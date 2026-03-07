@@ -10,7 +10,12 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "emulators": "firebase emulators:start --import=./emulator-data --export-on-exit",
-    "seed": "npx tsx scripts/seed-firestore.ts"
+    "seed": "npx tsx scripts/seed-firestore.ts",
+    "env:export": "npx tsx scripts/sync-env.ts export",
+    "env:import": "npx tsx scripts/sync-env.ts import",
+    "env:set": "npx tsx scripts/sync-env.ts set",
+    "env:delete": "npx tsx scripts/sync-env.ts delete",
+    "env:list": "npx tsx scripts/sync-env.ts list"
   },
   "dependencies": {
     "clsx": "^2.1.1",
