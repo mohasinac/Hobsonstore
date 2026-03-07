@@ -752,6 +752,15 @@ export const SEED_PROMO_BANNERS = [
     sortOrder: 3,
     active: true,
   },
+  {
+    id: "promo-004",
+    title: "DC Universe",
+    ctaLabel: "Shop DC",
+    ctaUrl: "/collections/dc",
+    image: "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=600&q=80",
+    sortOrder: 4,
+    active: true,
+  },
 ];
 
 // ─── Home Sections ────────────────────────────────────────────────────────────
