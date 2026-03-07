@@ -11,6 +11,7 @@ import { WishlistButton } from "./_components/WishlistButton";
 import { ImageGallery } from "./_components/ImageGallery";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
+import { generateProductMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -23,11 +24,8 @@ export async function generateMetadata({
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProduct(slug).catch(() => null);
-  if (!product) return {};
-  return {
-    title: product.seoTitle ?? product.name,
-    description: product.seoDescription,
-  };
+  if (!product) return { title: "Product not found" };
+  return generateProductMetadata(product);
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

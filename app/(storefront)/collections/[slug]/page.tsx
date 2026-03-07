@@ -5,6 +5,7 @@ import { getProducts } from "@/lib/firebase/products";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductFilterSidebar } from "@/components/product/ProductFilterSidebar";
 import type { ProductSortOption } from "@/types/product";
+import { generateCollectionMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -25,11 +26,8 @@ export async function generateMetadata({
 }: CollectionPageProps): Promise<Metadata> {
   const { slug } = await params;
   const col = await getCollection(slug).catch(() => null);
-  if (!col) return {};
-  return {
-    title: col.seoTitle ?? col.name,
-    description: col.seoDescription ?? col.description,
-  };
+  if (!col) return { title: "Collection not found" };
+  return generateCollectionMetadata(col);
 }
 
 export default async function CollectionPage({
