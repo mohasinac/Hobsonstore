@@ -35,28 +35,27 @@ export default async function CollectionPage({
   const { slug } = await params;
   const sp = await searchParams;
 
-  const [col, products] = await Promise.all([
-    getCollectionServer(slug).catch(() => null),
-    getProductsServer({
-      collectionSlug: slug !== "all" ? slug : undefined,
-      inStock: sp.inStock === "true" ? true : undefined,
-      sort: (sp.sort as "price_asc" | "price_desc" | "newest" | "name_asc") ?? "newest",
-      priceMin: sp.priceMin ? Number(sp.priceMin) : undefined,
-      priceMax: sp.priceMax ? Number(sp.priceMax) : undefined,
-    }).catch(() => []),
-  ]);
-
+  const col = await getCollectionServer(slug).catch(() => null);
   if (!col) notFound();
+
+  const filterKey = col.type === "brand" ? "brand" : "franchise";
+  const products = await getProductsServer({
+    [filterKey]: slug,
+    inStock: sp.inStock === "true" ? true : undefined,
+    sort: (sp.sort as "price_asc" | "price_desc" | "newest" | "name_asc") ?? "newest",
+    priceMin: sp.priceMin ? Number(sp.priceMin) : undefined,
+    priceMax: sp.priceMax ? Number(sp.priceMax) : undefined,
+  }).catch(() => []);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       {/* Collection header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{col.name}</h1>
+        <h1 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-bangers)', color: '#1A1A2E', letterSpacing: '0.06em' }}>{col.name}</h1>
         {col.description && (
-          <p className="mt-2 text-gray-500">{col.description}</p>
+          <p className="mt-2" style={{ color: '#6B6B6B' }}>{col.description}</p>
         )}
-        <p className="mt-1 text-sm text-gray-400">{products.length} products</p>
+        <p className="mt-1 text-sm font-semibold" style={{ color: '#6B6B6B' }}>{products.length} products</p>
       </div>
 
       <div className="flex flex-col gap-8 md:flex-row">

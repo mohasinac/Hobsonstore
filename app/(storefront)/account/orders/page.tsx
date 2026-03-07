@@ -39,11 +39,11 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-extrabold text-gray-900">My Orders</h1>
+      <h1 className="text-2xl font-extrabold" style={{ fontFamily: 'var(--font-bangers)', color: '#1A1A2E', letterSpacing: '0.06em' }}>My Orders</h1>
 
       {orders.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 py-16 text-center">
-          <p className="text-lg font-medium text-gray-600">No orders yet</p>
+        <div className="py-16 text-center" style={{ border: '2px dashed #0D0D0D' }}>
+          <p className="text-lg font-bold" style={{ color: '#1A1A2E' }}>No orders yet</p>
           <Link
             href={ROUTES.COLLECTIONS}
             className="mt-3 inline-block text-sm text-red-600 hover:underline"
@@ -52,7 +52,7 @@ export default function OrdersPage() {
           </Link>
         </div>
       ) : (
-        <div className="divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white shadow-sm">
+        <div className="divide-y bg-white" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D', borderColor: '#0D0D0D' }}>
           {orders.map((order) => (
             <OrderCard key={order.id} order={order} />
           ))}

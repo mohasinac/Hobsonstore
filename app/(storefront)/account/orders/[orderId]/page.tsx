@@ -50,8 +50,8 @@ export default function OrderDetailPage() {
   if (notFound || !order) {
     return (
       <div className="py-16 text-center">
-        <p className="text-lg font-medium text-gray-700">Order not found.</p>
-        <Link href={ROUTES.ACCOUNT_ORDERS} className="mt-3 inline-block text-sm text-red-600 hover:underline">
+        <p className="text-lg font-bold" style={{ color: '#1A1A2E' }}>Order not found.</p>
+        <Link href={ROUTES.ACCOUNT_ORDERS} className="mt-3 inline-block text-sm font-bold hover:underline" style={{ color: '#E8001C' }}>
           Back to orders
         </Link>
       </div>
@@ -65,13 +65,13 @@ export default function OrderDetailPage() {
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href={ROUTES.ACCOUNT_ORDERS} className="text-sm text-gray-500 hover:text-red-600">
+          <Link href={ROUTES.ACCOUNT_ORDERS} className="text-sm font-semibold hover:underline" style={{ color: '#6B6B6B' }}>
             ← My Orders
           </Link>
-          <h1 className="mt-1 text-xl font-extrabold text-gray-900">
+          <h1 className="mt-1 text-xl font-extrabold" style={{ fontFamily: 'var(--font-bangers)', color: '#1A1A2E', letterSpacing: '0.06em' }}>
             Order #{order.id.slice(-8).toUpperCase()}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm" style={{ color: '#6B6B6B' }}>
             {order.createdAt?.toDate
               ? order.createdAt.toDate().toLocaleDateString("en-IN", {
                   day: "numeric",
@@ -85,9 +85,9 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Items */}
-      <div className="rounded-xl border border-gray-100 bg-white shadow-sm">
-        <div className="border-b border-gray-100 px-5 py-3">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500">Items</h2>
+      <div className="bg-white" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
+        <div className="px-5 py-3" style={{ borderBottom: '2px solid #0D0D0D' }}>
+          <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: '#6B6B6B' }}>Items</h2>
         </div>
         <OrderItemList items={order.items} />
       </div>
@@ -95,13 +95,13 @@ export default function OrderDetailPage() {
       {/* Totals + Address row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* Order summary */}
-        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-sm font-bold uppercase tracking-widest text-gray-500">
+        <div className="bg-white p-5" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-widest" style={{ color: '#6B6B6B' }}>
             Price Breakdown
           </h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-gray-500">Subtotal</dt>
+              <dt style={{ color: '#6B6B6B' }}>Subtotal</dt>
               <dd>{formatINR(order.subtotal)}</dd>
             </div>
             {order.discountAmount > 0 && (
@@ -116,7 +116,7 @@ export default function OrderDetailPage() {
                 <dd>−{formatINR(order.coinsRedeemed / 10)}</dd>
               </div>
             )}
-            <div className="flex justify-between border-t border-gray-100 pt-2 font-bold">
+            <div className="flex justify-between pt-2 font-bold" style={{ borderTop: '2px solid #0D0D0D' }}>
               <dt>Total</dt>
               <dd>{formatINR(order.total)}</dd>
             </div>
@@ -124,11 +124,11 @@ export default function OrderDetailPage() {
         </div>
 
         {/* Shipping address */}
-        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-sm font-bold uppercase tracking-widest text-gray-500">
+        <div className="bg-white p-5" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-widest" style={{ color: '#6B6B6B' }}>
             Shipping Address
           </h2>
-          <address className="not-italic text-sm leading-relaxed text-gray-700">
+          <address className="not-italic text-sm leading-relaxed" style={{ color: '#1A1A2E' }}>
             <strong>{address.name}</strong>
             <br />
             {address.phone}
@@ -143,11 +143,11 @@ export default function OrderDetailPage() {
 
       {/* Tracking */}
       {order.trackingNumber && (
-        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="mb-2 text-sm font-bold uppercase tracking-widest text-gray-500">
+        <div className="bg-white p-5" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
+          <h2 className="mb-2 text-sm font-bold uppercase tracking-widest" style={{ color: '#6B6B6B' }}>
             Tracking
           </h2>
-          <p className="text-sm text-gray-700">
+          <p className="text-sm" style={{ color: '#1A1A2E' }}>
             <span className="font-medium">{order.courierName}</span> ·{" "}
             <span>{order.trackingNumber}</span>
           </p>
@@ -156,7 +156,8 @@ export default function OrderDetailPage() {
               href={order.trackingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-block text-sm text-red-600 hover:underline"
+              className="mt-2 inline-block text-sm font-bold hover:underline"
+              style={{ color: '#E8001C' }}
             >
               Track shipment →
             </a>

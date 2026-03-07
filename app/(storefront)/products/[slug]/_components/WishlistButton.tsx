@@ -16,7 +16,7 @@ export function WishlistButton({ productId }: WishlistButtonProps) {
       onClick={() => toggle(productId)}
       className={cn(
         "flex items-center gap-2 text-sm font-medium transition-colors",
-        isWishlisted ? "text-red-600" : "text-gray-500 hover:text-red-600",
+        isWishlisted ? "text-red-600" : "hover:text-red-600",
       )}
       aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
     >

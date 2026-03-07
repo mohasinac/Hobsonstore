@@ -50,8 +50,8 @@ export function OrderStatusStepper({ order, configs = [] }: OrderStatusStepperPr
   if (cancelled) {
     return (
       <div className="space-y-4">
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-          <p className="font-semibold text-red-700">
+        <div className="p-4" style={{ border: '2px solid #E8001C', background: '#FFF0F0', boxShadow: '3px 3px 0px #0D0D0D' }}>
+          <p className="font-bold" style={{ color: '#E8001C' }}>
             {labelFor(order.currentStatus)}
           </p>
           {eventFor(order.currentStatus) && (
@@ -74,7 +74,7 @@ export function OrderStatusStepper({ order, configs = [] }: OrderStatusStepperPr
   );
 
   return (
-    <ol className="relative ml-3 border-l border-gray-200">
+    <ol className="relative ml-3 border-l-2" style={{ borderColor: '#0D0D0D' }}>
       {STEPPER_STATUSES.map((status, idx) => {
         const isDone = idx <= currentIndex;
         const isActive = idx === currentIndex;
@@ -84,13 +84,16 @@ export function OrderStatusStepper({ order, configs = [] }: OrderStatusStepperPr
           <li key={status} className="mb-8 ml-6 last:mb-0">
             {/* Circle */}
             <span
-              className={`absolute -left-3.5 flex h-7 w-7 items-center justify-center rounded-full ring-4 ring-white ${
-                isDone
+              className="absolute -left-3.5 flex h-7 w-7 items-center justify-center rounded-full"
+              style={{
+                border: '2px solid #0D0D0D',
+                background: isDone
                   ? isActive
-                    ? "bg-red-600 text-white"
-                    : "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-400"
-              }`}
+                    ? '#E8001C'
+                    : '#16A34A'
+                  : '#FFFEF0',
+                color: isDone ? '#FFFFFF' : '#6B6B6B',
+              }}
             >
               {isDone && !isActive ? (
                 // Checkmark
@@ -110,19 +113,20 @@ export function OrderStatusStepper({ order, configs = [] }: OrderStatusStepperPr
 
             <div className="pl-1">
               <p
-                className={`text-sm font-semibold ${
-                  isActive ? "text-red-600" : isDone ? "text-gray-900" : "text-gray-400"
-                }`}
+                className="text-sm font-bold"
+                style={{
+                  color: isActive ? '#E8001C' : isDone ? '#1A1A2E' : '#6B6B6B',
+                }}
               >
                 {labelFor(status)}
               </p>
               {event && (
-                <time className="block text-xs text-gray-400">
+                <time className="block text-xs" style={{ color: '#6B6B6B' }}>
                   {formatTimestamp(event)}
                 </time>
               )}
               {event?.note && (
-                <p className="mt-0.5 text-xs text-gray-500">{event.note}</p>
+                <p className="mt-0.5 text-xs" style={{ color: '#6B6B6B' }}>{event.note}</p>
               )}
             </div>
           </li>

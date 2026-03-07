@@ -149,11 +149,7 @@ export async function POST(req: NextRequest) {
         const data = snap.data() as {
           availableStock?: number;
           isPreorder?: boolean;
-          status?: string;
         };
-        if (data.status === "sold-out") {
-          throw new Error(`"${item.name}" is sold out.`);
-        }
         const available = data.availableStock ?? 0;
         if (!data.isPreorder && available < item.qty) {
           throw new Error(`Only ${available} unit(s) of "${item.name}" left.`);

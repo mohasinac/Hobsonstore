@@ -18,7 +18,8 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
     <div className="flex flex-col gap-3">
       {/* Main image */}
       <div
-        className="relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg bg-gray-50"
+        className="relative aspect-square w-full cursor-zoom-in overflow-hidden"
+        style={{ border: '2px solid #0D0D0D', background: '#FFFEF0' }}
         onClick={() => setZoomed(true)}
       >
         <Image
@@ -39,9 +40,10 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
               key={i}
               onClick={() => setSelected(i)}
               className={cn(
-                "relative h-16 w-16 flex-shrink-0 overflow-hidden rounded border-2 bg-gray-50",
-                selected === i ? "border-red-600" : "border-gray-200",
+                "relative h-16 w-16 flex-shrink-0 overflow-hidden border-2",
+                selected === i ? "border-[#E8001C]" : "border-[#0D0D0D]",
               )}
+              style={{ background: '#FFFEF0' }}
               aria-label={`View image ${i + 1}`}
             >
               <Image

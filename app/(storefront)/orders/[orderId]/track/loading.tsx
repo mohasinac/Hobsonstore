@@ -16,7 +16,7 @@ export default function OrderTrackLoading() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
         {/* Stepper skeleton */}
         <div className="md:col-span-2">
-          <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm space-y-5">
+          <div className="bg-white p-5 space-y-5" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
             <Skeleton className="h-4 w-20" />
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex items-start gap-3">
@@ -32,7 +32,7 @@ export default function OrderTrackLoading() {
 
         {/* Summary skeleton */}
         <div className="flex flex-col gap-5 md:col-span-3">
-          <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm space-y-3">
+          <div className="bg-white p-5 space-y-3" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
             <Skeleton className="h-4 w-16" />
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex gap-3">
@@ -44,7 +44,7 @@ export default function OrderTrackLoading() {
               </div>
             ))}
           </div>
-          <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm space-y-2">
+          <div className="bg-white p-5 space-y-2" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex justify-between">
                 <Skeleton className="h-4 w-24" />

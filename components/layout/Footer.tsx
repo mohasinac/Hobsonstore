@@ -228,11 +228,35 @@ export function Footer({ siteConfig }: FooterProps) {
 
         {/* Bottom bar */}
         <div
-          className="mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs"
+          className="relative mt-10 pt-6 flex items-center justify-center text-xs"
           style={{ borderTop: "2px solid #2D2D2D", color: "#64748B" }}
         >
           <span>{copyright}</span>
-          <span>Made with ❤️ for collectors</span>
+          <a
+            href="https://github.com/mohasinac"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              position: "absolute",
+              right: 0,
+              bottom: 0,
+              fontSize: "0.55rem",
+              color: "transparent",
+              opacity: 0.08,
+              userSelect: "none",
+              pointerEvents: "auto",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.color = "#64748B";
+              (e.currentTarget as HTMLAnchorElement).style.opacity = "0.6";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.color = "transparent";
+              (e.currentTarget as HTMLAnchorElement).style.opacity = "0.08";
+            }}
+          >
+            dev @mohasinac
+          </a>
         </div>
       </div>
     </footer>

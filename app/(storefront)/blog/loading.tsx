@@ -8,7 +8,8 @@ export default function BlogLoading() {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="overflow-hidden rounded-lg border border-gray-200"
+            className="overflow-hidden"
+            style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}
           >
             <Skeleton className="aspect-[16/9] w-full" />
             <div className="space-y-3 p-5">

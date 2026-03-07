@@ -28,6 +28,7 @@ export interface Product {
   lowStockThreshold: number;
   isFeatured: boolean;
   isBestseller: boolean;
+  active?: boolean;
   seoTitle?: string;
   seoDescription?: string;
   videos: string[];

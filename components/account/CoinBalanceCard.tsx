@@ -91,7 +91,7 @@ export function CoinBalanceCard({
                   {entry.delta >= 0 ? "+" : ""}
                   {entry.delta.toLocaleString("en-IN")}
                   {entry.timestamp && (
-                    <span className="ml-1.5 font-normal text-gray-400">
+                    <span className="ml-1.5 font-normal" style={{ color: '#6B6B6B' }}>
                       {formatTs(entry.timestamp as Timestamp)}
                     </span>
                   )}

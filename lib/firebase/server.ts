@@ -201,6 +201,7 @@ export async function getRelatedProductsServer(product: Product, count = 4): Pro
   const snap = await db()
     .collection(COLLECTIONS.PRODUCTS)
     .where("franchise", "==", product.franchise)
+    .where("active", "==", true)
     .where("inStock", "==", true)
     .limit(count + 1)
     .get();
@@ -215,6 +216,7 @@ export const searchProductsServer = cache(async function (searchQuery: string): 
   const end = searchQuery + "\uf8ff";
   const snap = await db()
     .collection(COLLECTIONS.PRODUCTS)
+    .where("active", "==", true)
     .where("name", ">=", searchQuery)
     .where("name", "<=", end)
     .limit(30)
@@ -223,7 +225,6 @@ export const searchProductsServer = cache(async function (searchQuery: string): 
 });
 
 export interface ProductFiltersServer {
-  collectionSlug?: string;
   franchise?: string;
   brand?: string;
   inStock?: boolean;
@@ -250,16 +251,15 @@ export async function getProductsServer(
   pageSize = 24,
 ): Promise<Product[]> {
   let ref = db().collection(COLLECTIONS.PRODUCTS).where("active", "==", true) as FirebaseFirestore.Query;
-  if (filters.collectionSlug) ref = ref.where("collections", "array-contains", filters.collectionSlug);
   if (filters.franchise) ref = ref.where("franchise", "==", filters.franchise);
   if (filters.brand) ref = ref.where("brand", "==", filters.brand);
   if (filters.inStock) ref = ref.where("availableStock", ">", 0);
-  if (filters.priceMin !== undefined) ref = ref.where("price", ">=", filters.priceMin);
-  if (filters.priceMax !== undefined) ref = ref.where("price", "<=", filters.priceMax);
+  if (filters.priceMin !== undefined) ref = ref.where("salePrice", ">=", filters.priceMin);
+  if (filters.priceMax !== undefined) ref = ref.where("salePrice", "<=", filters.priceMax);
 
   switch (filters.sort) {
-    case "price_asc":  ref = ref.orderBy("price", "asc"); break;
-    case "price_desc": ref = ref.orderBy("price", "desc"); break;
+    case "price_asc":  ref = ref.orderBy("salePrice", "asc"); break;
+    case "price_desc": ref = ref.orderBy("salePrice", "desc"); break;
     case "name_asc":   ref = ref.orderBy("name", "asc"); break;
     default:           ref = ref.orderBy("createdAt", "desc");
   }
@@ -267,3 +267,33 @@ export async function getProductsServer(
   const snap = await ref.limit(pageSize).get();
   return snap.docs.map((d) => toData<Product>(d));
 }
+
+export const getFeaturedProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
+  const snap = await db()
+    .collection(COLLECTIONS.PRODUCTS)
+    .where("isFeatured", "==", true)
+    .where("active", "==", true)
+    .limit(pageSize)
+    .get();
+  return snap.docs.map((d) => toData<Product>(d));
+});
+
+export const getBestsellerProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
+  const snap = await db()
+    .collection(COLLECTIONS.PRODUCTS)
+    .where("isBestseller", "==", true)
+    .where("active", "==", true)
+    .limit(pageSize)
+    .get();
+  return snap.docs.map((d) => toData<Product>(d));
+});
+
+export const getNewArrivalsProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
+  const snap = await db()
+    .collection(COLLECTIONS.PRODUCTS)
+    .where("active", "==", true)
+    .orderBy("createdAt", "desc")
+    .limit(pageSize)
+    .get();
+  return snap.docs.map((d) => toData<Product>(d));
+});

@@ -57,7 +57,6 @@ export async function releaseReservedStock(orderId: string): Promise<void> {
     batch.update(productRef, {
       reservedStock: FieldValue.increment(-item.qty),
       availableStock: FieldValue.increment(item.qty),
-      inStock: true,
     });
   }
 
