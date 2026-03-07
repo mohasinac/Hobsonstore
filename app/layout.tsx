@@ -10,8 +10,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "FatCat Collectibles",
-    template: "%s | FatCat Collectibles",
+    default: "Hobson Collectibles",
+    template: "%s | Hobson Collectibles",
   },
   description:
     "Premium collectibles — action figures, statues & pop-culture merchandise.",

@@ -18,6 +18,7 @@
     "env:list": "npx tsx scripts/sync-env.ts list"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
     "clsx": "^2.1.1",
     "dompurify": "^3.3.2",
     "firebase": "^12.10.0",

@@ -13,7 +13,7 @@ import { initializeApp, getApps } from "firebase-admin/app";
 if (!getApps().length) initializeApp();
 
 const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://fatcatcollectibles.in";
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://hobsoncollectibles.in";
 const REVALIDATE_SECRET = process.env.REVALIDATE_SECRET ?? "";
 
 async function revalidate(paths: string[]): Promise<void> {

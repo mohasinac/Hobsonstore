@@ -20,7 +20,7 @@ if (!getApps().length) {
     initializeApp({ credential: cert(process.env.GOOGLE_APPLICATION_CREDENTIALS) });
   } else {
     // Emulator – no credentials needed
-    initializeApp({ projectId: process.env.GCLOUD_PROJECT ?? "fatcat-dev" });
+    initializeApp({ projectId: process.env.GCLOUD_PROJECT ?? "hobson-dev" });
   }
 }
 

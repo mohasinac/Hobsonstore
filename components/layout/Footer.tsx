@@ -9,7 +9,7 @@ interface FooterProps {
 export function Footer({ siteConfig }: FooterProps) {
   const year = new Date().getFullYear();
   const copyright =
-    siteConfig?.footerCopyright ?? `© ${year}, FATCAT COLLECTIBLES`;
+    siteConfig?.footerCopyright ?? `© ${year}, HOBSON COLLECTIBLES`;
 
   return (
     <footer className="bg-gray-900 text-gray-300">

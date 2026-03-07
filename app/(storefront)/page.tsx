@@ -13,7 +13,7 @@ import { NewsletterSignup } from "@/components/home/NewsletterSignup";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "FatCat Collectibles — Premium Action Figures & Statues",
+  title: "Hobson Collectibles — Premium Action Figures & Statues",
   description:
     "India's premier destination for licensed action figures, statues, and pop-culture collectibles from Hot Toys, Sideshow, Iron Studios, and more.",
 };

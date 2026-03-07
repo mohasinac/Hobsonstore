@@ -8,7 +8,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "News, reviews and stories from the world of collectibles at FatCat Collectibles.",
+    "News, reviews and stories from the world of collectibles at Hobson Collectibles.",
 };
 
 export default async function BlogPage() {

@@ -4,7 +4,7 @@ import { getAllCollections } from "@/lib/firebase/collections";
 import { getProducts } from "@/lib/firebase/products";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://fatcatcollectibles.in";
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://hobsoncollectibles.in";
 
 export const revalidate = 86400; // 24 hours
 

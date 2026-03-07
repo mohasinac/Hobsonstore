@@ -15,7 +15,7 @@ export function buildCheckoutMessageURL(
     (i) => `• ${i.name} ×${i.qty} — ${formatINR(i.salePrice * i.qty)}`,
   );
   const body = [
-    `${prefix}Hi FatCat! I'd like to place an order:`,
+    `${prefix}Hi Hobson! I'd like to place an order:`,
     "",
     ...lines,
     "",
@@ -64,7 +64,7 @@ export function isAdminNumber(
 
 export function buildHelpMessage(): string {
   return [
-    "*FatCat Inventory Bot — Commands*",
+    "*Hobson Inventory Bot — Commands*",
     "",
     "`RESTOCK {sku} qty:{n}` — Add stock",
     "`SOLDOUT {sku}` — Mark as sold out",

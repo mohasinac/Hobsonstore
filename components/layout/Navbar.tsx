@@ -39,13 +39,13 @@ export function Navbar({ collections, siteConfig }: NavbarProps) {
             {siteConfig?.logoUrl ? (
               <Image
                 src={siteConfig.logoUrl}
-                alt={siteConfig.siteName ?? "FatCat Collectibles"}
+                alt={siteConfig.siteName ?? "Hobson Collectibles"}
                 width={140}
                 height={40}
                 priority
               />
             ) : (
-              <span>FATCAT COLLECTIBLES</span>
+              <span>HOBSON COLLECTIBLES</span>
             )}
           </Link>
 

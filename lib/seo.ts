@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { Product } from "@/types/product";
 import type { BlogPost, ContentPage } from "@/types/content";
 
-const SITE_NAME = "FatCat Collectibles";
+const SITE_NAME = "Hobson Collectibles";
 const DEFAULT_DESCRIPTION =
   "Premium collectibles — action figures, statues & pop-culture merchandise. Free shipping across India.";
 const DEFAULT_OG_IMAGE = "/og-default.png";
@@ -62,7 +62,7 @@ export function generateCollectionMetadata(collection: {
   const description =
     collection.seoDescription ??
     collection.description ??
-    `Shop ${collection.name} collectibles at FatCat Collectibles.`;
+    `Shop ${collection.name} collectibles at Hobson Collectibles.`;
   const image = collection.bannerImage ?? DEFAULT_OG_IMAGE;
 
   return {

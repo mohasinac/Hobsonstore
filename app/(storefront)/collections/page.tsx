@@ -9,7 +9,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Collections",
   description:
-    "Browse all FatCat Collectibles franchise and brand collections.",
+    "Browse all Hobson Collectibles franchise and brand collections.",
 };
 
 export default async function CollectionsPage() {
