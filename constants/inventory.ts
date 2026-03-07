@@ -1,0 +1,2 @@
+export const DEFAULT_LOW_STOCK_THRESHOLD = 5;
+export const RESTOCK_NOTE_MAX_LEN = 500;

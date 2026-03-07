@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+    }
+
+    // Product & collection images — public read, admin write
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /collections/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /banners/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // User avatars — owner read/write
+    match /users/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Deny everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
