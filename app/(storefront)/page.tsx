@@ -60,13 +60,31 @@ export default async function HomePage() {
       <FAQAccordion items={faqItems} />
 
       {/* Newsletter */}
-      <section className="bg-gray-50 py-16">
+      <section
+        className="py-16"
+        style={{
+          background: "#FFE500",
+          borderTop: "4px solid #0D0D0D",
+        }}
+      >
         <div className="mx-auto max-w-lg px-4 text-center">
-          <h2 className="text-2xl font-extrabold text-gray-900">
-            Stay in the loop
+          <h2
+            className="mb-2"
+            style={{
+              fontFamily: "var(--font-bangers, Bangers, cursive)",
+              fontSize: "clamp(1.8rem, 5vw, 3rem)",
+              letterSpacing: "0.08em",
+              color: "#0D0D0D",
+              textShadow: "3px 3px 0px rgba(0,0,0,0.15)",
+            }}
+          >
+            STAY IN THE LOOP!
           </h2>
-          <p className="mt-2 mb-6 text-sm text-gray-500">
-            Get first access to new arrivals, pre-orders, and exclusive deals.
+          <p
+            className="mt-1 mb-6 text-sm font-semibold"
+            style={{ color: "#1A1A2E" }}
+          >
+            Get first access to new arrivals, pre-orders &amp; exclusive deals.
           </p>
           <NewsletterSignup />
         </div>

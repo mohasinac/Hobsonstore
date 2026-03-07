@@ -11,30 +11,46 @@ export function BrandStrip({ brands }: BrandStripProps) {
   if (brands.length === 0) return null;
 
   return (
-    <section className="border-y border-gray-100 bg-gray-50 py-6">
+    <section
+      className="py-8"
+      style={{
+        background: "#0D0D0D",
+        borderBottom: "3px solid #0D0D0D",
+      }}
+    >
       <div className="mx-auto max-w-7xl px-4">
-        <h2 className="mb-4 text-center text-sm font-bold uppercase tracking-widest text-gray-500">
-          Browse by Brand
+        <h2
+          className="mb-5 text-center"
+          style={{
+            fontFamily: "var(--font-bangers, Bangers, cursive)",
+            fontSize: "clamp(1.2rem, 3vw, 1.6rem)",
+            letterSpacing: "0.12em",
+            color: "#FFE500",
+          }}
+        >
+          BROWSE BY BRAND
         </h2>
-        <div className="flex items-center gap-6 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex items-center gap-8 overflow-x-auto pb-2 scrollbar-none justify-center flex-wrap">
           {brands.map((brand) => (
             <Link
               key={brand.slug}
               href={ROUTES.COLLECTION(brand.slug)}
-              className="group flex-shrink-0"
+              className="group flex-shrink-0 transition-transform hover:-translate-y-0.5"
             >
-              <div className="relative h-12 w-24 opacity-70 grayscale transition group-hover:opacity-100 group-hover:grayscale-0">
-                {brand.logoImage && (
+              <div className="relative h-12 w-28 opacity-60 grayscale transition group-hover:opacity-100 group-hover:grayscale-0">
+                {brand.logoImage ? (
                   <Image
                     src={brand.logoImage}
                     alt={brand.name}
                     fill
                     className="object-contain"
-                    sizes="96px"
+                    sizes="112px"
                   />
-                )}
-                {!brand.logoImage && (
-                  <span className="flex h-full items-center justify-center text-xs font-bold text-gray-600">
+                ) : (
+                  <span
+                    className="flex h-full items-center justify-center text-xs font-bold"
+                    style={{ color: "#CBD5E1" }}
+                  >
                     {brand.name}
                   </span>
                 )}

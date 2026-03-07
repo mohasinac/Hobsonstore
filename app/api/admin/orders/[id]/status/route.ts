@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminApp, getAdminDb } from "@/lib/firebase/admin";
-import { updateOrderStatus, releaseReservedStock } from "@/lib/firebase/orders.server";
+import { updateOrderStatus, releaseReservedStock, consumeReservedStock } from "@/lib/firebase/orders.server";
 import { buildStatusMessage, sendWhatsAppMessage } from "@/lib/whatsapp";
 import { ORDER_STATUS_TRANSITIONS } from "@/constants/orderStatus";
 import { COLLECTIONS } from "@/constants/firebase";
@@ -113,8 +113,11 @@ export async function PATCH(
       courierName,
     });
 
-    // Release reserved stock on delivered or cancelled
-    if (newStatus === "delivered" || newStatus === "cancelled") {
+    // On delivery: items are shipped — clear reservation without restoring inventory.
+    // On cancel: items return to available stock.
+    if (newStatus === "delivered") {
+      await consumeReservedStock(orderId);
+    } else if (newStatus === "cancelled") {
       await releaseReservedStock(orderId);
     }
 

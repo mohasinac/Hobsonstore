@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import {
   SEED_PRODUCTS,
@@ -73,7 +72,6 @@ type ResultStatus = "idle" | "loading" | "ok" | "error" | "partial";
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function SeedPage() {
-  const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [results, setResults] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<ResultStatus>("idle");
@@ -144,8 +142,8 @@ export default function SeedPage() {
       } else {
         newLog.push(`✔  All done.`);
         setStatus("ok");
-        // Re-run server components so the app immediately reflects new data
-        router.refresh();
+        // Revalidation is handled server-side by the seed API (revalidatePath).
+        // Do NOT call router.refresh() here — it causes a cascade of GET /seed requests.
       }
 
       setLog((l) => [...l, ...newLog]);

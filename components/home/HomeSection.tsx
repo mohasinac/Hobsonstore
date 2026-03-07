@@ -13,24 +13,42 @@ export function HomeSection({ section, products }: HomeSectionProps) {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-10">
+    <section
+      className="py-10"
+      style={{ background: "#FFFEF0", borderBottom: "2px solid #E5E0C4" }}
+    >
       <div className="mx-auto max-w-7xl px-4">
         {/* Header */}
         <div className="mb-6 flex items-end justify-between">
           <div>
-            <h2 className="text-xl font-extrabold uppercase tracking-tight text-gray-900 sm:text-2xl">
+            <h2
+              style={{
+                fontFamily: "var(--font-bangers, Bangers, cursive)",
+                fontSize: "clamp(1.4rem, 4vw, 2rem)",
+                letterSpacing: "0.08em",
+                color: "#0D0D0D",
+              }}
+            >
               {section.title}
             </h2>
             {section.subtitle && (
-              <p className="mt-1 text-sm text-gray-500">{section.subtitle}</p>
+              <p className="mt-1 text-sm font-medium" style={{ color: "#6B6B6B" }}>
+                {section.subtitle}
+              </p>
             )}
           </div>
           {section.collectionSlug && (
             <Link
               href={ROUTES.COLLECTION(section.collectionSlug)}
-              className="text-sm font-medium text-red-600 hover:underline"
+              className="text-sm font-black uppercase transition-colors"
+              style={{
+                color: "#E8001C",
+                fontFamily: "var(--font-bangers, Bangers, cursive)",
+                letterSpacing: "0.08em",
+                fontSize: "0.95rem",
+              }}
             >
-              View all
+              VIEW ALL →
             </Link>
           )}
         </div>
@@ -46,7 +64,7 @@ export function HomeSection({ section, products }: HomeSectionProps) {
                 href={ROUTES.PRODUCT(product.slug)}
                 className="block text-sm"
               >
-                <span className="font-medium text-gray-800 line-clamp-2">
+                <span className="font-bold" style={{ color: "#1A1A2E" }}>
                   {product.name}
                 </span>
               </Link>

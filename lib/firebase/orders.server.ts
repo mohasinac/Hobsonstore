@@ -40,6 +40,9 @@ export async function updateOrderStatus(
   await ref.update(updateData);
 }
 
+/**
+ * Cancel path: return items to available inventory (reservedStock ↓, availableStock ↑).
+ */
 export async function releaseReservedStock(orderId: string): Promise<void> {
   const adminDb = getAdminDb();
 
@@ -54,9 +57,30 @@ export async function releaseReservedStock(orderId: string): Promise<void> {
     batch.update(productRef, {
       reservedStock: FieldValue.increment(-item.qty),
       availableStock: FieldValue.increment(item.qty),
-      // Returning stock means availableStock > 0, so mark back in-stock.
-      // If it was manually set to sold-out, the admin can override in the dashboard.
       inStock: true,
+    });
+  }
+
+  await batch.commit();
+}
+
+/**
+ * Delivery path: items are shipped, only clear the reservation without returning stock.
+ */
+export async function consumeReservedStock(orderId: string): Promise<void> {
+  const adminDb = getAdminDb();
+
+  const orderSnap = await adminDb.collection(COLLECTIONS.ORDERS).doc(orderId).get();
+  if (!orderSnap.exists) return;
+
+  const order = orderSnap.data() as Order;
+  const batch = adminDb.batch();
+
+  for (const item of order.items) {
+    const productRef = adminDb.collection(COLLECTIONS.PRODUCTS).doc(item.productId);
+    batch.update(productRef, {
+      reservedStock: FieldValue.increment(-item.qty),
+      // availableStock is NOT incremented — the items are physically gone.
     });
   }
 

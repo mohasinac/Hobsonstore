@@ -86,10 +86,14 @@ export default function CheckoutPage() {
     }
   }, [user]);
 
-  if (items.length === 0) {
-    router.replace(ROUTES.CART);
-    return null;
-  }
+  useEffect(() => {
+    if (items.length === 0) {
+      router.replace(ROUTES.CART);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (items.length === 0) return null;
 
   async function handleApplyDiscount(code: string) {
     setDiscountLoading(true);
@@ -136,8 +140,9 @@ export default function CheckoutPage() {
         waUrl: string;
       };
       clear();
-      window.location.href = waUrl;
-      setTimeout(() => router.push(ROUTES.ORDER_TRACK(orderId)), 2000);
+      // Open WhatsApp in a new tab so the current page can navigate to order tracking.
+      window.open(waUrl, "_blank", "noopener,noreferrer");
+      router.push(ROUTES.ORDER_TRACK(orderId));
     } catch {
       toast("Something went wrong. Please try again.", "error");
     } finally {

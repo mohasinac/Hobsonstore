@@ -26,16 +26,21 @@ export function AnnouncementBar({ announcements }: AnnouncementBarProps) {
 
   return (
     <div
-      className="py-2 text-center text-xs font-medium"
+      className="py-1.5 text-center text-xs font-bold tracking-wide"
       style={{
-        backgroundColor: current.bgColor ?? "#1a1a1a",
-        color: current.textColor ?? "#ffffff",
+        backgroundColor: current.bgColor ?? "#E8001C",
+        color: current.textColor ?? "#FFFFFF",
+        borderBottom: "2px solid #0D0D0D",
+        fontFamily: "var(--font-inter, Inter, sans-serif)",
+        letterSpacing: "0.05em",
       }}
     >
       {current.link ? (
         <Link href={current.link} className="hover:underline">
           {current.message}
-          {current.linkLabel && ` — ${current.linkLabel}`}
+          {current.linkLabel && (
+            <span className="ml-2 font-black underline">{current.linkLabel} →</span>
+          )}
         </Link>
       ) : (
         <span>{current.message}</span>

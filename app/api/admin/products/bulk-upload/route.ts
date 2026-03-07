@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         inStock: row.stock > 0,
         images: [],
         videos: [],
-        specs: [],
+        specs: {},
         restockHistory: [],
         lowStockThreshold: 5,
         isPreorder: false,

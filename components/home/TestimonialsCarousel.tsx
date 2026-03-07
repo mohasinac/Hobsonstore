@@ -21,23 +21,51 @@ export function TestimonialsCarousel({
   const canNext = start + perPage < testimonials.length;
 
   return (
-    <section className="bg-gray-50 py-12">
+    <section
+      className="py-14"
+      style={{
+        background: "#FFFEF0",
+        borderTop: "3px solid #0D0D0D",
+        borderBottom: "3px solid #0D0D0D",
+      }}
+    >
       <div className="mx-auto max-w-7xl px-4">
-        <h2 className="mb-8 text-center text-xl font-extrabold uppercase tracking-tight text-gray-900 sm:text-2xl">
-          What Our Customers Say
+        <h2
+          className="mb-8 text-center"
+          style={{
+            fontFamily: "var(--font-bangers, Bangers, cursive)",
+            fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+            letterSpacing: "0.08em",
+            color: "#0D0D0D",
+          }}
+        >
+          WHAT OUR COLLECTORS SAY
         </h2>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((t) => (
             <div
               key={t.id}
-              className="flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-6 shadow-sm"
+              className="flex flex-col gap-3 p-6"
+              style={{
+                background: "#FFFFFF",
+                border: "3px solid #0D0D0D",
+                boxShadow: "4px 4px 0px #0D0D0D",
+              }}
             >
               <StarRating rating={t.rating} />
-              <p className="flex-1 text-sm leading-relaxed text-gray-700">
+              <p
+                className="flex-1 text-sm leading-relaxed"
+                style={{ color: "#1A1A2E" }}
+              >
                 &ldquo;{t.text}&rdquo;
               </p>
-              <p className="text-xs font-semibold text-gray-900">{t.name}</p>
+              <p
+                className="text-xs font-black uppercase"
+                style={{ color: "#E8001C", letterSpacing: "0.06em" }}
+              >
+                — {t.name}
+              </p>
             </div>
           ))}
         </div>
@@ -47,16 +75,32 @@ export function TestimonialsCarousel({
             <button
               onClick={() => setStart((s) => Math.max(0, s - perPage))}
               disabled={!canPrev}
-              className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium hover:border-red-500 hover:text-red-600 disabled:opacity-30"
+              className="px-5 py-2 text-sm font-black uppercase transition-transform hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{
+                fontFamily: "var(--font-bangers, Bangers, cursive)",
+                letterSpacing: "0.08em",
+                border: "2px solid #0D0D0D",
+                boxShadow: "3px 3px 0px #0D0D0D",
+                background: "#FFFFFF",
+                color: "#0D0D0D",
+              }}
             >
-              ← Prev
+              ← PREV
             </button>
             <button
               onClick={() => setStart((s) => s + perPage)}
               disabled={!canNext}
-              className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium hover:border-red-500 hover:text-red-600 disabled:opacity-30"
+              className="px-5 py-2 text-sm font-black uppercase transition-transform hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{
+                fontFamily: "var(--font-bangers, Bangers, cursive)",
+                letterSpacing: "0.08em",
+                border: "2px solid #0D0D0D",
+                boxShadow: "3px 3px 0px #0D0D0D",
+                background: "#E8001C",
+                color: "#FFFFFF",
+              }}
             >
-              Next →
+              NEXT →
             </button>
           </div>
         )}

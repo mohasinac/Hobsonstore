@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { arrayUnion } from "firebase/firestore";
 import { getFirebaseApp } from "@/lib/firebase/client";
 import { updateProduct } from "@/lib/firebase/products";
 import { Button } from "@/components/ui/Button";
@@ -54,11 +55,23 @@ export function InventoryEditForm({ product, onSaved }: InventoryEditFormProps) 
     try {
       const newStock = parseInt(stock) || 0;
       const newThreshold = parseInt(threshold) || 5;
+      const newAvailable = Math.max(0, newStock - product.reservedStock);
+
+      const restockEntry = {
+        qty: newStock - product.stock,
+        note: restockNote.trim().slice(0, 500) || undefined,
+        photos: conditionPhotos.length > 0 ? conditionPhotos : undefined,
+        restockedAt: new Date().toISOString(),
+        restockedBy: "admin-ui",
+      };
+
       await updateProduct(product.id, {
         stock: newStock,
-        availableStock: Math.max(0, newStock - product.reservedStock),
-        inStock: newStock > 0,
+        availableStock: newAvailable,
+        inStock: newAvailable > 0,
         lowStockThreshold: newThreshold,
+        // Append to history only when stock qty actually changed
+        ...(newStock !== product.stock ? { restockHistory: arrayUnion(restockEntry) as unknown as [] } : {}),
       });
       setSuccess(true);
       onSaved?.();

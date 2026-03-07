@@ -22,52 +22,101 @@ export function Navbar({ collections, siteConfig }: NavbarProps) {
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const franchiseCollections = collections.filter(
-    (c) => c.type === "franchise",
-  );
+  const franchiseCollections = collections.filter((c) => c.type === "franchise");
   const brandCollections = collections.filter((c) => c.type === "brand");
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-white shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          {/* Logo */}
+      {/* ── Comic-style sticky navbar ── */}
+      <header
+        className="sticky top-0 z-30"
+        style={{
+          background: "#FFE500",
+          borderBottom: "3px solid #0D0D0D",
+          boxShadow: "0 3px 0px #0D0D0D",
+        }}
+      >
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 gap-4">
+
+          {/* ── Logo ── */}
           <Link
             href={ROUTES.HOME}
-            className="flex-shrink-0 font-bold text-xl tracking-tight text-gray-900"
+            className="flex-shrink-0"
+            style={{ fontFamily: "var(--font-bangers, Bangers, cursive)" }}
           >
             {siteConfig?.logoUrl ? (
               <Image
                 src={siteConfig.logoUrl}
                 alt={siteConfig.siteName ?? "Hobson Collectibles"}
-                width={140}
-                height={40}
+                width={150}
+                height={44}
                 priority
+                style={{ filter: "drop-shadow(2px 2px 0px #0D0D0D)" }}
               />
             ) : (
-              <span>HOBSON COLLECTIBLES</span>
+              <span
+                className="text-2xl tracking-widest"
+                style={{
+                  fontFamily: "var(--font-bangers, Bangers, cursive)",
+                  color: "#0D0D0D",
+                  textShadow: "2px 2px 0px rgba(0,0,0,0.25)",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                HOBSON COLLECTIBLES
+              </span>
             )}
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+          {/* ── Desktop nav links ── */}
+          <nav className="hidden lg:flex items-center gap-1 text-sm font-bold">
+
+            {/* Collections mega-menu */}
             <div className="group relative">
-              <button className="flex items-center gap-1 text-gray-700 hover:text-red-600">
-                Collections
-                <span aria-hidden="true">▾</span>
+              <button
+                className="flex items-center gap-1 px-3 py-2 rounded-md transition-colors"
+                style={{ color: "#0D0D0D" }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "#0D0D0D";
+                  (e.currentTarget as HTMLButtonElement).style.color = "#FFE500";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                  (e.currentTarget as HTMLButtonElement).style.color = "#0D0D0D";
+                }}
+              >
+                <span style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", letterSpacing: "0.06em", fontSize: "1rem" }}>
+                  COLLECTIONS
+                </span>
+                <span aria-hidden="true" className="text-xs">▾</span>
               </button>
-              {/* Mega-menu dropdown */}
-              <div className="invisible absolute left-0 top-full mt-1 w-[600px] rounded-lg bg-white p-6 shadow-xl group-hover:visible grid grid-cols-2 gap-6 z-40">
+
+              {/* Mega-menu */}
+              <div
+                className="invisible group-hover:visible absolute left-0 top-full z-40 w-[620px] grid grid-cols-2 gap-6 p-6"
+                style={{
+                  background: "#FFFEF0",
+                  border: "3px solid #0D0D0D",
+                  boxShadow: "6px 6px 0px #0D0D0D",
+                  marginTop: "3px",
+                }}
+              >
                 <div>
-                  <p className="mb-2 text-xs font-bold uppercase tracking-widest text-gray-400">
-                    Browse by Franchise
+                  <p
+                    className="mb-3 text-xs uppercase tracking-widest"
+                    style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", color: "#E8001C", letterSpacing: "0.1em", fontSize: "0.8rem" }}
+                  >
+                    By Franchise
                   </p>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                    {franchiseCollections.slice(0, 14).map((c) => (
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                    {franchiseCollections.slice(0, 16).map((c) => (
                       <Link
                         key={c.slug}
                         href={ROUTES.COLLECTION(c.slug)}
-                        className="text-sm text-gray-700 hover:text-red-600 truncate"
+                        className="text-sm font-semibold truncate transition-colors"
+                        style={{ color: "#1A1A2E" }}
+                        onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.color = "#E8001C")}
+                        onMouseLeave={(e) => ((e.target as HTMLAnchorElement).style.color = "#1A1A2E")}
                       >
                         {c.name}
                       </Link>
@@ -75,136 +124,185 @@ export function Navbar({ collections, siteConfig }: NavbarProps) {
                   </div>
                 </div>
                 <div>
-                  <p className="mb-2 text-xs font-bold uppercase tracking-widest text-gray-400">
-                    Browse by Brand
+                  <p
+                    className="mb-3 text-xs uppercase tracking-widest"
+                    style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", color: "#0057FF", letterSpacing: "0.1em", fontSize: "0.8rem" }}
+                  >
+                    By Brand
                   </p>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                    {brandCollections.slice(0, 14).map((c) => (
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                    {brandCollections.slice(0, 16).map((c) => (
                       <Link
                         key={c.slug}
                         href={ROUTES.COLLECTION(c.slug)}
-                        className="text-sm text-gray-700 hover:text-red-600 truncate"
+                        className="text-sm font-semibold truncate transition-colors"
+                        style={{ color: "#1A1A2E" }}
+                        onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.color = "#0057FF")}
+                        onMouseLeave={(e) => ((e.target as HTMLAnchorElement).style.color = "#1A1A2E")}
                       >
                         {c.name}
                       </Link>
                     ))}
                   </div>
+                </div>
+                <div className="col-span-2 pt-3" style={{ borderTop: "2px solid #0D0D0D" }}>
+                  <Link
+                    href={ROUTES.COLLECTIONS}
+                    className="inline-flex items-center gap-1 text-sm font-bold"
+                    style={{ color: "#E8001C" }}
+                  >
+                    View all collections →
+                  </Link>
                 </div>
               </div>
             </div>
+
+            {/* Static nav items */}
+            {([
+              { label: "SHOP ALL",  href: ROUTES.SEARCH },
+              { label: "BLOG",      href: ROUTES.BLOG },
+              { label: "ABOUT",     href: ROUTES.PAGE("about") },
+              { label: "CONTACT",   href: ROUTES.PAGE("contact") },
+            ] as { label: string; href: string }[]).map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                className="px-3 py-2 rounded-md text-sm transition-colors"
+                style={{
+                  fontFamily: "var(--font-bangers, Bangers, cursive)",
+                  letterSpacing: "0.06em",
+                  fontSize: "1rem",
+                  color: "#0D0D0D",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = "#0D0D0D";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
+                }}
+              >
+                {label}
+              </Link>
+            ))}
           </nav>
 
-          {/* Action icons */}
-          <div className="flex items-center gap-3">
+          {/* ── Action icons ── */}
+          <div className="flex items-center gap-2">
+            {/* Search */}
             <Link
               href={ROUTES.SEARCH}
               aria-label="Search"
-              className="text-gray-600 hover:text-red-600"
+              className="p-2 rounded-md transition-colors"
+              style={{ color: "#0D0D0D" }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.background = "#0D0D0D";
+                (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
+              }}
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
-                />
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
               </svg>
             </Link>
+
+            {/* Account */}
             <Link
               href={ROUTES.ACCOUNT}
               aria-label="Account"
-              className="text-gray-600 hover:text-red-600"
+              className="p-2 rounded-md transition-colors"
+              style={{ color: "#0D0D0D" }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.background = "#0D0D0D";
+                (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
+              }}
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z"
-                />
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z" />
               </svg>
             </Link>
+
+            {/* Wishlist */}
             <Link
               href={ROUTES.ACCOUNT_WISHLIST}
               aria-label={`Wishlist (${productIds.length})`}
-              className="relative text-gray-600 hover:text-red-600"
+              className="relative p-2 rounded-md transition-colors"
+              style={{ color: "#0D0D0D" }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.background = "#0D0D0D";
+                (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
+              }}
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 0 1 6.364 0L12 7.636l1.318-1.318a4.5 4.5 0 1 1 6.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 0 1 0-6.364z"
-                />
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 0 1 6.364 0L12 7.636l1.318-1.318a4.5 4.5 0 1 1 6.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 0 1 0-6.364z" />
               </svg>
               {productIds.length > 0 && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+                <span
+                  className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center text-[10px] font-black"
+                  style={{ background: "#E8001C", color: "#fff", border: "2px solid #0D0D0D", borderRadius: "50%" }}
+                >
                   {productIds.length}
                 </span>
               )}
             </Link>
+
+            {/* Cart */}
             <button
               onClick={() => setCartOpen(true)}
               aria-label={`Cart (${itemCount()} items)`}
-              className="relative text-gray-600 hover:text-red-600"
+              className="relative p-2 rounded-md transition-colors"
+              style={{ color: "#0D0D0D" }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "#0D0D0D";
+                (e.currentTarget as HTMLButtonElement).style.color = "#FFE500";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                (e.currentTarget as HTMLButtonElement).style.color = "#0D0D0D";
+              }}
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9"
-                />
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9" />
               </svg>
               {itemCount() > 0 && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+                <span
+                  className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center text-[10px] font-black"
+                  style={{ background: "#E8001C", color: "#fff", border: "2px solid #0D0D0D", borderRadius: "50%" }}
+                >
                   {itemCount()}
                 </span>
               )}
             </button>
+
             {/* Mobile hamburger */}
             <button
-              className="md:hidden text-gray-600"
+              className="lg:hidden p-2 rounded-md transition-colors"
+              style={{ color: "#0D0D0D" }}
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "#0D0D0D";
+                (e.currentTarget as HTMLButtonElement).style.color = "#FFE500";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                (e.currentTarget as HTMLButtonElement).style.color = "#0D0D0D";
+              }}
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
           </div>

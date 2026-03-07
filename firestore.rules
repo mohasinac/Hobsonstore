@@ -90,7 +90,9 @@ service cloud.firestore {
     }
 
     match /discounts/{docId} {
-      allow read: if isAdmin();
+      // Customers need read access to validate codes at checkout.
+      // All writes still restricted to admins.
+      allow read: if true;
       allow write: if isAdmin();
     }
 

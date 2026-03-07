@@ -25,7 +25,7 @@ export default function CartPage() {
         <p className="text-gray-500">
           Looks like you haven&apos;t added anything yet.
         </p>
-        <Link href={ROUTES.COLLECTION("all")}>
+        <Link href={ROUTES.COLLECTIONS}>
           <Button>Continue Shopping</Button>
         </Link>
       </div>

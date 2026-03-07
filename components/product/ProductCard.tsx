@@ -19,10 +19,22 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={ROUTES.PRODUCT(slug)}
-      className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm transition hover:shadow-md"
+      className="group relative flex flex-col overflow-hidden bg-white transition-all"
+      style={{
+        border: "3px solid #0D0D0D",
+        boxShadow: "4px 4px 0px #0D0D0D",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLAnchorElement).style.transform = "translate(-2px,-2px)";
+        (e.currentTarget as HTMLAnchorElement).style.boxShadow = "6px 6px 0px #0D0D0D";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLAnchorElement).style.transform = "";
+        (e.currentTarget as HTMLAnchorElement).style.boxShadow = "4px 4px 0px #0D0D0D";
+      }}
     >
       {/* Image */}
-      <div className="relative aspect-square overflow-hidden bg-gray-50">
+      <div className="relative aspect-square overflow-hidden" style={{ background: "#F5F5F0" }}>
         <Image
           src={firstImage}
           alt={name}
@@ -47,14 +59,25 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Details */}
-      <div className="flex flex-col gap-1 p-3">
-        <p className="line-clamp-2 text-sm font-medium text-gray-900">{name}</p>
+      <div
+        className="flex flex-col gap-1 p-3"
+        style={{ borderTop: "2px solid #0D0D0D" }}
+      >
+        <p
+          className="line-clamp-2 text-sm font-bold"
+          style={{ color: "#0D0D0D" }}
+        >
+          {name}
+        </p>
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-red-600">
+          <span
+            className="font-black"
+            style={{ color: "#E8001C", fontSize: "0.95rem" }}
+          >
             {formatINR(salePrice)}
           </span>
           {isOnSale && (
-            <span className="text-xs text-gray-400 line-through">
+            <span className="text-xs line-through" style={{ color: "#9CA3AF" }}>
               {formatINR(regularPrice)}
             </span>
           )}

@@ -6,6 +6,7 @@
  * The client SDK hangs in Node.js build environments (no browser WebSocket).
  */
 import "server-only";
+import { cache } from "react";
 import { getAdminDb } from "./admin";
 import { COLLECTIONS } from "@/constants/firebase";
 import type {
@@ -49,7 +50,7 @@ function toData<T>(snap: FirebaseFirestore.QueryDocumentSnapshot<any>): T {
 
 // ─── Banners ──────────────────────────────────────────────────────────────────
 
-export async function getBannersServer(): Promise<Banner[]> {
+export const getBannersServer = cache(async function (): Promise<Banner[]> {
   const snap = await db()
     .collection(COLLECTIONS.BANNERS)
     .orderBy("sortOrder", "asc")
@@ -57,9 +58,9 @@ export async function getBannersServer(): Promise<Banner[]> {
   return snap.docs
     .map((d) => toData<Banner>(d))
     .filter((b) => b.active);
-}
+});
 
-export async function getPromoBannersServer(): Promise<PromoBanner[]> {
+export const getPromoBannersServer = cache(async function (): Promise<PromoBanner[]> {
   const snap = await db()
     .collection(COLLECTIONS.PROMO_BANNERS)
     .orderBy("sortOrder", "asc")
@@ -68,11 +69,11 @@ export async function getPromoBannersServer(): Promise<PromoBanner[]> {
     .map((d) => toData<PromoBanner>(d))
     .filter((b) => b.active)
     .slice(0, 4);
-}
+});
 
 // ─── Home sections ────────────────────────────────────────────────────────────
 
-export async function getHomeSectionsServer(): Promise<HomeSection[]> {
+export const getHomeSectionsServer = cache(async function (): Promise<HomeSection[]> {
   const snap = await db()
     .collection(COLLECTIONS.HOME_SECTIONS)
     .orderBy("sortOrder", "asc")
@@ -80,11 +81,11 @@ export async function getHomeSectionsServer(): Promise<HomeSection[]> {
   return snap.docs
     .map((d) => toData<HomeSection>(d))
     .filter((s) => s.active);
-}
+});
 
 // ─── Testimonials / FAQ ───────────────────────────────────────────────────────
 
-export async function getTestimonialsServer(featuredOnly = false): Promise<Testimonial[]> {
+export const getTestimonialsServer = cache(async function (featuredOnly = false): Promise<Testimonial[]> {
   const snap = await db()
     .collection(COLLECTIONS.TESTIMONIALS)
     .orderBy("sortOrder", "asc")
@@ -92,9 +93,9 @@ export async function getTestimonialsServer(featuredOnly = false): Promise<Testi
   return snap.docs
     .map((d) => toData<Testimonial>(d))
     .filter((t) => t.active && (!featuredOnly || t.featured));
-}
+});
 
-export async function getFAQServer(): Promise<FAQItem[]> {
+export const getFAQServer = cache(async function (): Promise<FAQItem[]> {
   const snap = await db()
     .collection(COLLECTIONS.FAQ)
     .orderBy("sortOrder", "asc")
@@ -102,11 +103,11 @@ export async function getFAQServer(): Promise<FAQItem[]> {
   return snap.docs
     .map((d) => toData<FAQItem>(d))
     .filter((f) => f.active);
-}
+});
 
 // ─── Announcements ────────────────────────────────────────────────────────────
 
-export async function getAnnouncementsServer(): Promise<Announcement[]> {
+export const getAnnouncementsServer = cache(async function (): Promise<Announcement[]> {
   const snap = await db()
     .collection(COLLECTIONS.ANNOUNCEMENTS)
     .orderBy("sortOrder", "asc")
@@ -114,17 +115,17 @@ export async function getAnnouncementsServer(): Promise<Announcement[]> {
   return snap.docs
     .map((d) => toData<Announcement>(d))
     .filter((a) => a.active);
-}
+});
 
 // ─── Pages / Blog ─────────────────────────────────────────────────────────────
 
-export async function getPageServer(slug: string): Promise<ContentPage | null> {
+export const getPageServer = cache(async function (slug: string): Promise<ContentPage | null> {
   const snap = await db().collection(COLLECTIONS.PAGES).doc(slug).get();
   if (!snap.exists) return null;
   return serializeTimestamps({ id: snap.id, ...snap.data() }) as ContentPage;
-}
+});
 
-export async function getBlogPostServer(slug: string): Promise<BlogPost | null> {
+export const getBlogPostServer = cache(async function (slug: string): Promise<BlogPost | null> {
   const snap = await db()
     .collection(COLLECTIONS.BLOG)
     .where("slug", "==", slug)
@@ -134,9 +135,9 @@ export async function getBlogPostServer(slug: string): Promise<BlogPost | null> 
   const post = toData<BlogPost>(snap.docs[0]!);
   if (!post.published) return null;
   return post;
-}
+});
 
-export async function getAllBlogPostsServer(): Promise<BlogPost[]> {
+export const getAllBlogPostsServer = cache(async function (): Promise<BlogPost[]> {
   const snap = await db()
     .collection(COLLECTIONS.BLOG)
     .orderBy("publishedAt", "desc")
@@ -144,11 +145,11 @@ export async function getAllBlogPostsServer(): Promise<BlogPost[]> {
   return snap.docs
     .map((d) => toData<BlogPost>(d))
     .filter((p) => p.published);
-}
+});
 
 // ─── Collections ──────────────────────────────────────────────────────────────
 
-export async function getAllCollectionsServer(): Promise<Collection[]> {
+export const getAllCollectionsServer = cache(async function (): Promise<Collection[]> {
   const snap = await db()
     .collection(COLLECTIONS.COLLECTIONS)
     .orderBy("sortOrder", "asc")
@@ -156,15 +157,15 @@ export async function getAllCollectionsServer(): Promise<Collection[]> {
   return snap.docs
     .map((d) => toData<Collection>(d))
     .filter((c) => c.active);
-}
+});
 
-export async function getCollectionServer(slug: string): Promise<Collection | null> {
+export const getCollectionServer = cache(async function (slug: string): Promise<Collection | null> {
   const snap = await db().collection(COLLECTIONS.COLLECTIONS).doc(slug).get();
   if (!snap.exists) return null;
   return serializeTimestamps({ id: snap.id, ...snap.data() }) as unknown as Collection;
-}
+});
 
-export async function getActiveCollectionsByTypeServer(
+export const getActiveCollectionsByTypeServer = cache(async function (
   type: "franchise" | "brand",
 ): Promise<Collection[]> {
   const snap = await db()
@@ -174,19 +175,19 @@ export async function getActiveCollectionsByTypeServer(
   return snap.docs
     .map((d) => toData<Collection>(d))
     .filter((c) => c.active && c.type === type);
-}
+});
 
 // ─── Site config ──────────────────────────────────────────────────────────────
 
-export async function getSiteConfigServer(): Promise<SiteConfig | null> {
+export const getSiteConfigServer = cache(async function (): Promise<SiteConfig | null> {
   const snap = await db().collection(COLLECTIONS.SITE_CONFIG).doc("main").get();
   if (!snap.exists) return null;
   return serializeTimestamps(snap.data()) as SiteConfig;
-}
+});
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 
-export async function getProductServer(slug: string): Promise<Product | null> {
+export const getProductServer = cache(async function (slug: string): Promise<Product | null> {
   const snap = await db()
     .collection(COLLECTIONS.PRODUCTS)
     .where("slug", "==", slug)
@@ -194,7 +195,7 @@ export async function getProductServer(slug: string): Promise<Product | null> {
     .get();
   if (snap.empty) return null;
   return toData<Product>(snap.docs[0]!);
-}
+});
 
 export async function getRelatedProductsServer(product: Product, count = 4): Promise<Product[]> {
   const snap = await db()
@@ -209,7 +210,7 @@ export async function getRelatedProductsServer(product: Product, count = 4): Pro
     .slice(0, count);
 }
 
-export async function searchProductsServer(searchQuery: string): Promise<Product[]> {
+export const searchProductsServer = cache(async function (searchQuery: string): Promise<Product[]> {
   if (!searchQuery.trim()) return [];
   const end = searchQuery + "\uf8ff";
   const snap = await db()
@@ -219,7 +220,7 @@ export async function searchProductsServer(searchQuery: string): Promise<Product
     .limit(30)
     .get();
   return snap.docs.map((d) => toData<Product>(d));
-}
+});
 
 export interface ProductFiltersServer {
   collectionSlug?: string;
