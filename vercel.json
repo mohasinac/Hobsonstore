@@ -5,7 +5,13 @@
   "installCommand": "npm install",
   "functions": {
     "app/api/**": {
-      "maxDuration": 30
+      "maxDuration": 10
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/sitemap",
+      "schedule": "30 20 * * *"
+    }
+  ]
 }

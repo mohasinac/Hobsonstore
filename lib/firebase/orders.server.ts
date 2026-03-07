@@ -54,6 +54,9 @@ export async function releaseReservedStock(orderId: string): Promise<void> {
     batch.update(productRef, {
       reservedStock: FieldValue.increment(-item.qty),
       availableStock: FieldValue.increment(item.qty),
+      // Returning stock means availableStock > 0, so mark back in-stock.
+      // If it was manually set to sold-out, the admin can override in the dashboard.
+      inStock: true,
     });
   }
 

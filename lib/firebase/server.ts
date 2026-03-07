@@ -38,20 +38,22 @@ function toData<T>(snap: FirebaseFirestore.QueryDocumentSnapshot<any>): T {
 export async function getBannersServer(): Promise<Banner[]> {
   const snap = await db()
     .collection(COLLECTIONS.BANNERS)
-    .where("active", "==", true)
     .orderBy("sortOrder", "asc")
     .get();
-  return snap.docs.map((d) => toData<Banner>(d));
+  return snap.docs
+    .map((d) => toData<Banner>(d))
+    .filter((b) => b.active);
 }
 
 export async function getPromoBannersServer(): Promise<PromoBanner[]> {
   const snap = await db()
     .collection(COLLECTIONS.PROMO_BANNERS)
-    .where("active", "==", true)
     .orderBy("sortOrder", "asc")
-    .limit(4)
     .get();
-  return snap.docs.map((d) => toData<PromoBanner>(d));
+  return snap.docs
+    .map((d) => toData<PromoBanner>(d))
+    .filter((b) => b.active)
+    .slice(0, 4);
 }
 
 // ─── Home sections ────────────────────────────────────────────────────────────
@@ -59,31 +61,33 @@ export async function getPromoBannersServer(): Promise<PromoBanner[]> {
 export async function getHomeSectionsServer(): Promise<HomeSection[]> {
   const snap = await db()
     .collection(COLLECTIONS.HOME_SECTIONS)
-    .where("active", "==", true)
     .orderBy("sortOrder", "asc")
     .get();
-  return snap.docs.map((d) => toData<HomeSection>(d));
+  return snap.docs
+    .map((d) => toData<HomeSection>(d))
+    .filter((s) => s.active);
 }
 
 // ─── Testimonials / FAQ ───────────────────────────────────────────────────────
 
 export async function getTestimonialsServer(featuredOnly = false): Promise<Testimonial[]> {
-  let ref = db()
+  const snap = await db()
     .collection(COLLECTIONS.TESTIMONIALS)
-    .where("active", "==", true)
-    .orderBy("sortOrder", "asc") as FirebaseFirestore.Query;
-  if (featuredOnly) ref = ref.where("featured", "==", true);
-  const snap = await ref.get();
-  return snap.docs.map((d) => toData<Testimonial>(d));
+    .orderBy("sortOrder", "asc")
+    .get();
+  return snap.docs
+    .map((d) => toData<Testimonial>(d))
+    .filter((t) => t.active && (!featuredOnly || t.featured));
 }
 
 export async function getFAQServer(): Promise<FAQItem[]> {
   const snap = await db()
     .collection(COLLECTIONS.FAQ)
-    .where("active", "==", true)
     .orderBy("sortOrder", "asc")
     .get();
-  return snap.docs.map((d) => toData<FAQItem>(d));
+  return snap.docs
+    .map((d) => toData<FAQItem>(d))
+    .filter((f) => f.active);
 }
 
 // ─── Announcements ────────────────────────────────────────────────────────────
@@ -91,10 +95,11 @@ export async function getFAQServer(): Promise<FAQItem[]> {
 export async function getAnnouncementsServer(): Promise<Announcement[]> {
   const snap = await db()
     .collection(COLLECTIONS.ANNOUNCEMENTS)
-    .where("active", "==", true)
     .orderBy("sortOrder", "asc")
     .get();
-  return snap.docs.map((d) => toData<Announcement>(d));
+  return snap.docs
+    .map((d) => toData<Announcement>(d))
+    .filter((a) => a.active);
 }
 
 // ─── Pages / Blog ─────────────────────────────────────────────────────────────
@@ -109,20 +114,22 @@ export async function getBlogPostServer(slug: string): Promise<BlogPost | null> 
   const snap = await db()
     .collection(COLLECTIONS.BLOG)
     .where("slug", "==", slug)
-    .where("published", "==", true)
     .limit(1)
     .get();
   if (snap.empty) return null;
-  return toData<BlogPost>(snap.docs[0]!);
+  const post = toData<BlogPost>(snap.docs[0]!);
+  if (!post.published) return null;
+  return post;
 }
 
 export async function getAllBlogPostsServer(): Promise<BlogPost[]> {
   const snap = await db()
     .collection(COLLECTIONS.BLOG)
-    .where("published", "==", true)
     .orderBy("publishedAt", "desc")
     .get();
-  return snap.docs.map((d) => toData<BlogPost>(d));
+  return snap.docs
+    .map((d) => toData<BlogPost>(d))
+    .filter((p) => p.published);
 }
 
 // ─── Collections ──────────────────────────────────────────────────────────────
@@ -130,10 +137,11 @@ export async function getAllBlogPostsServer(): Promise<BlogPost[]> {
 export async function getAllCollectionsServer(): Promise<Collection[]> {
   const snap = await db()
     .collection(COLLECTIONS.COLLECTIONS)
-    .where("active", "==", true)
     .orderBy("sortOrder", "asc")
     .get();
-  return snap.docs.map((d) => toData<Collection>(d));
+  return snap.docs
+    .map((d) => toData<Collection>(d))
+    .filter((c) => c.active);
 }
 
 export async function getCollectionServer(slug: string): Promise<Collection | null> {
@@ -147,11 +155,11 @@ export async function getActiveCollectionsByTypeServer(
 ): Promise<Collection[]> {
   const snap = await db()
     .collection(COLLECTIONS.COLLECTIONS)
-    .where("type", "==", type)
-    .where("active", "==", true)
     .orderBy("sortOrder", "asc")
     .get();
-  return snap.docs.map((d) => toData<Collection>(d));
+  return snap.docs
+    .map((d) => toData<Collection>(d))
+    .filter((c) => c.active && c.type === type);
 }
 
 // ─── Site config ──────────────────────────────────────────────────────────────

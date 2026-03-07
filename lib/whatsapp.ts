@@ -1,5 +1,6 @@
 import type { CartItem } from "@/types/cart";
 import type { Address } from "@/types/order";
+import type { OrderStatus } from "@/types/order";
 import { formatINR } from "@/lib/formatCurrency";
 import { createHmac, timingSafeEqual } from "crypto";
 
@@ -132,5 +133,72 @@ export function parseIncomingWebhook(
     return { from: from.replace(/\D/g, ""), body: body.trim() };
   } catch {
     return null;
+  }
+}
+
+// ─── Outbound messaging (Twilio REST API) ────────────────────────────────────
+
+const STATUS_MESSAGES: Record<OrderStatus, string> = {
+  pending_payment:    "🛒 Your order #{id} has been received and is awaiting payment confirmation.",
+  payment_confirmed:  "✅ Payment confirmed for order #{id}! We're getting it ready.",
+  processing:         "📦 Your order #{id} is being packed and prepared for dispatch.",
+  shipped:            "🚚 Your order #{id} is on its way!{tracking}",
+  out_for_delivery:   "🏃 Your order #{id} is out for delivery today!",
+  delivered:          "🎉 Order #{id} delivered! We hope you love your new collectible. Thank you for shopping with Hobson!",
+  cancelled:          "❌ Your order #{id} has been cancelled. Contact us if you have any questions.",
+  refund_initiated:   "💸 Refund initiated for order #{id}. It should reflect within 5–7 business days.",
+};
+
+export function buildStatusMessage(
+  orderId: string,
+  status: OrderStatus,
+  trackingNumber?: string,
+  courierName?: string,
+): string {
+  const template = STATUS_MESSAGES[status] ?? `Your order #${orderId} status updated to: ${status}.`;
+  const trackingLine =
+    trackingNumber
+      ? `\nTracking: ${courierName ? courierName + " — " : ""}${trackingNumber}`
+      : "";
+  return template.replace("{id}", orderId).replace("{tracking}", trackingLine);
+}
+
+/**
+ * Send an outbound WhatsApp message via Twilio REST API.
+ * Silently no-ops when TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN are not set.
+ * `toPhone` should be digits only (e.g. "919876543210").
+ */
+export async function sendWhatsAppMessage(
+  toPhone: string,
+  message: string,
+): Promise<void> {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken  = process.env.TWILIO_AUTH_TOKEN;
+  const from       = process.env.TWILIO_WHATSAPP_FROM; // e.g. "whatsapp:+14155238886"
+
+  if (!accountSid || !authToken || !from) return;
+
+  const cleanPhone = toPhone.replace(/\D/g, "");
+  if (!cleanPhone) return;
+
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+  const body = new URLSearchParams({
+    From: from,
+    To: `whatsapp:+${cleanPhone}`,
+    Body: message,
+  });
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`,
+    },
+    body: body.toString(),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("[whatsapp/send] Twilio error:", res.status, text);
   }
 }

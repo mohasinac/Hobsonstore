@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminApp, getAdminDb } from "@/lib/firebase/admin";
 import { updateOrderStatus, releaseReservedStock } from "@/lib/firebase/orders.server";
+import { buildStatusMessage, sendWhatsAppMessage } from "@/lib/whatsapp";
 import { ORDER_STATUS_TRANSITIONS } from "@/constants/orderStatus";
 import { COLLECTIONS } from "@/constants/firebase";
-import type { OrderStatus } from "@/types/order";
+import { calculateCoinsEarned } from "@/lib/loyalty";
+import { FieldValue } from "firebase-admin/firestore";
+import type { OrderStatus, Order } from "@/types/order";
+import type { LoyaltyConfig } from "@/types/config";
 
 interface StatusBody {
   newStatus: OrderStatus;
@@ -11,6 +15,32 @@ interface StatusBody {
   trackingNumber?: string;
   trackingUrl?: string;
   courierName?: string;
+}
+
+async function awardCoinsForOrder(orderId: string): Promise<void> {
+  const db = getAdminDb();
+  const [orderSnap, configSnap] = await Promise.all([
+    db.collection(COLLECTIONS.ORDERS).doc(orderId).get(),
+    db.collection(COLLECTIONS.LOYALTY_CONFIG).doc("main").get(),
+  ]);
+  if (!orderSnap.exists || !configSnap.exists) return;
+
+  const order = orderSnap.data() as Order;
+  const config = configSnap.data() as LoyaltyConfig;
+  if (!config.active || !order.userId || order.userId === "guest") return;
+
+  const coinsEarned = calculateCoinsEarned(order.total, config);
+  if (coinsEarned <= 0) return;
+
+  await db.collection(COLLECTIONS.USERS).doc(order.userId).update({
+    fccCoins: FieldValue.increment(coinsEarned),
+    coinHistory: FieldValue.arrayUnion({
+      delta: coinsEarned,
+      reason: "purchase",
+      orderId,
+      timestamp: new Date().toISOString(),
+    }),
+  });
 }
 
 async function verifyAdminToken(req: NextRequest): Promise<string | null> {
@@ -86,6 +116,26 @@ export async function PATCH(
     // Release reserved stock on delivered or cancelled
     if (newStatus === "delivered" || newStatus === "cancelled") {
       await releaseReservedStock(orderId);
+    }
+
+    // Award FCC Coins on delivery
+    if (newStatus === "delivered") {
+      await awardCoinsForOrder(orderId);
+    }
+
+    // Notify customer on WhatsApp (no-op if Twilio not configured)
+    const freshOrderSnap = await db.collection(COLLECTIONS.ORDERS).doc(orderId).get();
+    if (freshOrderSnap.exists) {
+      const freshOrder = freshOrderSnap.data() as { address: { phone: string } };
+      const message = buildStatusMessage(
+        orderId,
+        newStatus,
+        body.trackingNumber,
+        body.courierName,
+      );
+      await sendWhatsAppMessage(freshOrder.address.phone, message).catch((e) =>
+        console.error("[admin/orders/status] WA notify failed:", e),
+      );
     }
 
     return NextResponse.json({ success: true });

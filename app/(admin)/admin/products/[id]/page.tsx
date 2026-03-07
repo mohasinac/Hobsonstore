@@ -26,7 +26,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   }, [params]);
 
   async function handleSubmit(data: ProductWritePayload) {
-    await updateProduct(pId, data);
+    const reserved = product!.reservedStock ?? 0;
+    const newStock = data.stock ?? 0;
+    await updateProduct(pId, {
+      ...data,
+      availableStock: Math.max(0, newStock - reserved),
+      inStock: newStock - reserved > 0,
+    });
     router.push("/admin/products");
   }
 

@@ -2,25 +2,17 @@
  * POST /api/admin/seed
  *
  * DEV-ONLY public route — returns 404 in production.
- * Upserts or deletes seed data using the Firebase Admin SDK.
+ * Upserts or deletes seed data using the Firebase Admin SDK,
+ * then revalidates affected Next.js cache paths.
  *
- * Body:
- *   { action: "seed" | "delete", entities: string[] }
- *
- * Supported entity keys (matching SEED_ENTITY_MAP keys):
- *   products | collections | banners | promobanners | homeSections |
- *   announcements | testimonials | faq | discounts | orderStatusConfig |
- *   pages | blogPosts | siteConfig | loyaltyConfig
+ * Body:  { action: "seed" | "delete", entities: string[] }
+ * GET:   returns supported entity keys (for the seed UI to discover)
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
-
-const IS_DEV = process.env.NODE_ENV === "development";
-
-function devOnly() {
-  return NextResponse.json({ error: "Not found" }, { status: 404 });
-}
 import {
   SEED_PRODUCTS,
   SEED_COLLECTIONS,
@@ -41,17 +33,22 @@ import { COLLECTIONS } from "@/constants/firebase";
 
 export const dynamic = "force-dynamic";
 
+const IS_DEV = process.env.NODE_ENV === "development";
+
+function devOnly() {
+  return NextResponse.json({ error: "Not found" }, { status: 404 });
+}
+
+// Paths to revalidate after any write — keeps Next.js ISR caches fresh
+const REVALIDATE_PATHS = ["/", "/blog", "/collections", "/search", "/products"];
+
 // ─── Write helpers ────────────────────────────────────────────────────────────
 
 function serverTs() {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { FieldValue } = require("firebase-admin/firestore");
   return FieldValue.serverTimestamp();
 }
 
 function expiryTs(dateStr: string) {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Timestamp } = require("firebase-admin/firestore");
   return Timestamp.fromDate(new Date(dateStr));
 }
 
@@ -294,7 +291,7 @@ async function seedLoyaltyConfig(db: FirebaseFirestore.Firestore) {
     .set(rest, { merge: true });
 }
 
-// ─── Dispatch table ───────────────────────────────────────────────────────────
+// ─── Dispatch table ─────────────────────────────────────────────────────────
 
 type SeedFn = (db: FirebaseFirestore.Firestore) => Promise<void>;
 
@@ -330,7 +327,15 @@ const DELETE_FNS: Record<string, SeedFn> = {
   blogPosts: deleteBlogPosts,
 };
 
-// ─── Route handler ────────────────────────────────────────────────────────────
+// ─── Route handlers ────────────────────────────────────────────────────────────
+
+export async function GET() {
+  if (!IS_DEV) return devOnly();
+  return NextResponse.json({
+    entities: Object.keys(SEED_FNS),
+    deleteSupported: Object.keys(DELETE_FNS),
+  });
+}
 
 export async function POST(req: NextRequest) {
   if (!IS_DEV) return devOnly();
@@ -344,43 +349,50 @@ export async function POST(req: NextRequest) {
 
   const { action, entities } = body;
 
-  if (!["seed", "delete"].includes(action)) {
-    return NextResponse.json({ error: "action must be 'seed' or 'delete'" }, { status: 400 });
+  if (action !== "seed" && action !== "delete") {
+    return NextResponse.json(
+      { error: "action must be 'seed' or 'delete'" },
+      { status: 400 },
+    );
   }
   if (!Array.isArray(entities) || entities.length === 0) {
-    return NextResponse.json({ error: "entities must be a non-empty array" }, { status: 400 });
+    return NextResponse.json(
+      { error: "entities must be a non-empty array" },
+      { status: 400 },
+    );
   }
 
   const db = getAdminDb();
-  const results: Record<string, "ok" | string> = {};
+  const fns = action === "seed" ? SEED_FNS : DELETE_FNS;
 
-  for (const entity of entities) {
-    const fns = action === "seed" ? SEED_FNS : DELETE_FNS;
-    const fn = fns[entity];
-    if (!fn) {
-      results[entity] = `unknown entity '${entity}'`;
-      continue;
-    }
-    try {
-      await fn(db);
-      results[entity] = "ok";
-    } catch (err) {
-      results[entity] = err instanceof Error ? err.message : String(err);
-    }
+  const unknown = entities.filter((e) => !fns[e]);
+  const known = entities.filter((e) => !!fns[e]);
+
+  // Run all known entity operations in parallel
+  const settled = await Promise.allSettled(known.map((e) => fns[e]!(db)));
+
+  const results: Record<string, "ok" | string> = {};
+  for (const e of unknown) {
+    results[e] = `unknown entity '${e}'`;
+  }
+  known.forEach((e, i) => {
+    const outcome = settled[i]!;
+    results[e] =
+      outcome.status === "fulfilled"
+        ? "ok"
+        : outcome.reason instanceof Error
+          ? outcome.reason.message
+          : String(outcome.reason);
+  });
+
+  // Bust Next.js ISR caches so storefront reflects the new data immediately
+  for (const path of REVALIDATE_PATHS) {
+    revalidatePath(path, "layout");
   }
 
   const hasErrors = Object.values(results).some((v) => v !== "ok");
-  return NextResponse.json({ action, results }, { status: hasErrors ? 207 : 200 });
+  return NextResponse.json(
+    { action, results, revalidated: REVALIDATE_PATHS },
+    { status: hasErrors ? 207 : 200 },
+  );
 }
-
-// Expose the list of supported entity keys (GET for the admin UI to discover)
-export async function GET() {
-  if (!IS_DEV) return devOnly();
-  return NextResponse.json({
-    entities: Object.keys(SEED_FNS),
-    deleteSupported: Object.keys(DELETE_FNS),
-  });
-}
-
-// Expose for TypeScript — suppress unused-import warning on expiryTs
-void expiryTs;
