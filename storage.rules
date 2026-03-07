@@ -12,10 +12,11 @@ service firebase.storage {
         firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
     }
 
-    // Product & collection images — public read, admin write
+    // Product & collection images/videos — public read, admin write (max 100 MB for video)
     match /products/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAdmin() &&
+        (request.resource == null || request.resource.size <= 104857600);
     }
 
     match /collections/{allPaths=**} {

@@ -6,9 +6,12 @@ import {
   query,
   where,
   orderBy,
+  limit,
+  startAfter,
   runTransaction,
   serverTimestamp,
   getFirestore,
+  type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { getFirebaseApp } from "./client";
 import { COLLECTIONS } from "@/constants/firebase";
@@ -94,4 +97,23 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Order);
+}
+
+// ─── Admin reads ──────────────────────────────────────────────────────────────
+
+export async function getAllOrdersAdmin(
+  statusFilter?: string,
+  pageSize = 50,
+  cursor?: QueryDocumentSnapshot,
+): Promise<{ orders: Order[]; lastDoc: QueryDocumentSnapshot | null }> {
+  const db = getDb();
+  const constraints = [] as Parameters<typeof query>[1][];
+  if (statusFilter) constraints.push(where("currentStatus", "==", statusFilter));
+  constraints.push(orderBy("createdAt", "desc"));
+  if (cursor) constraints.push(startAfter(cursor));
+  constraints.push(limit(pageSize));
+  const q = query(collection(db, COLLECTIONS.ORDERS), ...constraints);
+  const snap = await getDocs(q);
+  const orders = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Order);
+  return { orders, lastDoc: snap.docs[snap.docs.length - 1] ?? null };
 }

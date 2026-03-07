@@ -74,7 +74,6 @@ export const onProductWrite = functions.onDocumentWritten(
     const newInStock = newAvailable > 0;
 
     const prevAvailable = data.availableStock ?? newAvailable;
-    const prevInStock = data.inStock ?? newInStock;
 
     const productId = event.params.productId;
     const productName = data.name ?? productId;

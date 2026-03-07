@@ -30,6 +30,7 @@ export interface Product {
   isBestseller: boolean;
   seoTitle?: string;
   seoDescription?: string;
+  videos: string[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
   lastRestockedAt?: Timestamp;

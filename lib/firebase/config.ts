@@ -1,4 +1,4 @@
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, getFirestore } from "firebase/firestore";
 import { getFirebaseApp } from "./client";
 import { COLLECTIONS } from "@/constants/firebase";
 import type {
@@ -37,4 +37,24 @@ export async function getOrderStatusConfig(): Promise<OrderStatusConfig[]> {
   return snap.docs.map(
     (d: { data: () => OrderStatusConfig }) => d.data() as OrderStatusConfig,
   );
+}
+
+// ─── Admin write functions ────────────────────────────────────────────────────
+
+export async function updateSiteConfig(data: Partial<SiteConfig>): Promise<void> {
+  const db = getDb();
+  await setDoc(doc(db, COLLECTIONS.SITE_CONFIG, "main"), data, { merge: true });
+}
+
+export async function updateLoyaltyConfig(data: Partial<LoyaltyConfig>): Promise<void> {
+  const db = getDb();
+  await setDoc(doc(db, COLLECTIONS.LOYALTY_CONFIG, "main"), data, { merge: true });
+}
+
+export async function updateOrderStatusConfigEntry(
+  status: string,
+  data: Partial<OrderStatusConfig>,
+): Promise<void> {
+  const db = getDb();
+  await updateDoc(doc(db, COLLECTIONS.ORDER_STATUS_CONFIG, status), data);
 }

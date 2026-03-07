@@ -10,6 +10,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   loading?: boolean;
   fullWidth?: boolean;
+  size?: "sm" | "md" | "lg";
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
@@ -29,6 +30,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = "primary",
       loading = false,
       fullWidth = false,
+      size = "md",
       disabled,
       className,
       children,
@@ -40,7 +42,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2",
+        "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2",
+        size === "sm" && "px-3 py-1.5 text-xs",
+        size === "md" && "px-4 py-2 text-sm",
+        size === "lg" && "px-6 py-3 text-base",
         variantClasses[variant],
         fullWidth && "w-full",
         className,

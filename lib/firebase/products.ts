@@ -3,11 +3,15 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
+  deleteDoc,
+  addDoc,
   query,
   where,
   orderBy,
   limit,
   startAfter,
+  serverTimestamp,
   type QueryDocumentSnapshot,
   getFirestore,
 } from "firebase/firestore";
@@ -126,4 +130,49 @@ export async function getProductById(id: string): Promise<Product | null> {
   const snap = await getDoc(doc(db, COLLECTIONS.PRODUCTS, id));
   if (!snap.exists()) return null;
   return { id: snap.id, ...snap.data() } as Product;
+}
+
+// ─── Admin CRUD ───────────────────────────────────────────────────────────────
+
+export type ProductWritePayload = Omit<Product, "id" | "createdAt" | "updatedAt" | "availableStock" | "reservedStock" | "restockHistory"> & {
+  availableStock?: number;
+};
+
+export async function createProduct(data: ProductWritePayload): Promise<string> {
+  const db = getDb();
+  const ref = await addDoc(collection(db, COLLECTIONS.PRODUCTS), {
+    ...data,
+    reservedStock: 0,
+    availableStock: data.stock,
+    restockHistory: [],
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export async function updateProduct(id: string, data: Partial<ProductWritePayload>): Promise<void> {
+  const db = getDb();
+  await updateDoc(doc(db, COLLECTIONS.PRODUCTS, id), {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteProduct(id: string): Promise<void> {
+  const db = getDb();
+  await deleteDoc(doc(db, COLLECTIONS.PRODUCTS, id));
+}
+
+export async function getAllProductsAdmin(
+  pageSize = 50,
+  cursor?: QueryDocumentSnapshot,
+): Promise<{ products: Product[]; lastDoc: QueryDocumentSnapshot | null }> {
+  const db = getDb();
+  const constraints = [orderBy("createdAt", "desc"), limit(pageSize)] as Parameters<typeof query>[1][];
+  if (cursor) constraints.splice(1, 0, startAfter(cursor));
+  const q = query(collection(db, COLLECTIONS.PRODUCTS), ...constraints);
+  const snap = await getDocs(q);
+  const products = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Product);
+  return { products, lastDoc: snap.docs[snap.docs.length - 1] ?? null };
 }
