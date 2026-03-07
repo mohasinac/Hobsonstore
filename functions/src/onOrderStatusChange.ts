@@ -9,10 +9,11 @@
  */
 
 import * as functions from "firebase-functions/v2/firestore";
+import { logger } from "firebase-functions/v2";
 import { getFirestore } from "firebase-admin/firestore";
-import { initializeApp } from "firebase-admin/app";
+import { initializeApp, getApps } from "firebase-admin/app";
 
-initializeApp();
+if (!getApps().length) initializeApp();
 
 const db = getFirestore();
 
@@ -61,7 +62,7 @@ export const onOrderStatusChange = functions.onDocumentUpdated(
 
     // TODO Phase 4: Use WhatsApp Business API (Twilio/Wati) to send proactively.
     // For now, log the URL so an admin can manually trigger from the dashboard.
-    functions.logger.info("[onOrderStatusChange] WA notification ready", {
+    logger.info("[onOrderStatusChange] WA notification ready", {
       orderId,
       newStatus,
       waUrl,

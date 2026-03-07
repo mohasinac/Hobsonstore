@@ -2068,13 +2068,13 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 
 #### Checklist
 
-- [ ] `app/api/webhooks/whatsapp/route.ts` â€” HMAC verification, command dispatch
+- [x] `app/api/webhooks/whatsapp/route.ts` â€” HMAC verification, command dispatch
 - [ ] `lib/whatsapp.ts` â€” `parseIncomingWebhook()`, `verifyWebhookSignature()`, `isAdminNumber()`, `buildHelpMessage()`
-- [ ] `lib/inventory.ts` â€” `parseRestockCommand()`, `parseStatusCommand()`, `buildLowStockAlertMessage()`, `buildSoldOutAlertMessage()`
-- [ ] Command handlers: RESTOCK, SOLDOUT, PREORDER, STATUS, STOCK, HELP
-- [ ] `functions/src/onProductWrite.ts` â€” recalc `availableStock`, alert logic
-- [ ] `functions/src/onOrderWrite.ts` â€” coins on delivered, release reserved stock on cancel/deliver
-- [ ] `functions/src/onUserCoinUpdate.ts` â€” guard negative balance
+- [x] `lib/inventory.ts` â€” `parseRestockCommand()`, `parseStatusCommand()`, `buildLowStockAlertMessage()`, `buildSoldOutAlertMessage()`
+- [x] Command handlers: RESTOCK, SOLDOUT, PREORDER, STATUS, STOCK, HELP
+- [x] `functions/src/onProductWrite.ts` â€” recalc `availableStock`, alert logic
+- [x] `functions/src/onOrderWrite.ts` â€” coins on delivered, release reserved stock on cancel/deliver
+- [x] `functions/src/onUserCoinUpdate.ts` â€” guard negative balance
 - [ ] Admin restock UI in `/admin/products/[id]` (Phase 6 page, but core logic here)
 - [ ] Vitest integration test: webhook handler processes RESTOCK command correctly
 
@@ -2172,8 +2172,8 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 - [ ] Pre-order badge on `ProductCard`, `StockBadge`, product detail CTA
 - [ ] Pre-order checkout: WhatsApp message prefixed "PRE-ORDER:"
 - [ ] `components/account/CoinBalanceCard.tsx` â€” balance + history (coin history tab)
-- [ ] `functions/src/onOrderWrite.ts` â€” coins awarded on `delivered`
-- [ ] `functions/src/onUserCoinUpdate.ts` â€” negative balance guard
+- [x] `functions/src/onOrderWrite.ts` â€” coins awarded on `delivered`
+- [x] `functions/src/onUserCoinUpdate.ts` â€” negative balance guard
 - [ ] Firestore `discounts` seed with sample codes
 - [ ] Firestore `loyaltyConfig/main` seed
 
@@ -2201,3 +2201,4 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 
 _Document version: 1.2 â€” March 2026_
 _All dynamic content fields editable by admin without code deployment._
+

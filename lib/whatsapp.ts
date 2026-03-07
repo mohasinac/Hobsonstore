@@ -74,3 +74,63 @@ export function buildHelpMessage(): string {
     "`HELP` — Show this message",
   ].join("\n");
 }
+
+/**
+ * Parsed representation of an inbound WhatsApp webhook message.
+ */
+export interface IncomingWebhookPayload {
+  /** Normalised phone number (digits only, no country-code prefix "+") */
+  from: string;
+  /** Raw message body text */
+  body: string;
+}
+
+/**
+ * Parse an inbound WhatsApp webhook POST body.
+ *
+ * Supports two formats:
+ *  - Twilio (application/x-www-form-urlencoded): `From` + `Body` fields.
+ *    The `From` value is stripped of the "whatsapp:" prefix.
+ *  - Generic JSON: `{ from: string; body: string }` (Wati.io compatible).
+ *
+ * Returns `null` when the body cannot be meaningfully parsed.
+ */
+export function parseIncomingWebhook(
+  rawBody: string,
+  contentType: string,
+): IncomingWebhookPayload | null {
+  try {
+    if (contentType.includes("application/x-www-form-urlencoded")) {
+      const params = new URLSearchParams(rawBody);
+      const from = params.get("From") ?? "";
+      const body = params.get("Body") ?? "";
+      if (!from || !body) return null;
+      return {
+        from: from.replace(/^whatsapp:/i, "").replace(/\D/g, ""),
+        body: body.trim(),
+      };
+    }
+
+    // JSON format (Wati.io or generic)
+    const json = JSON.parse(rawBody) as Record<string, unknown>;
+    // Wati.io: { senderWaId, text: { body } }
+    const from =
+      typeof json.senderWaId === "string"
+        ? json.senderWaId
+        : typeof json.from === "string"
+          ? json.from
+          : "";
+    const body =
+      typeof (json.text as Record<string, unknown> | undefined)?.body ===
+      "string"
+        ? ((json.text as Record<string, unknown>).body as string)
+        : typeof json.body === "string"
+          ? json.body
+          : "";
+
+    if (!from || !body) return null;
+    return { from: from.replace(/\D/g, ""), body: body.trim() };
+  } catch {
+    return null;
+  }
+}
