@@ -154,7 +154,7 @@ export default function CheckoutPage() {
           <h2 className="text-lg font-semibold text-gray-800">Delivery Address</h2>
           <AddressForm value={address} onChange={setAddress} />
 
-          {/* Coins toggle — shown only to logged-in users with active loyalty */}
+          {/* Coins toggle - shown only to logged-in users with active loyalty */}
           {loyaltyConfig && user && (
             <CoinRedeemToggle
               availableCoins={userCoins}

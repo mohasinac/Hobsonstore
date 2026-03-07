@@ -52,11 +52,11 @@ export function CoinBalanceCard({
             {balance.toLocaleString("en-IN")}
           </p>
           <p className="mt-0.5 text-xs text-amber-600">
-            ˜ {formatINR(balance)} redeemable
+            &#x1F4B0; {formatINR(balance)} redeemable
           </p>
         </div>
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-200 text-2xl">
-          ??
+          &#x1FA99;
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-# FatCat Collectibles — Full Platform Plan
+﻿# FatCat Collectibles — Full Platform Plan
 
 > **Stack:** Next.js 15 (App Router) · Firebase (Firestore, Auth, Storage, Functions) · WhatsApp (checkout + inventory bot) · Zustand · Tailwind CSS
 > **Payment (Phase 1):** WhatsApp-message-based · **Payment (Phase 2, future):** Razorpay drop-in
@@ -2164,18 +2164,18 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 
 #### Checklist
 
-- [ ] `lib/loyalty.ts` — `calculateCoinsEarned()`, `calculateMaxRedeemable()`, `applyCoinsToOrder()`
-- [ ] `lib/firebase/users.ts` — `awardCoins()`, `redeemCoins()`
-- [ ] `lib/firebase/discounts.ts` — `validateDiscount()`, `incrementDiscountUsage()`
-- [ ] Coin UI on checkout: `CoinRedeemToggle` fully wired
-- [ ] Discount code UI on checkout: `DiscountCodeInput` fully wired
-- [ ] Pre-order badge on `ProductCard`, `StockBadge`, product detail CTA
-- [ ] Pre-order checkout: WhatsApp message prefixed "PRE-ORDER:"
-- [ ] `components/account/CoinBalanceCard.tsx` — balance + history (coin history tab)
+- [x] `lib/loyalty.ts` — `calculateCoinsEarned()`, `calculateMaxRedeemable()`, `applyCoinsToOrder()`
+- [x] `lib/firebase/users.ts` — `awardCoins()`, `redeemCoins()`
+- [x] `lib/firebase/discounts.ts` — `validateDiscount()`, `incrementDiscountUsage()`
+- [x] Coin UI on checkout: `CoinRedeemToggle` fully wired
+- [x] Discount code UI on checkout: `DiscountCodeInput` fully wired
+- [x] Pre-order badge on `ProductCard`, `StockBadge`, product detail CTA
+- [x] Pre-order checkout: WhatsApp message prefixed "PRE-ORDER:"
+- [x] `components/account/CoinBalanceCard.tsx` — balance + history (coin history tab)
 - [x] `functions/src/onOrderWrite.ts` — coins awarded on `delivered`
 - [x] `functions/src/onUserCoinUpdate.ts` — negative balance guard
-- [ ] Firestore `discounts` seed with sample codes
-- [ ] Firestore `loyaltyConfig/main` seed
+- [x] Firestore `discounts` seed with sample codes
+- [x] Firestore `loyaltyConfig/main` seed
 
 **Phase 7 gate**
 
