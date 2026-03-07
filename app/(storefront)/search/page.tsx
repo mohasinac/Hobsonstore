@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { searchProducts } from "@/lib/firebase/products";
+import { searchProductsServer } from "@/lib/firebase/server";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q } = await searchParams;
   const query = q?.trim() ?? "";
-  const products = query ? await searchProducts(query).catch(() => []) : [];
+  const products = query ? await searchProductsServer(query).catch(() => []) : [];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">

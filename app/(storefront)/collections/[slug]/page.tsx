@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getCollection } from "@/lib/firebase/collections";
-import { getProducts } from "@/lib/firebase/products";
+import { getCollectionServer, getProductsServer } from "@/lib/firebase/server";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductFilterSidebar } from "@/components/product/ProductFilterSidebar";
-import type { ProductSortOption } from "@/types/product";
 import { generateCollectionMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
@@ -25,7 +23,7 @@ export async function generateMetadata({
   params,
 }: CollectionPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const col = await getCollection(slug).catch(() => null);
+  const col = await getCollectionServer(slug).catch(() => null);
   if (!col) return { title: "Collection not found" };
   return generateCollectionMetadata(col);
 }
@@ -37,17 +35,15 @@ export default async function CollectionPage({
   const { slug } = await params;
   const sp = await searchParams;
 
-  const [col, { products }] = await Promise.all([
-    getCollection(slug).catch(() => null),
-    getProducts({
-      franchise: undefined,
-      brand: undefined,
-      ...(slug !== "all" ? { franchise: slug } : {}),
-      inStockOnly: sp.inStock === "true",
-      sort: (sp.sort as ProductSortOption) ?? "newest",
+  const [col, products] = await Promise.all([
+    getCollectionServer(slug).catch(() => null),
+    getProductsServer({
+      collectionSlug: slug !== "all" ? slug : undefined,
+      inStock: sp.inStock === "true" ? true : undefined,
+      sort: (sp.sort as "price_asc" | "price_desc" | "newest" | "name_asc") ?? "newest",
       priceMin: sp.priceMin ? Number(sp.priceMin) : undefined,
       priceMax: sp.priceMax ? Number(sp.priceMax) : undefined,
-    }).catch(() => ({ products: [], cursor: null })),
+    }).catch(() => []),
   ]);
 
   if (!col) notFound();

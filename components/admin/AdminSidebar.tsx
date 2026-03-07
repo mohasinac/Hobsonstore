@@ -21,6 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/loyalty", label: "Loyalty", icon: "🪙" },
   { href: "/admin/discounts", label: "Discounts", icon: "🏷" },
   { href: "/admin/config", label: "Config", icon: "⚙" },
+  { href: "/admin/seed", label: "Seed Data", icon: "🌱" },
 ];
 
 export function AdminSidebar() {

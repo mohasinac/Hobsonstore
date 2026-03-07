@@ -2,9 +2,7 @@ import type { ReactNode } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
-import { getAllCollections } from "@/lib/firebase/collections";
-import { getSiteConfig } from "@/lib/firebase/config";
-import { getAnnouncements } from "@/lib/firebase/content";
+import { getAllCollectionsServer, getSiteConfigServer, getAnnouncementsServer } from "@/lib/firebase/server";
 
 export default async function StorefrontLayout({
   children,
@@ -12,9 +10,9 @@ export default async function StorefrontLayout({
   children: ReactNode;
 }) {
   const [collections, siteConfig, announcements] = await Promise.all([
-    getAllCollections().catch(() => []),
-    getSiteConfig().catch(() => null),
-    getAnnouncements().catch(() => []),
+    getAllCollectionsServer().catch(() => []),
+    getSiteConfigServer().catch(() => null),
+    getAnnouncementsServer().catch(() => []),
   ]);
 
   return (

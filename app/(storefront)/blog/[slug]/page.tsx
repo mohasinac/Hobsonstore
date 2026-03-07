@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getBlogPost, getAllBlogPosts } from "@/lib/firebase/content";
+import { getBlogPostServer, getAllBlogPostsServer } from "@/lib/firebase/server";
 import { PostBody } from "@/components/blog/PostBody";
 import { generateBlogMetadata } from "@/lib/seo";
 import { ROUTES } from "@/constants/routes";
@@ -14,13 +14,13 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const posts = await getAllBlogPosts().catch(() => []);
+  const posts = await getAllBlogPostsServer().catch(() => []);
   return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getBlogPost(slug).catch(() => null);
+  const post = await getBlogPostServer(slug).catch(() => null);
   if (!post) return { title: "Post not found" };
   return generateBlogMetadata(post);
 }
@@ -43,7 +43,7 @@ function formatDate(ts: { toDate?: () => Date } | Date | string): string {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = await getBlogPost(slug).catch(() => null);
+  const post = await getBlogPostServer(slug).catch(() => null);
   if (!post) notFound();
 
   return (

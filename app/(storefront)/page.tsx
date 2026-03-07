@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { getBanners, getHomeSections, getTestimonials, getFAQ, getPromoBanners } from "@/lib/firebase/content";
-import { getActiveCollectionsByType } from "@/lib/firebase/collections";
+import { getBannersServer, getHomeSectionsServer, getTestimonialsServer, getFAQServer, getPromoBannersServer, getActiveCollectionsByTypeServer } from "@/lib/firebase/server";
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { CollectionStrip } from "@/components/home/CollectionStrip";
 import { BrandStrip } from "@/components/home/BrandStrip";
@@ -28,13 +27,13 @@ export default async function HomePage() {
     testimonials,
     faqItems,
   ] = await Promise.all([
-    getBanners().catch(() => []),
-    getActiveCollectionsByType("franchise").catch(() => []),
-    getActiveCollectionsByType("brand").catch(() => []),
-    getHomeSections().catch(() => []),
-    getPromoBanners().catch(() => []),
-    getTestimonials(true).catch(() => []),
-    getFAQ().catch(() => []),
+    getBannersServer().catch(() => []),
+    getActiveCollectionsByTypeServer("franchise").catch(() => []),
+    getActiveCollectionsByTypeServer("brand").catch(() => []),
+    getHomeSectionsServer().catch(() => []),
+    getPromoBannersServer().catch(() => []),
+    getTestimonialsServer(true).catch(() => []),
+    getFAQServer().catch(() => []),
   ]);
 
   return (

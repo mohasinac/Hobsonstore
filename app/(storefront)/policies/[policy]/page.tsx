@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPage } from "@/lib/firebase/content";
+import { getPageServer } from "@/lib/firebase/server";
 import { RichTextRenderer } from "@/components/ui/RichTextRenderer";
 import { generatePageMetadata } from "@/lib/seo";
 
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!VALID_POLICIES.includes(policy as PolicySlug)) {
     return { title: "Not Found" };
   }
-  const page = await getPage(policy).catch(() => null);
+  const page = await getPageServer(policy).catch(() => null);
   if (page) return generatePageMetadata(page);
   return {
     title: POLICY_TITLES[policy as PolicySlug] ?? policy,
@@ -46,7 +46,7 @@ export default async function PolicyPage({ params }: Props) {
   const { policy } = await params;
   if (!VALID_POLICIES.includes(policy as PolicySlug)) notFound();
 
-  const page = await getPage(policy).catch(() => null);
+  const page = await getPageServer(policy).catch(() => null);
   const title = page?.title ?? POLICY_TITLES[policy as PolicySlug] ?? policy;
 
   return (

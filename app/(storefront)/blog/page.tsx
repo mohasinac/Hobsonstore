@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAllBlogPosts } from "@/lib/firebase/content";
+import { getAllBlogPostsServer } from "@/lib/firebase/server";
 import { PostCard } from "@/components/blog/PostCard";
 
 export const revalidate = 3600;
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const posts = await getAllBlogPosts().catch(() => []);
+  const posts = await getAllBlogPostsServer().catch(() => []);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">

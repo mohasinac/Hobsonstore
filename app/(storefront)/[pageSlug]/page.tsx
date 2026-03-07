@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPage } from "@/lib/firebase/content";
+import { getPageServer } from "@/lib/firebase/server";
 import { RichTextRenderer } from "@/components/ui/RichTextRenderer";
 import { generatePageMetadata } from "@/lib/seo";
 
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!VALID_PAGE_SLUGS.includes(pageSlug as PageSlug)) {
     return { title: "Not Found" };
   }
-  const page = await getPage(pageSlug).catch(() => null);
+  const page = await getPageServer(pageSlug).catch(() => null);
   if (page) return generatePageMetadata(page);
   return { title: PAGE_TITLES[pageSlug as PageSlug] ?? pageSlug };
 }
@@ -39,7 +39,7 @@ export default async function InfoPage({ params }: Props) {
   const { pageSlug } = await params;
   if (!VALID_PAGE_SLUGS.includes(pageSlug as PageSlug)) notFound();
 
-  const page = await getPage(pageSlug).catch(() => null);
+  const page = await getPageServer(pageSlug).catch(() => null);
   const title = page?.title ?? PAGE_TITLES[pageSlug as PageSlug] ?? pageSlug;
 
   return (

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProduct, getRelatedProducts } from "@/lib/firebase/products";
+import { getProductServer, getRelatedProductsServer } from "@/lib/firebase/server";
 import { PriceTag } from "@/components/product/PriceTag";
 import { StockBadge } from "@/components/product/StockBadge";
 import { ProductGrid } from "@/components/product/ProductGrid";
@@ -23,17 +23,17 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProduct(slug).catch(() => null);
+  const product = await getProductServer(slug).catch(() => null);
   if (!product) return { title: "Product not found" };
   return generateProductMetadata(product);
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = await getProduct(slug).catch(() => null);
+  const product = await getProductServer(slug).catch(() => null);
   if (!product) notFound();
 
-  const related = await getRelatedProducts(product).catch(() => []);
+  const related = await getRelatedProductsServer(product).catch(() => []);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
