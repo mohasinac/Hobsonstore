@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { buildCheckoutMessageURL } from "@/lib/whatsapp";
 import { COLLECTIONS } from "@/constants/firebase";
 import type { CartItem } from "@/types/cart";
 import type { Address } from "@/types/order";
+import type { Discount, LoyaltyConfig } from "@/types/config";
+import type { User } from "@/types/user";
+import { applyCoinsToOrder } from "@/lib/loyalty";
 
 interface CheckoutBody {
   items: CartItem[];
   address: Address;
   userId: string;
   total: number;
+  discountCode?: string | null;
+  coinsToRedeem?: number;
 }
 
 export async function POST(req: NextRequest) {
@@ -21,13 +26,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  const { items, address, userId, total } = body;
+  const {
+    items,
+    address,
+    userId,
+    total: subtotal,
+    discountCode,
+    coinsToRedeem = 0,
+  } = body;
 
   if (!items?.length) {
     return NextResponse.json({ error: "Cart is empty." }, { status: 400 });
   }
-  if (!address?.name || !address?.phone || !address?.line1 || !address?.city || !address?.pincode) {
-    return NextResponse.json({ error: "Incomplete delivery address." }, { status: 400 });
+  if (
+    !address?.name ||
+    !address?.phone ||
+    !address?.line1 ||
+    !address?.city ||
+    !address?.pincode
+  ) {
+    return NextResponse.json(
+      { error: "Incomplete delivery address." },
+      { status: 400 },
+    );
   }
   if (!/^\d{6}$/.test(address.pincode)) {
     return NextResponse.json({ error: "Invalid pincode." }, { status: 400 });
@@ -40,8 +61,87 @@ export async function POST(req: NextRequest) {
     const db = getAdminDb();
 
     const orderId = await db.runTransaction(async (tx) => {
+      // -- 1. Validate discount code -----------------------------------------
+      let discountAmount = 0;
+      let validatedDiscount: Discount | null = null;
+
+      if (discountCode) {
+        const discountRef = db
+          .collection(COLLECTIONS.DISCOUNTS)
+          .doc(discountCode.toUpperCase());
+        const discountSnap = await tx.get(discountRef);
+
+        if (discountSnap.exists) {
+          const d = discountSnap.data() as Discount;
+          const now = new Date();
+          const expired =
+            d.expiresAt &&
+            (d.expiresAt as unknown as Timestamp).toDate() < now;
+          const limitReached =
+            d.maxUses !== undefined && d.usedCount >= d.maxUses;
+          const belowMin =
+            d.minOrderValue !== undefined && subtotal < d.minOrderValue;
+
+          if (d.active && !expired && !limitReached && !belowMin) {
+            validatedDiscount = d;
+            discountAmount =
+              d.type === "percent"
+                ? Math.floor((subtotal * d.value) / 100)
+                : Math.min(d.value, subtotal);
+
+            // Increment usage count
+            tx.update(discountRef, { usedCount: d.usedCount + 1 });
+          }
+        }
+      }
+
+      // -- 2. Validate coin redemption ---------------------------------------
+      let coinsDiscount = 0;
+      const safeCoinsToRedeem = Math.max(0, Math.floor(coinsToRedeem));
+
+      if (safeCoinsToRedeem > 0 && userId !== "guest") {
+        const loyaltyRef = db
+          .collection(COLLECTIONS.LOYALTY_CONFIG)
+          .doc("main");
+        const [loyaltySnap, userSnap] = await Promise.all([
+          tx.get(loyaltyRef),
+          tx.get(db.collection(COLLECTIONS.USERS).doc(userId)),
+        ]);
+
+        if (loyaltySnap.exists && userSnap.exists) {
+          const loyaltyConfig = loyaltySnap.data() as LoyaltyConfig;
+          const userData = userSnap.data() as User;
+          const userBalance = userData.fccCoins ?? 0;
+
+          if (loyaltyConfig.active && userBalance >= safeCoinsToRedeem) {
+            const postDiscountTotal = subtotal - discountAmount;
+            coinsDiscount = applyCoinsToOrder(
+              safeCoinsToRedeem,
+              postDiscountTotal,
+              loyaltyConfig,
+            );
+
+            // Deduct coins from user balance
+            const coinEntry = {
+              delta: -safeCoinsToRedeem,
+              reason: "redemption",
+              timestamp: FieldValue.serverTimestamp(),
+            };
+            tx.update(db.collection(COLLECTIONS.USERS).doc(userId), {
+              fccCoins: FieldValue.increment(-safeCoinsToRedeem),
+              coinHistory: FieldValue.arrayUnion(coinEntry),
+            });
+          }
+        }
+      }
+
+      const finalTotal = Math.max(0, subtotal - discountAmount - coinsDiscount);
+
+      // -- 3. Reserve stock --------------------------------------------------
       for (const item of items) {
-        const productRef = db.collection(COLLECTIONS.PRODUCTS).doc(item.productId);
+        const productRef = db
+          .collection(COLLECTIONS.PRODUCTS)
+          .doc(item.productId);
         const snap = await tx.get(productRef);
         if (!snap.exists) {
           throw new Error(`Product "${item.name}" is no longer available.`);
@@ -64,16 +164,18 @@ export async function POST(req: NextRequest) {
         });
       }
 
+      // -- 4. Create order ---------------------------------------------------
       const orderRef = db.collection(COLLECTIONS.ORDERS).doc();
       tx.set(orderRef, {
         userId,
         items,
         address,
-        subtotal: total,
-        total,
-        discount: 0,
-        coinsRedeemed: 0,
-        discountAmount: 0,
+        subtotal,
+        discountCode: validatedDiscount?.code ?? null,
+        discountAmount,
+        coinsRedeemed: safeCoinsToRedeem > 0 ? safeCoinsToRedeem : 0,
+        coinsDiscount,
+        total: finalTotal,
         isPreorder: items.some((i) => i.isPreorder),
         currentStatus: "pending_payment",
         statusHistory: [
@@ -93,11 +195,18 @@ export async function POST(req: NextRequest) {
 
     const waNumber = process.env.WHATSAPP_NUMBER ?? "";
     const isPreorder = items.some((i) => i.isPreorder);
-    const waUrl = buildCheckoutMessageURL(waNumber, items, total, address, isPreorder);
+    const waUrl = buildCheckoutMessageURL(
+      waNumber,
+      items,
+      subtotal,
+      address,
+      isPreorder,
+    );
 
     return NextResponse.json({ orderId, waUrl }, { status: 201 });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Order could not be placed.";
+    const message =
+      err instanceof Error ? err.message : "Order could not be placed.";
     if (
       message.includes("no longer available") ||
       message.includes("sold out") ||

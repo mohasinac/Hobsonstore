@@ -68,7 +68,10 @@ export default function AccountPage() {
       </div>
 
       {/* Coins */}
-      <CoinBalanceCard balance={profile?.fccCoins ?? 0} />
+      <CoinBalanceCard
+        balance={profile?.fccCoins ?? 0}
+        history={profile?.coinHistory ?? []}
+      />
 
       {/* Quick links */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
