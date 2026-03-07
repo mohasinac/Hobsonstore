@@ -53,16 +53,39 @@ export default function WishlistPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-extrabold text-gray-900">My Wishlist</h1>
+      <h1
+        style={{
+          fontFamily: "var(--font-bangers, Bangers, cursive)",
+          fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
+          letterSpacing: "0.06em",
+          color: "#0D0D0D",
+        }}
+      >
+        MY WISHLIST
+      </h1>
 
       {products.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 py-16 text-center">
-          <p className="text-lg font-medium text-gray-600">
+        <div
+          className="py-16 text-center"
+          style={{
+            border: "2px dashed #0D0D0D",
+            background: "#FFFEF0",
+          }}
+        >
+          <p
+            className="text-lg"
+            style={{
+              fontFamily: "var(--font-bangers, Bangers, cursive)",
+              letterSpacing: "0.06em",
+              color: "#0D0D0D",
+            }}
+          >
             Your wishlist is empty
           </p>
           <Link
             href={ROUTES.COLLECTIONS}
-            className="mt-3 inline-block text-sm text-red-600 hover:underline"
+            className="mt-3 inline-block text-sm font-bold hover:underline"
+            style={{ color: "#E8001C" }}
           >
             Explore products →
           </Link>

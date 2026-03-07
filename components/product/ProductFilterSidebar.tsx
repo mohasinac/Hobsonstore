@@ -67,7 +67,7 @@ export function ProductFilterSidebar({
     <aside className="flex flex-col gap-6 text-sm">
       {/* Sort */}
       <div>
-        <p className="mb-2 font-semibold text-gray-800">Sort by</p>
+        <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Sort by</p>
         <Select
           options={SORT_OPTIONS}
           value={current.sort}
@@ -77,7 +77,7 @@ export function ProductFilterSidebar({
 
       {/* Availability */}
       <div>
-        <p className="mb-2 font-semibold text-gray-800">Availability</p>
+        <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Availability</p>
         <Checkbox
           label="In stock only"
           checked={current.inStock}
@@ -87,7 +87,7 @@ export function ProductFilterSidebar({
 
       {/* Price range */}
       <div>
-        <p className="mb-2 font-semibold text-gray-800">Price (₹)</p>
+        <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Price (₹)</p>
         <div className="flex gap-2">
           <Input
             label="Min"
@@ -109,7 +109,7 @@ export function ProductFilterSidebar({
       {/* Brand filter (shown only when brands are provided) */}
       {brands.length > 0 && (
         <div>
-          <p className="mb-2 font-semibold text-gray-800">Brand</p>
+          <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Brand</p>
           <Select
             placeholder="All brands"
             options={brands.map((b) => ({ value: b.slug, label: b.name }))}

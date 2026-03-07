@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProductGrid } from "@/components/product/ProductGrid";
+import { ProductCard } from "@/components/product/ProductCard";
 import { ROUTES } from "@/constants/routes";
 import type { Product } from "@/types/product";
 import type { HomeSection as HomeSectionType } from "@/types/content";
@@ -60,14 +61,7 @@ export function HomeSection({ section, products }: HomeSectionProps) {
         <div className="flex gap-4 overflow-x-auto pb-2 sm:hidden scrollbar-none">
           {products.slice(0, section.itemLimit).map((product) => (
             <div key={product.id} className="w-44 flex-shrink-0">
-              <Link
-                href={ROUTES.PRODUCT(product.slug)}
-                className="block text-sm"
-              >
-                <span className="font-bold" style={{ color: "#1A1A2E" }}>
-                  {product.name}
-                </span>
-              </Link>
+              <ProductCard product={product} />
             </div>
           ))}
         </div>

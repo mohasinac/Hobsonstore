@@ -3,6 +3,12 @@
   "buildCommand": "next build",
   "devCommand": "next dev",
   "installCommand": "npm install",
+  "github": {
+    "enabled": true,
+    "deploymentEnabled": {
+      "main": true
+    }
+  },
   "functions": {
     "app/api/**": {
       "maxDuration": 10

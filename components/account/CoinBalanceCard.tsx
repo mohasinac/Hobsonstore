@@ -41,7 +41,14 @@ export function CoinBalanceCard({
     .slice(0, 5);
 
   return (
-    <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+    <div
+      className="p-5"
+      style={{
+        background: "#FFFEF0",
+        border: "3px solid #0D0D0D",
+        boxShadow: "4px 4px 0px #0D0D0D",
+      }}
+    >
       {/* Balance row */}
       <div className="flex items-center justify-between">
         <div>
@@ -70,7 +77,8 @@ export function CoinBalanceCard({
             {recent.map((entry, i) => (
               <li
                 key={i}
-                className="flex items-center justify-between text-xs text-gray-700"
+                className="flex items-center justify-between text-xs"
+                style={{ color: "#1A1A2E" }}
               >
                 <span>{REASON_LABELS[entry.reason] ?? entry.reason}</span>
                 <span

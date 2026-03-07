@@ -20,16 +20,16 @@ export function PriceTag({
 
   return (
     <div className={cn("flex flex-wrap items-baseline gap-2", className)}>
-      <span className="text-2xl font-bold text-red-600">
+      <span className="text-2xl font-black" style={{ color: "#E8001C" }}>
         {formatINR(salePrice)}
       </span>
       {isOnSale && (
-        <span className="text-base text-gray-400 line-through">
+        <span className="text-base line-through" style={{ color: "#9CA3AF" }}>
           {formatINR(regularPrice)}
         </span>
       )}
       {!inStock && !isPreorder && (
-        <span className="text-sm font-medium text-gray-500">— Sold Out</span>
+        <span className="text-sm font-bold" style={{ color: "#6B6B6B" }}>— Sold Out</span>
       )}
       {isPreorder && (
         <span className="text-sm font-medium text-amber-600">— Pre-order</span>

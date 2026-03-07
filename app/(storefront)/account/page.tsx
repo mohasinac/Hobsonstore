@@ -38,30 +38,46 @@ export default function AccountPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">My Account</h1>
+      <h1
+        style={{
+          fontFamily: "var(--font-bangers, Bangers, cursive)",
+          fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
+          letterSpacing: "0.06em",
+          color: "#0D0D0D",
+        }}
+      >
+        MY ACCOUNT
+      </h1>
 
       {/* Profile info */}
-      <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-gray-500">
+      <div
+        className="p-6"
+        style={{
+          background: "#FFFFFF",
+          border: "2px solid #0D0D0D",
+          boxShadow: "3px 3px 0px #0D0D0D",
+        }}
+      >
+        <h2 className="mb-4 text-sm font-black uppercase tracking-widest" style={{ color: "#6B6B6B" }}>
           Profile
         </h2>
         <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
           <div>
-            <dt className="text-gray-500">Name</dt>
-            <dd className="font-medium text-gray-900">
+            <dt style={{ color: "#6B6B6B" }}>Name</dt>
+            <dd className="font-bold" style={{ color: "#0D0D0D" }}>
               {profile?.displayName ?? user?.displayName ?? "—"}
             </dd>
           </div>
           <div>
-            <dt className="text-gray-500">Email</dt>
-            <dd className="font-medium text-gray-900">
+            <dt style={{ color: "#6B6B6B" }}>Email</dt>
+            <dd className="font-bold" style={{ color: "#0D0D0D" }}>
               {profile?.email ?? user?.email ?? "—"}
             </dd>
           </div>
           {profile?.phone && (
             <div>
-              <dt className="text-gray-500">Phone</dt>
-              <dd className="font-medium text-gray-900">{profile.phone}</dd>
+              <dt style={{ color: "#6B6B6B" }}>Phone</dt>
+              <dd className="font-bold" style={{ color: "#0D0D0D" }}>{profile.phone}</dd>
             </div>
           )}
         </dl>
@@ -83,7 +99,14 @@ export default function AccountPage() {
           <Link
             key={href}
             href={href}
-            className="flex items-center justify-center rounded-xl border border-gray-100 bg-white p-5 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-red-300 hover:text-red-600"
+            className="flex items-center justify-center p-5 text-sm font-black uppercase transition-transform hover:-translate-y-1"
+            style={{
+              border: "2px solid #0D0D0D",
+              boxShadow: "3px 3px 0px #0D0D0D",
+              background: "#FFFFFF",
+              color: "#0D0D0D",
+              letterSpacing: "0.04em",
+            }}
           >
             {label} →
           </Link>

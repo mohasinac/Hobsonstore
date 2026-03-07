@@ -51,11 +51,21 @@ export default async function PolicyPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="mb-8 text-3xl font-bold text-gray-900">{title}</h1>
+      <h1
+        className="mb-8"
+        style={{
+          fontFamily: "var(--font-bangers, Bangers, cursive)",
+          fontSize: "clamp(2rem, 5vw, 2.8rem)",
+          letterSpacing: "0.06em",
+          color: "#0D0D0D",
+        }}
+      >
+        {title.toUpperCase()}
+      </h1>
       {page?.body ? (
         <RichTextRenderer html={page.body} />
       ) : (
-        <p className="text-gray-500">
+        <p style={{ color: "#6B6B6B" }}>
           This page is not yet available. Please check back later.
         </p>
       )}

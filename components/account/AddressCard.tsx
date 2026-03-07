@@ -25,21 +25,31 @@ export function AddressCard({ address, uid, onRemoved }: AddressCardProps) {
   }
 
   return (
-    <div className="relative rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+    <div
+      className="relative p-5"
+      style={{
+        background: "#FFFFFF",
+        border: "2px solid #0D0D0D",
+        boxShadow: "3px 3px 0px #0D0D0D",
+      }}
+    >
       {address.isDefault && (
-        <span className="absolute right-4 top-4 rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+        <span
+          className="absolute right-4 top-4 px-2 py-0.5 text-xs font-black uppercase"
+          style={{ background: "#FFE500", border: "2px solid #0D0D0D", color: "#0D0D0D" }}
+        >
           Default
         </span>
       )}
-      <p className="font-semibold text-gray-900">{address.name}</p>
-      <p className="mt-1 text-sm text-gray-600">
+      <p className="font-bold" style={{ color: "#0D0D0D" }}>{address.name}</p>
+      <p className="mt-1 text-sm" style={{ color: "#1A1A2E" }}>
         {address.line1}
         {address.line2 ? `, ${address.line2}` : ""}
       </p>
-      <p className="text-sm text-gray-600">
+      <p className="text-sm" style={{ color: "#1A1A2E" }}>
         {address.city}, {address.state} – {address.pincode}
       </p>
-      <p className="text-sm text-gray-600">{address.phone}</p>
+      <p className="text-sm" style={{ color: "#1A1A2E" }}>{address.phone}</p>
       <Button
         variant="ghost"
         onClick={handleRemove}

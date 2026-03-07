@@ -19,26 +19,42 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">
-        {query ? `Results for "${query}"` : "Search"}
+      <h1
+        className="mb-6"
+        style={{
+          fontFamily: "var(--font-bangers, Bangers, cursive)",
+          fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
+          letterSpacing: "0.06em",
+          color: "#0D0D0D",
+        }}
+      >
+        {query ? `RESULTS FOR "${query.toUpperCase()}"` : "SEARCH"}
       </h1>
 
       {!query && (
-        <p className="text-gray-500">
+        <p style={{ color: "#6B6B6B" }}>
           Enter a search term above to find products.
         </p>
       )}
 
       {query && products.length === 0 && (
         <div className="py-16 text-center">
-          <p className="text-lg font-medium text-gray-700">
+          <p
+            className="text-lg"
+            style={{
+              fontFamily: "var(--font-bangers, Bangers, cursive)",
+              letterSpacing: "0.06em",
+              color: "#0D0D0D",
+            }}
+          >
             No products found for &ldquo;{query}&rdquo;
           </p>
           <Link
-            href={ROUTES.COLLECTION("all")}
-            className="mt-4 inline-block text-sm text-red-600 hover:underline"
+            href={ROUTES.COLLECTIONS}
+            className="mt-4 inline-block text-sm font-bold hover:underline"
+            style={{ color: "#E8001C" }}
           >
-            Browse all products
+            Browse all products →
           </Link>
         </div>
       )}

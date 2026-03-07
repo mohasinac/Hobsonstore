@@ -51,14 +51,18 @@ export default async function BlogPostPage({ params }: Props) {
       {/* Back link */}
       <Link
         href={ROUTES.BLOG}
-        className="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-red-600"
+        className="mb-6 inline-flex items-center gap-1 text-sm font-bold"
+        style={{ color: "#E8001C" }}
       >
         ← Blog
       </Link>
 
       {/* Cover image */}
       {post.coverImage && (
-        <div className="relative mb-8 aspect-[16/9] w-full overflow-hidden rounded-xl bg-gray-100">
+        <div
+          className="relative mb-8 aspect-[16/9] w-full overflow-hidden"
+          style={{ border: "3px solid #0D0D0D", boxShadow: "4px 4px 0px #0D0D0D" }}
+        >
           <Image
             src={post.coverImage}
             alt={post.title}
@@ -76,7 +80,12 @@ export default async function BlogPostPage({ params }: Props) {
           {post.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-600"
+              className="px-3 py-1 text-xs font-black uppercase"
+              style={{
+                background: "#FFE500",
+                border: "2px solid #0D0D0D",
+                color: "#0D0D0D",
+              }}
             >
               {tag}
             </span>
@@ -85,10 +94,20 @@ export default async function BlogPostPage({ params }: Props) {
       )}
 
       {/* Title */}
-      <h1 className="mb-3 text-3xl font-bold text-gray-900">{post.title}</h1>
+      <h1
+        className="mb-3"
+        style={{
+          fontFamily: "var(--font-bangers, Bangers, cursive)",
+          fontSize: "clamp(2rem, 5vw, 2.8rem)",
+          letterSpacing: "0.06em",
+          color: "#0D0D0D",
+        }}
+      >
+        {post.title.toUpperCase()}
+      </h1>
 
       {/* Author + date */}
-      <div className="mb-8 flex items-center gap-3 text-sm text-gray-500">
+      <div className="mb-8 flex items-center gap-3 text-sm" style={{ color: "#6B6B6B" }}>
         {post.authorAvatar && (
           <Image
             src={post.authorAvatar}
@@ -98,7 +117,7 @@ export default async function BlogPostPage({ params }: Props) {
             className="rounded-full"
           />
         )}
-        <span className="font-medium text-gray-700">{post.authorName}</span>
+        <span className="font-bold" style={{ color: "#0D0D0D" }}>{post.authorName}</span>
         <span>·</span>
         <time dateTime={formatDate(post.publishedAt)}>
           {formatDate(post.publishedAt)}

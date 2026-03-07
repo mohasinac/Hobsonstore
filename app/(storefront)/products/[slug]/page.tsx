@@ -47,13 +47,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {product.brand && (
             <Link
               href={ROUTES.COLLECTION(product.brand)}
-              className="text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-red-600"
+              className="text-xs font-black uppercase tracking-wider"
+              style={{ color: "#E8001C", letterSpacing: "0.1em" }}
             >
               {product.brand.replace(/-/g, " ")}
             </Link>
           )}
 
-          <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
+          <h1
+            style={{
+              fontFamily: "var(--font-bangers, Bangers, cursive)",
+              fontSize: "clamp(1.6rem, 4vw, 2.4rem)",
+              letterSpacing: "0.05em",
+              color: "#0D0D0D",
+            }}
+          >
+            {product.name.toUpperCase()}
+          </h1>
 
           <PriceTag
             salePrice={product.salePrice}
@@ -91,7 +101,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <WishlistButton productId={product.id} />
 
           {/* Trust badges */}
-          <div className="flex flex-wrap gap-3 border-t pt-4 text-xs text-gray-500">
+          <div
+            className="flex flex-wrap gap-3 pt-4 text-xs font-bold"
+            style={{ borderTop: "2px solid #0D0D0D", color: "#1A1A2E" }}
+          >
             <span>🚚 Free Shipping</span>
             <span>💬 WhatsApp Support</span>
             <span>🪙 Earn FCC Coins</span>
@@ -103,8 +116,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {/* Related products */}
       {related.length > 0 && (
         <section className="mt-16">
-          <h2 className="mb-6 text-xl font-bold text-gray-900">
-            You May Also Like
+          <h2
+            className="mb-6"
+            style={{
+              fontFamily: "var(--font-bangers, Bangers, cursive)",
+              fontSize: "clamp(1.4rem, 3vw, 1.8rem)",
+              letterSpacing: "0.06em",
+              color: "#0D0D0D",
+            }}
+          >
+            YOU MAY ALSO LIKE
           </h2>
           <ProductGrid products={related} />
         </section>

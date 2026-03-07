@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useCart } from "@/hooks/useCart";
 import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
@@ -14,15 +13,18 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto flex max-w-xl flex-col items-center gap-6 px-4 py-20 text-center">
-        <Image
-          src="/icons/cart.svg"
-          alt=""
-          width={64}
-          height={64}
-          aria-hidden="true"
-        />
-        <h1 className="text-2xl font-bold text-gray-900">Your cart is empty</h1>
-        <p className="text-gray-500">
+        <span style={{ fontSize: "3rem" }}>🛒</span>
+        <h1
+          style={{
+            fontFamily: "var(--font-bangers, Bangers, cursive)",
+            fontSize: "clamp(1.6rem, 4vw, 2rem)",
+            letterSpacing: "0.06em",
+            color: "#0D0D0D",
+          }}
+        >
+          YOUR CART IS EMPTY
+        </h1>
+        <p style={{ color: "#6B6B6B" }}>
           Looks like you haven&apos;t added anything yet.
         </p>
         <Link href={ROUTES.COLLECTIONS}>
@@ -34,7 +36,17 @@ export default function CartPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900">Your Cart</h1>
+      <h1
+        className="mb-8"
+        style={{
+          fontFamily: "var(--font-bangers, Bangers, cursive)",
+          fontSize: "clamp(1.6rem, 4vw, 2rem)",
+          letterSpacing: "0.06em",
+          color: "#0D0D0D",
+        }}
+      >
+        YOUR CART
+      </h1>
       <div className="flex flex-col gap-6 md:flex-row md:gap-10">
         {/* Line items */}
         <div className="flex flex-1 flex-col gap-4">
@@ -45,9 +57,16 @@ export default function CartPage() {
 
         {/* Summary */}
         <div className="md:w-72">
-          <div className="rounded-lg border border-gray-200 p-5">
+          <div
+            className="p-5"
+            style={{
+              border: "2px solid #0D0D0D",
+              boxShadow: "3px 3px 0px #0D0D0D",
+              background: "#FFFEF0",
+            }}
+          >
             <CartSummary />
-            <p className="mt-2 text-xs text-gray-400">
+            <p className="mt-2 text-xs" style={{ color: "#6B6B6B" }}>
               Taxes + free shipping included.
             </p>
             <Link href={ROUTES.CHECKOUT} className="mt-4 block">

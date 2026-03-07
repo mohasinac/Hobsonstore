@@ -10,9 +10,18 @@ interface ProductGridProps {
 export function ProductGrid({ products, className }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <div className="py-16 text-center text-gray-500">
-        <p className="text-lg font-medium">No products found</p>
-        <p className="mt-1 text-sm">Try adjusting your filters.</p>
+      <div className="py-16 text-center" style={{ color: "#6B6B6B" }}>
+        <p
+          className="text-lg"
+          style={{
+            fontFamily: "var(--font-bangers, Bangers, cursive)",
+            letterSpacing: "0.06em",
+            color: "#0D0D0D",
+          }}
+        >
+          NO PRODUCTS FOUND
+        </p>
+        <p className="mt-1 text-sm font-medium">Try adjusting your filters.</p>
       </div>
     );
   }

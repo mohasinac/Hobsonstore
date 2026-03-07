@@ -16,19 +16,43 @@ export default async function BlogPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="mb-8 text-3xl font-bold text-gray-900">Blog</h1>
+      <h1
+        className="mb-8"
+        style={{
+          fontFamily: "var(--font-bangers, Bangers, cursive)",
+          fontSize: "clamp(2rem, 5vw, 3rem)",
+          letterSpacing: "0.08em",
+          color: "#0D0D0D",
+        }}
+      >
+        BLOG
+      </h1>
 
       {posts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <p className="text-xl font-semibold text-gray-700">
-            This blog is empty.
+          <p
+            className="text-xl"
+            style={{
+              fontFamily: "var(--font-bangers, Bangers, cursive)",
+              letterSpacing: "0.06em",
+              color: "#0D0D0D",
+            }}
+          >
+            THIS BLOG IS EMPTY.
           </p>
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2" style={{ color: "#6B6B6B" }}>
             Check back soon — stories are coming.
           </p>
           <Link
             href="/collections"
-            className="mt-6 inline-block rounded-md bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700"
+            className="mt-6 inline-block px-5 py-2.5 text-sm font-black uppercase"
+            style={{
+              background: "#E8001C",
+              color: "#FFFFFF",
+              border: "2px solid #0D0D0D",
+              boxShadow: "3px 3px 0px #0D0D0D",
+              letterSpacing: "0.06em",
+            }}
           >
             Browse Collectibles
           </Link>

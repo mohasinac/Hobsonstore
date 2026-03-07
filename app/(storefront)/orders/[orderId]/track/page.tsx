@@ -80,8 +80,17 @@ export default function OrderTrackPage({ params }: TrackPageProps) {
   if (accessDenied || !order) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <p className="text-lg font-semibold text-gray-700">Order not found</p>
-        <Link href={ROUTES.ACCOUNT_ORDERS} className="mt-4 inline-block text-sm text-red-600 hover:underline">
+        <p
+          className="text-lg"
+          style={{
+            fontFamily: "var(--font-bangers, Bangers, cursive)",
+            letterSpacing: "0.06em",
+            color: "#0D0D0D",
+          }}
+        >
+          ORDER NOT FOUND
+        </p>
+        <Link href={ROUTES.ACCOUNT_ORDERS} className="mt-4 inline-block text-sm font-bold hover:underline" style={{ color: "#E8001C" }}>
           View my orders
         </Link>
       </div>
@@ -102,9 +111,19 @@ export default function OrderTrackPage({ params }: TrackPageProps) {
       {/* Header */}
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs font-mono text-gray-500">Order #{order.id}</p>
-          <h1 className="mt-0.5 text-2xl font-extrabold text-gray-900">Track Order</h1>
-          {date && <p className="text-sm text-gray-500">Placed on {date}</p>}
+          <p className="text-xs font-mono" style={{ color: "#6B6B6B" }}>Order #{order.id}</p>
+          <h1
+            className="mt-0.5"
+            style={{
+              fontFamily: "var(--font-bangers, Bangers, cursive)",
+              fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
+              letterSpacing: "0.06em",
+              color: "#0D0D0D",
+            }}
+          >
+            TRACK ORDER
+          </h1>
+          {date && <p className="text-sm" style={{ color: "#6B6B6B" }}>Placed on {date}</p>}
         </div>
         <OrderStatusBadge status={order.currentStatus} />
       </div>
@@ -123,8 +142,15 @@ export default function OrderTrackPage({ params }: TrackPageProps) {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
         {/* Status stepper — takes 2/5 cols */}
         <div className="md:col-span-2">
-          <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-            <h2 className="mb-5 text-sm font-bold uppercase tracking-widest text-gray-500">
+          <div
+            className="p-5"
+            style={{
+              border: "2px solid #0D0D0D",
+              boxShadow: "3px 3px 0px #0D0D0D",
+              background: "#FFFFFF",
+            }}
+          >
+            <h2 className="mb-5 text-sm font-black uppercase tracking-widest" style={{ color: "#6B6B6B" }}>
               Status
             </h2>
             <OrderStatusStepper order={order} configs={configs} />
@@ -134,21 +160,35 @@ export default function OrderTrackPage({ params }: TrackPageProps) {
         {/* Order summary — takes 3/5 cols */}
         <div className="flex flex-col gap-5 md:col-span-3">
           {/* Items */}
-          <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-            <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-gray-500">
+          <div
+            className="p-5"
+            style={{
+              border: "2px solid #0D0D0D",
+              boxShadow: "3px 3px 0px #0D0D0D",
+              background: "#FFFFFF",
+            }}
+          >
+            <h2 className="mb-4 text-sm font-black uppercase tracking-widest" style={{ color: "#6B6B6B" }}>
               Items
             </h2>
             <OrderItemList items={order.items} />
           </div>
 
           {/* Totals */}
-          <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-            <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-gray-500">
+          <div
+            className="p-5"
+            style={{
+              border: "2px solid #0D0D0D",
+              boxShadow: "3px 3px 0px #0D0D0D",
+              background: "#FFFFFF",
+            }}
+          >
+            <h2 className="mb-4 text-sm font-black uppercase tracking-widest" style={{ color: "#6B6B6B" }}>
               Summary
             </h2>
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <dt className="text-gray-500">Subtotal</dt>
+                <dt style={{ color: "#6B6B6B" }}>Subtotal</dt>
                 <dd>{formatINR(order.subtotal)}</dd>
               </div>
               {order.discountAmount > 0 && (
@@ -163,19 +203,26 @@ export default function OrderTrackPage({ params }: TrackPageProps) {
                   <dd>− {formatINR(order.coinsRedeemed)}</dd>
                 </div>
               )}
-              <div className="flex justify-between border-t border-gray-100 pt-2 font-bold">
+              <div className="flex justify-between pt-2 font-black" style={{ borderTop: "2px solid #0D0D0D" }}>
                 <dt>Total</dt>
-                <dd>{formatINR(order.total)}</dd>
+                <dd style={{ color: "#E8001C" }}>{formatINR(order.total)}</dd>
               </div>
             </dl>
           </div>
 
           {/* Delivery address */}
-          <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-            <h2 className="mb-3 text-sm font-bold uppercase tracking-widest text-gray-500">
+          <div
+            className="p-5"
+            style={{
+              border: "2px solid #0D0D0D",
+              boxShadow: "3px 3px 0px #0D0D0D",
+              background: "#FFFFFF",
+            }}
+          >
+            <h2 className="mb-3 text-sm font-black uppercase tracking-widest" style={{ color: "#6B6B6B" }}>
               Delivery Address
             </h2>
-            <address className="not-italic text-sm text-gray-700 leading-relaxed">
+            <address className="not-italic text-sm leading-relaxed" style={{ color: "#1A1A2E" }}>
               <strong>{order.address.name}</strong>
               <br />
               {order.address.line1}
@@ -195,7 +242,7 @@ export default function OrderTrackPage({ params }: TrackPageProps) {
       </div>
 
       <div className="mt-6 text-center">
-        <Link href={ROUTES.ACCOUNT_ORDERS} className="text-sm text-red-600 hover:underline">
+        <Link href={ROUTES.ACCOUNT_ORDERS} className="text-sm font-bold hover:underline" style={{ color: "#E8001C" }}>
           ← Back to my orders
         </Link>
       </div>

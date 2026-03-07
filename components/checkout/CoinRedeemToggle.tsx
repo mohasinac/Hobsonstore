@@ -23,7 +23,14 @@ export function CoinRedeemToggle({
   if (!loyaltyActive || availableCoins <= 0) return null;
 
   return (
-    <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
+    <div
+      className="px-4 py-3"
+      style={{
+        border: "2px solid #0D0D0D",
+        background: "#FFFEF0",
+        boxShadow: "3px 3px 0px #0D0D0D",
+      }}
+    >
       <Checkbox
         label={`Use ${availableCoins} FCC Coins (save ${formatINR(savingsAmount)})`}
         checked={enabled}

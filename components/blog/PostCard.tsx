@@ -27,10 +27,14 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Link
       href={ROUTES.BLOG_POST(post.slug)}
-      className="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+      className="group flex flex-col overflow-hidden bg-white transition-transform hover:-translate-y-1"
+      style={{
+        border: "2px solid #0D0D0D",
+        boxShadow: "3px 3px 0px #0D0D0D",
+      }}
     >
       {post.coverImage && (
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-100">
+        <div className="relative aspect-[16/9] w-full overflow-hidden" style={{ borderBottom: "2px solid #0D0D0D" }}>
           <Image
             src={post.coverImage}
             alt={post.title}
@@ -47,7 +51,8 @@ export function PostCard({ post }: PostCardProps) {
             {post.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600"
+                className="px-2 py-0.5 text-xs font-black uppercase"
+                style={{ background: "#FFE500", border: "1.5px solid #0D0D0D", color: "#0D0D0D" }}
               >
                 {tag}
               </span>
@@ -55,15 +60,15 @@ export function PostCard({ post }: PostCardProps) {
           </div>
         )}
 
-        <h2 className="line-clamp-2 text-base font-semibold text-gray-900 group-hover:text-red-600">
+        <h2 className="line-clamp-2 text-base font-bold" style={{ color: "#0D0D0D" }}>
           {post.title}
         </h2>
 
         {post.excerpt && (
-          <p className="line-clamp-3 text-sm text-gray-500">{post.excerpt}</p>
+          <p className="line-clamp-3 text-sm" style={{ color: "#6B6B6B" }}>{post.excerpt}</p>
         )}
 
-        <div className="mt-auto flex items-center gap-2 pt-2 text-xs text-gray-400">
+        <div className="mt-auto flex items-center gap-2 pt-2 text-xs" style={{ color: "#6B6B6B" }}>
           {post.authorAvatar && (
             <Image
               src={post.authorAvatar}
