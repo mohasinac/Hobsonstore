@@ -29,8 +29,22 @@ function db() {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+function serializeTimestamps(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
+  // Firestore Admin Timestamp has toDate()
+  if (typeof obj.toDate === "function") return obj.toDate().toISOString();
+  if (Array.isArray(obj)) return obj.map(serializeTimestamps);
+  if (typeof obj === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(obj)) out[k] = serializeTimestamps(v);
+    return out;
+  }
+  return obj;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toData<T>(snap: FirebaseFirestore.QueryDocumentSnapshot<any>): T {
-  return { id: snap.id, ...snap.data() } as T;
+  return serializeTimestamps({ id: snap.id, ...snap.data() }) as T;
 }
 
 // ─── Banners ──────────────────────────────────────────────────────────────────
@@ -107,7 +121,7 @@ export async function getAnnouncementsServer(): Promise<Announcement[]> {
 export async function getPageServer(slug: string): Promise<ContentPage | null> {
   const snap = await db().collection(COLLECTIONS.PAGES).doc(slug).get();
   if (!snap.exists) return null;
-  return snap.data() as ContentPage;
+  return serializeTimestamps({ id: snap.id, ...snap.data() }) as ContentPage;
 }
 
 export async function getBlogPostServer(slug: string): Promise<BlogPost | null> {
@@ -147,7 +161,7 @@ export async function getAllCollectionsServer(): Promise<Collection[]> {
 export async function getCollectionServer(slug: string): Promise<Collection | null> {
   const snap = await db().collection(COLLECTIONS.COLLECTIONS).doc(slug).get();
   if (!snap.exists) return null;
-  return { id: snap.id, ...snap.data() } as unknown as Collection;
+  return serializeTimestamps({ id: snap.id, ...snap.data() }) as unknown as Collection;
 }
 
 export async function getActiveCollectionsByTypeServer(
@@ -167,7 +181,7 @@ export async function getActiveCollectionsByTypeServer(
 export async function getSiteConfigServer(): Promise<SiteConfig | null> {
   const snap = await db().collection(COLLECTIONS.SITE_CONFIG).doc("main").get();
   if (!snap.exists) return null;
-  return snap.data() as SiteConfig;
+  return serializeTimestamps(snap.data()) as SiteConfig;
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
