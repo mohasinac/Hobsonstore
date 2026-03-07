@@ -1,0 +1,133 @@
+import { ORDER_STATUS_LABELS } from "@/constants/orderStatus";
+import type { Order, OrderStatusEvent } from "@/types/order";
+import type { OrderStatusConfig } from "@/types/config";
+
+interface OrderStatusStepperProps {
+  order: Order;
+  /** Live configs from Firestore — falls back to static labels if empty */
+  configs?: OrderStatusConfig[];
+}
+
+/** Ordered list of all possible non-terminal statuses shown in the stepper */
+const STEPPER_STATUSES = [
+  "pending_payment",
+  "payment_confirmed",
+  "processing",
+  "shipped",
+  "out_for_delivery",
+  "delivered",
+] as const;
+
+const CANCELLED_STATUSES = ["cancelled", "refund_initiated"] as const;
+
+function isCancelled(status: string): boolean {
+  return CANCELLED_STATUSES.includes(status as (typeof CANCELLED_STATUSES)[number]);
+}
+
+function formatTimestamp(event: OrderStatusEvent): string {
+  if (!event.timestamp) return "";
+  const seconds = (event.timestamp as { seconds: number }).seconds;
+  return new Date(seconds * 1000).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+export function OrderStatusStepper({ order, configs = [] }: OrderStatusStepperProps) {
+  const labelFor = (status: string): string => {
+    const cfg = configs.find((c) => c.status === status);
+    return cfg?.label ?? ORDER_STATUS_LABELS[status] ?? status;
+  };
+
+  const eventFor = (status: string): OrderStatusEvent | undefined =>
+    order.statusHistory?.find((e) => e.status === status);
+
+  const cancelled = isCancelled(order.currentStatus);
+
+  if (cancelled) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+          <p className="font-semibold text-red-700">
+            {labelFor(order.currentStatus)}
+          </p>
+          {eventFor(order.currentStatus) && (
+            <p className="mt-1 text-xs text-red-500">
+              {formatTimestamp(eventFor(order.currentStatus)!)}
+            </p>
+          )}
+          {eventFor(order.currentStatus)?.note && (
+            <p className="mt-1 text-sm text-red-600">
+              {eventFor(order.currentStatus)!.note}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const currentIndex = STEPPER_STATUSES.indexOf(
+    order.currentStatus as (typeof STEPPER_STATUSES)[number],
+  );
+
+  return (
+    <ol className="relative ml-3 border-l border-gray-200">
+      {STEPPER_STATUSES.map((status, idx) => {
+        const isDone = idx <= currentIndex;
+        const isActive = idx === currentIndex;
+        const event = eventFor(status);
+
+        return (
+          <li key={status} className="mb-8 ml-6 last:mb-0">
+            {/* Circle */}
+            <span
+              className={`absolute -left-3.5 flex h-7 w-7 items-center justify-center rounded-full ring-4 ring-white ${
+                isDone
+                  ? isActive
+                    ? "bg-red-600 text-white"
+                    : "bg-green-500 text-white"
+                  : "bg-gray-200 text-gray-400"
+              }`}
+            >
+              {isDone && !isActive ? (
+                // Checkmark
+                <svg
+                  className="h-3.5 w-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={3}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <span className="h-2 w-2 rounded-full bg-current" />
+              )}
+            </span>
+
+            <div className="pl-1">
+              <p
+                className={`text-sm font-semibold ${
+                  isActive ? "text-red-600" : isDone ? "text-gray-900" : "text-gray-400"
+                }`}
+              >
+                {labelFor(status)}
+              </p>
+              {event && (
+                <time className="block text-xs text-gray-400">
+                  {formatTimestamp(event)}
+                </time>
+              )}
+              {event?.note && (
+                <p className="mt-0.5 text-xs text-gray-500">{event.note}</p>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}

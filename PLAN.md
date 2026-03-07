@@ -2041,20 +2041,20 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 
 #### Checklist
 
-- [ ] `app/(storefront)/orders/[orderId]/track/page.tsx` â€” vertical stepper, `onSnapshot`
-- [ ] `app/(storefront)/orders/[orderId]/track/loading.tsx`
-- [ ] `components/order/OrderStatusStepper.tsx`
-- [ ] `components/order/TrackingBanner.tsx`
-- [ ] `lib/firebase/orders.ts` â€” `updateOrderStatus()`, `releaseReservedStock()`
-- [ ] `hooks/useOrderStatusConfig.ts`
-- [ ] `app/api/admin/orders/[id]/status/route.ts` â€” PATCH (admin-only)
+- [x] `app/(storefront)/orders/[orderId]/track/page.tsx` â€” vertical stepper, `onSnapshot`
+- [x] `app/(storefront)/orders/[orderId]/track/loading.tsx`
+- [x] `components/order/OrderStatusStepper.tsx`
+- [x] `components/order/TrackingBanner.tsx`
+- [x] `lib/firebase/orders.ts` â€” `updateOrderStatus()`, `releaseReservedStock()`
+- [x] `hooks/useOrderStatusConfig.ts`
+- [x] `app/api/admin/orders/[id]/status/route.ts` â€” PATCH (admin-only)
 - [ ] Firestore `orderStatusConfig` seed documents (all 7 statuses)
-- [ ] Cloud Function stub: `onOrderStatusChange.ts` â€” dispatches WA notification
-- [ ] `components/admin/StatusChangeForm.tsx` â€” status dropdown (valid transitions only), note, AWB, WA preview
+- [x] Cloud Function stub: `onOrderStatusChange.ts` â€” dispatches WA notification
+- [x] `components/admin/StatusChangeForm.tsx` â€” status dropdown (valid transitions only), note, AWB, WA preview
 
 **Phase 3 gate**
 
-- [ ] typecheck Â· lint Â· build pass
+- [x] typecheck Â· lint Â· build pass
 - [ ] Smoke test: place order â†’ view `/orders/{id}/track` â†’ update status as admin â†’ customer stepper updates in real time
 
 ---
