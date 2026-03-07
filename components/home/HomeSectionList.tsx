@@ -1,5 +1,4 @@
-import { getProducts } from "@/lib/firebase/products";
-import { getCollection } from "@/lib/firebase/collections";
+import { getCollectionServer, getProductsServer, getProductsByIdsServer } from "@/lib/firebase/server";
 import { HomeSection } from "./HomeSection";
 import type { HomeSection as HomeSectionType } from "@/types/content";
 import type { Product } from "@/types/product";
@@ -13,25 +12,14 @@ export async function HomeSectionList({ sections }: HomeSectionListProps) {
     sections.map(async (section) => {
       let products: Product[] = [];
       if (section.collectionSlug) {
-        // Look up the collection type to decide which field to filter by
-        const col = await getCollection(section.collectionSlug).catch(
-          () => null,
-        );
-        const filterKey =
-          col?.type === "brand" ? "brand" : "franchise";
-        const result = await getProducts(
+        const col = await getCollectionServer(section.collectionSlug).catch(() => null);
+        const filterKey = col?.type === "brand" ? "brand" : "franchise";
+        products = await getProductsServer(
           { [filterKey]: section.collectionSlug },
           section.itemLimit,
-        ).catch(() => ({ products: [], lastDoc: null }));
-        products = result.products;
+        ).catch(() => []);
       } else if (section.manualProductIds?.length) {
-        const result = await getProducts({}, section.itemLimit).catch(() => ({
-          products: [],
-          lastDoc: null,
-        }));
-        products = result.products.filter((p) =>
-          section.manualProductIds!.includes(p.id),
-        );
+        products = await getProductsByIdsServer(section.manualProductIds).catch(() => []);
       }
       return { section, products };
     }),

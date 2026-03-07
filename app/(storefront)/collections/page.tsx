@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAllCollections } from "@/lib/firebase/collections";
+import { getAllCollectionsServer } from "@/lib/firebase/server";
 import Link from "next/link";
 import Image from "next/image";
 import { ROUTES } from "@/constants/routes";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CollectionsPage() {
-  const collections = await getAllCollections().catch(() => []);
+  const collections = await getAllCollectionsServer().catch(() => []);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">

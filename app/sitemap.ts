@@ -1,7 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllBlogPosts } from "@/lib/firebase/content";
-import { getAllCollections } from "@/lib/firebase/collections";
-import { getProducts } from "@/lib/firebase/products";
+import { getAllBlogPostsServer, getAllCollectionsServer, getProductsServer } from "@/lib/firebase/server";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://hobsoncollectibles.in";
@@ -9,10 +7,10 @@ const BASE_URL =
 export const revalidate = 86400; // 24 hours
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [collections, { products }, posts] = await Promise.all([
-    getAllCollections().catch(() => []),
-    getProducts({}, 500).catch(() => ({ products: [], lastDoc: null })),
-    getAllBlogPosts().catch(() => []),
+  const [collections, products, posts] = await Promise.all([
+    getAllCollectionsServer().catch(() => []),
+    getProductsServer({}, 500).catch(() => []),
+    getAllBlogPostsServer().catch(() => []),
   ]);
 
   const today = new Date();

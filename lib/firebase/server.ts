@@ -201,11 +201,25 @@ export async function searchProductsServer(searchQuery: string): Promise<Product
 
 export interface ProductFiltersServer {
   collectionSlug?: string;
+  franchise?: string;
   brand?: string;
   inStock?: boolean;
   priceMin?: number;
   priceMax?: number;
   sort?: "price_asc" | "price_desc" | "newest" | "name_asc";
+}
+
+export async function getProductsByIdsServer(ids: string[]): Promise<Product[]> {
+  if (!ids.length) return [];
+  // Firestore `in` supports max 30 per query — batch if needed
+  const batches: string[][] = [];
+  for (let i = 0; i < ids.length; i += 30) batches.push(ids.slice(i, i + 30));
+  const results = await Promise.all(
+    batches.map((batch) =>
+      db().collection(COLLECTIONS.PRODUCTS).where("__name__", "in", batch).get(),
+    ),
+  );
+  return results.flatMap((snap) => snap.docs.map((d) => toData<Product>(d)));
 }
 
 export async function getProductsServer(
@@ -214,6 +228,7 @@ export async function getProductsServer(
 ): Promise<Product[]> {
   let ref = db().collection(COLLECTIONS.PRODUCTS).where("active", "==", true) as FirebaseFirestore.Query;
   if (filters.collectionSlug) ref = ref.where("collections", "array-contains", filters.collectionSlug);
+  if (filters.franchise) ref = ref.where("franchise", "==", filters.franchise);
   if (filters.brand) ref = ref.where("brand", "==", filters.brand);
   if (filters.inStock) ref = ref.where("availableStock", ">", 0);
   if (filters.priceMin !== undefined) ref = ref.where("price", ">=", filters.priceMin);
