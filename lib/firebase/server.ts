@@ -406,10 +406,10 @@ export const getNewArrivalsProductsServer = cache(async function (pageSize = 8):
 
 // ─── Integration Keys ─────────────────────────────────────────────────────────
 
-/** Read the `settings/integrationKeys` document. Returns empty object if not found. */
+/** Read the `integrationKeys/main` document. Returns empty object if not found. */
 export async function getIntegrationKeysServer(): Promise<IntegrationKeys> {
   try {
-    const snap = await db().collection("settings").doc("integrationKeys").get();
+    const snap = await db().collection(COLLECTIONS.INTEGRATION_KEYS).doc("main").get();
     if (!snap.exists) return {};
     return serializeTimestamps(snap.data()) as IntegrationKeys;
   } catch {
@@ -417,8 +417,8 @@ export async function getIntegrationKeysServer(): Promise<IntegrationKeys> {
   }
 }
 
-/** Merge-update the `settings/integrationKeys` document. */
+/** Merge-update the `integrationKeys/main` document. */
 export async function updateIntegrationKeysServer(updates: Partial<IntegrationKeys>): Promise<void> {
-  await db().collection("settings").doc("integrationKeys").set(updates, { merge: true });
+  await db().collection(COLLECTIONS.INTEGRATION_KEYS).doc("main").set(updates, { merge: true });
 }
 

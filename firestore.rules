@@ -17,7 +17,7 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
-    // ── Products & Collections ────────────────────────────────────
+    // ── Products, Taxonomy & Collections ─────────────────────────
     match /products/{productId} {
       allow read: if true;
       allow write: if isAdmin();
@@ -26,6 +26,21 @@ service cloud.firestore {
     match /collections/{colId} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    match /franchises/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /brands/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Integration keys — server-side only (Admin SDK bypasses rules); no client access
+    match /integrationKeys/{docId} {
+      allow read, write: if false;
     }
 
     // ── Site Config / Content ─────────────────────────────────────

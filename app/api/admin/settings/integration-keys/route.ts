@@ -129,8 +129,8 @@ export async function DELETE(req: NextRequest) {
 
   const { FieldValue } = await import("firebase-admin/firestore");
   await getAdminDb()
-    .collection("settings")
-    .doc("integrationKeys")
+    .collection(COLLECTIONS.INTEGRATION_KEYS)
+    .doc("main")
     .update({ [field]: FieldValue.delete() });
 
   invalidateIntegrationKeysCache();

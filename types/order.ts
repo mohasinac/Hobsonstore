@@ -42,6 +42,7 @@ export interface Order {
   items: OrderItem[];
   subtotal: number;
   coinsRedeemed: number;
+  coinsDiscount: number;
   discountCode?: string;
   discountAmount: number;
   total: number;
