@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 /**
  * POST /api/revalidate
@@ -33,7 +33,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { path, paths } = body as { path?: string; paths?: string[] };
+  const { path, paths, tag, tags: tagList } = body as {
+    path?: string;
+    paths?: string[];
+    tag?: string;
+    tags?: string[];
+  };
 
   const toRevalidate: string[] = [];
   if (typeof path === "string" && path.startsWith("/")) {
@@ -47,9 +52,17 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  if (toRevalidate.length === 0) {
+  const tagsToRevalidate: string[] = [];
+  if (typeof tag === "string" && tag) tagsToRevalidate.push(tag);
+  if (Array.isArray(tagList)) {
+    for (const t of tagList) {
+      if (typeof t === "string" && t) tagsToRevalidate.push(t);
+    }
+  }
+
+  if (toRevalidate.length === 0 && tagsToRevalidate.length === 0) {
     return NextResponse.json(
-      { error: "No valid paths provided" },
+      { error: "No valid paths or tags provided" },
       { status: 400 },
     );
   }
@@ -57,6 +70,9 @@ export async function POST(request: NextRequest) {
   for (const p of toRevalidate) {
     revalidatePath(p);
   }
+  for (const t of tagsToRevalidate) {
+    revalidateTag(t, "");
+  }
 
-  return NextResponse.json({ revalidated: toRevalidate });
+  return NextResponse.json({ revalidated: toRevalidate, tags: tagsToRevalidate });
 }

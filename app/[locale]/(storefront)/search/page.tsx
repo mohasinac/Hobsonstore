@@ -8,6 +8,8 @@ import {
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductFilterSidebar } from "@/components/product/ProductFilterSidebar";
 
+export const revalidate = 60;
+
 interface SearchPageProps {
   searchParams: Promise<{
     q?: string;

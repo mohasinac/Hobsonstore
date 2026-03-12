@@ -7,6 +7,7 @@
  */
 import "server-only";
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { getAdminDb } from "./admin";
 import { COLLECTIONS } from "@/constants/firebase";
 import type {
@@ -284,22 +285,30 @@ export const getProductServer = cache(async function (slug: string): Promise<Pro
   }
 });
 
+const _getRelatedProductsCached = unstable_cache(
+  async (franchise: string, excludeId: string, count: number): Promise<Product[]> => {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.PRODUCTS)
+        .where("franchise", "==", franchise)
+        .where("active", "==", true)
+        .where("inStock", "==", true)
+        .limit(count + 1)
+        .get();
+      return snap.docs
+        .map((d) => toData<Product>(d))
+        .filter((p) => p.id !== excludeId)
+        .slice(0, count);
+    } catch {
+      return [];
+    }
+  },
+  ["related-products"],
+  { revalidate: 300, tags: ["products"] },
+);
+
 export async function getRelatedProductsServer(product: Product, count = 4): Promise<Product[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.PRODUCTS)
-      .where("franchise", "==", product.franchise)
-      .where("active", "==", true)
-      .where("inStock", "==", true)
-      .limit(count + 1)
-      .get();
-    return snap.docs
-      .map((d) => toData<Product>(d))
-      .filter((p) => p.id !== product.id)
-      .slice(0, count);
-  } catch {
-    return [];
-  }
+  return _getRelatedProductsCached(product.franchise, product.id, count);
 }
 
 export const searchProductsServer = cache(async function (searchQuery: string): Promise<Product[]> {
@@ -328,47 +337,65 @@ export interface ProductFiltersServer {
   sort?: "price_asc" | "price_desc" | "newest" | "name_asc";
 }
 
+const _getProductsByIdsCached = unstable_cache(
+  async (idsJson: string): Promise<Product[]> => {
+    const ids: string[] = JSON.parse(idsJson);
+    try {
+      // Firestore `in` supports max 30 per query — batch if needed
+      const batches: string[][] = [];
+      for (let i = 0; i < ids.length; i += 30) batches.push(ids.slice(i, i + 30));
+      const results = await Promise.all(
+        batches.map((batch) =>
+          db().collection(COLLECTIONS.PRODUCTS).where("__name__", "in", batch).get(),
+        ),
+      );
+      return results.flatMap((snap) => snap.docs.map((d) => toData<Product>(d)));
+    } catch {
+      return [];
+    }
+  },
+  ["products-by-ids"],
+  { revalidate: 300, tags: ["products"] },
+);
+
 export async function getProductsByIdsServer(ids: string[]): Promise<Product[]> {
   if (!ids.length) return [];
-  try {
-    // Firestore `in` supports max 30 per query — batch if needed
-    const batches: string[][] = [];
-    for (let i = 0; i < ids.length; i += 30) batches.push(ids.slice(i, i + 30));
-    const results = await Promise.all(
-      batches.map((batch) =>
-        db().collection(COLLECTIONS.PRODUCTS).where("__name__", "in", batch).get(),
-      ),
-    );
-    return results.flatMap((snap) => snap.docs.map((d) => toData<Product>(d)));
-  } catch {
-    return [];
-  }
+  return _getProductsByIdsCached(JSON.stringify([...ids].sort()));
 }
+
+const _getProductsServerCached = unstable_cache(
+  async (filtersJson: string, pageSize: number): Promise<Product[]> => {
+    const filters = JSON.parse(filtersJson) as ProductFiltersServer;
+    try {
+      let ref = db().collection(COLLECTIONS.PRODUCTS).where("active", "==", true) as FirebaseFirestore.Query;
+      if (filters.franchise) ref = ref.where("franchise", "==", filters.franchise);
+      if (filters.brand) ref = ref.where("brand", "==", filters.brand);
+      if (filters.inStock) ref = ref.where("availableStock", ">", 0);
+      if (filters.priceMin !== undefined) ref = ref.where("salePrice", ">=", filters.priceMin);
+      if (filters.priceMax !== undefined) ref = ref.where("salePrice", "<=", filters.priceMax);
+
+      switch (filters.sort) {
+        case "price_asc":  ref = ref.orderBy("salePrice", "asc"); break;
+        case "price_desc": ref = ref.orderBy("salePrice", "desc"); break;
+        case "name_asc":   ref = ref.orderBy("name", "asc"); break;
+        default:           ref = ref.orderBy("createdAt", "desc");
+      }
+
+      const snap = await ref.limit(pageSize).get();
+      return snap.docs.map((d) => toData<Product>(d));
+    } catch {
+      return [];
+    }
+  },
+  ["products-list"],
+  { revalidate: 120, tags: ["products"] },
+);
 
 export async function getProductsServer(
   filters: ProductFiltersServer = {},
   pageSize = 24,
 ): Promise<Product[]> {
-  try {
-    let ref = db().collection(COLLECTIONS.PRODUCTS).where("active", "==", true) as FirebaseFirestore.Query;
-    if (filters.franchise) ref = ref.where("franchise", "==", filters.franchise);
-    if (filters.brand) ref = ref.where("brand", "==", filters.brand);
-    if (filters.inStock) ref = ref.where("availableStock", ">", 0);
-    if (filters.priceMin !== undefined) ref = ref.where("salePrice", ">=", filters.priceMin);
-    if (filters.priceMax !== undefined) ref = ref.where("salePrice", "<=", filters.priceMax);
-
-    switch (filters.sort) {
-      case "price_asc":  ref = ref.orderBy("salePrice", "asc"); break;
-      case "price_desc": ref = ref.orderBy("salePrice", "desc"); break;
-      case "name_asc":   ref = ref.orderBy("name", "asc"); break;
-      default:           ref = ref.orderBy("createdAt", "desc");
-    }
-
-    const snap = await ref.limit(pageSize).get();
-    return snap.docs.map((d) => toData<Product>(d));
-  } catch {
-    return [];
-  }
+  return _getProductsServerCached(JSON.stringify(filters), pageSize);
 }
 
 export const getFeaturedProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
