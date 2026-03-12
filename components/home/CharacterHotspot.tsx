@@ -20,6 +20,7 @@ const HOTSPOTS: HotspotPin[] = [
     description:
       "Mid-swing, wall-crawling, Symbiote — Peter Parker in every iconic pose. Hot Toys & Iron Studios pieces with real fabric suits and LED arc detail. Ships India-wide.",
     href: "/franchise/marvel",
+    xPct: 8,
     yPct: 22,
     accent: "#E8001C",
     badge: "MARVEL",
@@ -32,6 +33,7 @@ const HOTSPOTS: HotspotPin[] = [
     description:
       "Tony Stark's armour at display scale. Arc-reactor glow, battle-damaged panels, nano-tech variants — the cornerstone of every serious Marvel shelf.",
     href: "/franchise/marvel",
+    xPct: 18,
     yPct: 58,
     accent: "#E8001C",
     badge: "MARVEL",
@@ -44,6 +46,7 @@ const HOTSPOTS: HotspotPin[] = [
     description:
       "Dick Grayson's acrobatic grace in resin. Flying-kick, staff-spin & Nightwing-transition statues — the most underrated must-have in the Bat-family lineup.",
     href: "/franchise/dc-comics",
+    xPct: 28,
     yPct: 18,
     accent: "#4A90D9",
     badge: "DC",
@@ -56,6 +59,7 @@ const HOTSPOTS: HotspotPin[] = [
     description:
       "Gotham's Dark Knight on your shelf. Full-armoured, Nanosuit & Bat-suit variants from Hot Toys & Prime 1 Studio — every grim detail preserved in 1/6 scale.",
     href: "/franchise/dc-comics",
+    xPct: 36,
     yPct: 42,
     accent: "#4A90D9",
     badge: "DC",
@@ -68,6 +72,7 @@ const HOTSPOTS: HotspotPin[] = [
     description:
       "Shield raised, Endgame-ready. WW2 Origin, MCU & Broken Shield variants — the most recognisable Marvel statue in any collection. Limited stock.",
     href: "/franchise/marvel",
+    xPct: 12,
     yPct: 76,
     accent: "#0057FF",
     badge: "MARVEL",
@@ -80,6 +85,7 @@ const HOTSPOTS: HotspotPin[] = [
     description:
       "Kal-El soaring above your display. XM Studios & Iron Studios full-sculpt statues — classic red cape and New 52 dark variants, ready to ship.",
     href: "/franchise/dc-comics",
+    xPct: 44,
     yPct: 68,
     accent: "#0057FF",
     badge: "DC",
