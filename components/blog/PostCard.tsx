@@ -27,14 +27,15 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Link
       href={ROUTES.BLOG_POST(post.slug)}
-      className="group flex flex-col overflow-hidden bg-white transition-transform hover:-translate-y-1"
+      className="group flex flex-col overflow-hidden transition-transform hover:-translate-y-1"
       style={{
-        border: "2px solid #0D0D0D",
-        boxShadow: "3px 3px 0px #0D0D0D",
+        background: "var(--surface-elevated)",
+        border: "2px solid var(--border-ink)",
+        boxShadow: "3px 3px 0px var(--border-ink)",
       }}
     >
       {post.coverImage && (
-        <div className="relative aspect-[16/9] w-full overflow-hidden" style={{ borderBottom: "2px solid #0D0D0D" }}>
+        <div className="relative aspect-video w-full overflow-hidden" style={{ borderBottom: "2px solid var(--border-ink)" }}>
           <Image
             src={post.coverImage}
             alt={post.title}
@@ -52,7 +53,7 @@ export function PostCard({ post }: PostCardProps) {
               <span
                 key={tag}
                 className="px-2 py-0.5 text-xs font-black uppercase"
-                style={{ background: "#FFE500", border: "1.5px solid #0D0D0D", color: "#0D0D0D" }}
+                style={{ background: "var(--color-yellow)", border: "1.5px solid var(--border-ink)", color: "#1A1A1A" }}
               >
                 {tag}
               </span>
@@ -60,15 +61,15 @@ export function PostCard({ post }: PostCardProps) {
           </div>
         )}
 
-        <h2 className="line-clamp-2 text-base font-bold" style={{ color: "#0D0D0D" }}>
+        <h2 className="line-clamp-2 text-base font-bold" style={{ color: "var(--color-black)" }}>
           {post.title}
         </h2>
 
         {post.excerpt && (
-          <p className="line-clamp-3 text-sm" style={{ color: "#6B6B6B" }}>{post.excerpt}</p>
+          <p className="line-clamp-3 text-sm" style={{ color: "var(--color-muted)" }}>{post.excerpt}</p>
         )}
 
-        <div className="mt-auto flex items-center gap-2 pt-2 text-xs" style={{ color: "#6B6B6B" }}>
+        <div className="mt-auto flex items-center gap-2 pt-2 text-xs" style={{ color: "var(--color-muted)" }}>
           {post.authorAvatar && (
             <Image
               src={post.authorAvatar}

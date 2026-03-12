@@ -21,15 +21,15 @@ export function OrderSummary({
       {/* Line items */}
       {items.map((item) => (
         <div key={item.productId} className="flex justify-between text-sm">
-          <span className="flex-1 truncate mr-2" style={{ color: "#1A1A2E" }}>
+          <span className="flex-1 truncate mr-2" style={{ color: "var(--color-black)" }}>
             {item.name} ×{item.qty}
           </span>
-          <span className="font-bold" style={{ color: "#0D0D0D" }}>{formatINR(item.salePrice * item.qty)}</span>
+          <span className="font-bold" style={{ color: "var(--color-black)" }}>{formatINR(item.salePrice * item.qty)}</span>
         </div>
       ))}
 
       <div className="border-t pt-3 flex flex-col gap-1.5 text-sm">
-        <div className="flex justify-between" style={{ color: "#6B6B6B" }}>
+        <div className="flex justify-between" style={{ color: "var(--color-muted)" }}>
           <span>Subtotal</span>
           <span>{formatINR(subtotal)}</span>
         </div>
@@ -48,12 +48,12 @@ export function OrderSummary({
           </div>
         )}
 
-        <div className="flex justify-between font-black text-base pt-2 mt-1" style={{ borderTop: "2px solid #0D0D0D", color: "#0D0D0D" }}>
+        <div className="flex justify-between font-black text-base pt-2 mt-1" style={{ borderTop: "2px solid var(--border-ink)", color: "var(--color-black)" }}>
           <span>Total</span>
-          <span style={{ color: "#E8001C" }}>{formatINR(total)}</span>
+          <span style={{ color: "var(--color-red)" }}>{formatINR(total)}</span>
         </div>
 
-        <p className="text-xs" style={{ color: "#6B6B6B" }}>Free shipping. No hidden charges.</p>
+        <p className="text-xs" style={{ color: "var(--color-muted)" }}>Free shipping. No hidden charges.</p>
       </div>
     </div>
   );

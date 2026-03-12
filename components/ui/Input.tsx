@@ -15,7 +15,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <label
             htmlFor={inputId}
             className="text-sm font-bold"
-            style={{ color: "#0D0D0D", letterSpacing: "0.02em" }}
+            style={{ color: "var(--color-black)", letterSpacing: "0.02em" }}
           >
             {label}
           </label>
@@ -28,14 +28,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className,
           )}
           style={{
-            border: error ? "2px solid #E8001C" : "2px solid #0D0D0D",
-            boxShadow: "3px 3px 0px #0D0D0D",
-            background: "#FFFFFF",
-            color: "#0D0D0D",
+            border: error ? "2px solid var(--color-red)" : "2px solid var(--border-ink)",
+            boxShadow: "3px 3px 0px var(--border-ink)",
+            background: "var(--surface-elevated)",
+            color: "var(--color-black)",
           }}
           {...props}
         />
-        {error && <p className="text-xs font-bold" style={{ color: "#E8001C" }}>{error}</p>}
+        {error && <p className="text-xs font-bold" style={{ color: "var(--color-red)" }}>{error}</p>}
       </div>
     );
   },

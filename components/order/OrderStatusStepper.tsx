@@ -50,7 +50,7 @@ export function OrderStatusStepper({ order, configs = [] }: OrderStatusStepperPr
   if (cancelled) {
     return (
       <div className="space-y-4">
-        <div className="p-4" style={{ border: '2px solid #E8001C', background: '#FFF0F0', boxShadow: '3px 3px 0px #0D0D0D' }}>
+        <div className="p-4" style={{ border: '2px solid var(--color-red)', background: 'rgba(248,58,58,0.06)', boxShadow: '3px 3px 0px var(--border-ink)' }}>
           <p className="font-bold" style={{ color: '#E8001C' }}>
             {labelFor(order.currentStatus)}
           </p>
@@ -74,7 +74,7 @@ export function OrderStatusStepper({ order, configs = [] }: OrderStatusStepperPr
   );
 
   return (
-    <ol className="relative ml-3 border-l-2" style={{ borderColor: '#0D0D0D' }}>
+    <ol className="relative ml-3 border-l-2" style={{ borderColor: 'var(--border-ink)' }}>
       {STEPPER_STATUSES.map((status, idx) => {
         const isDone = idx <= currentIndex;
         const isActive = idx === currentIndex;
@@ -86,13 +86,13 @@ export function OrderStatusStepper({ order, configs = [] }: OrderStatusStepperPr
             <span
               className="absolute -left-3.5 flex h-7 w-7 items-center justify-center rounded-full"
               style={{
-                border: '2px solid #0D0D0D',
+              border: '2px solid var(--border-ink)',
                 background: isDone
                   ? isActive
-                    ? '#E8001C'
-                    : '#16A34A'
-                  : '#FFFEF0',
-                color: isDone ? '#FFFFFF' : '#6B6B6B',
+                    ? 'var(--color-red)'
+                  : '#16A34A'
+                  : 'var(--surface-warm)',
+                color: isDone ? '#FFFFFF' : 'var(--color-muted)',
               }}
             >
               {isDone && !isActive ? (
@@ -115,18 +115,18 @@ export function OrderStatusStepper({ order, configs = [] }: OrderStatusStepperPr
               <p
                 className="text-sm font-bold"
                 style={{
-                  color: isActive ? '#E8001C' : isDone ? '#1A1A2E' : '#6B6B6B',
+                  color: isActive ? 'var(--color-red)' : isDone ? 'var(--color-black)' : 'var(--color-muted)',
                 }}
               >
                 {labelFor(status)}
               </p>
               {event && (
-                <time className="block text-xs" style={{ color: '#6B6B6B' }}>
+                <time className="block text-xs" style={{ color: 'var(--color-muted)' }}>
                   {formatTimestamp(event)}
                 </time>
               )}
               {event?.note && (
-                <p className="mt-0.5 text-xs" style={{ color: '#6B6B6B' }}>{event.note}</p>
+                <p className="mt-0.5 text-xs" style={{ color: 'var(--color-muted)' }}>{event.note}</p>
               )}
             </div>
           </li>

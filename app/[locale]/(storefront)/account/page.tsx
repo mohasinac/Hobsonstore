@@ -39,11 +39,10 @@ export default function AccountPage() {
   return (
     <div className="space-y-6">
       <h1
+        className="font-comic"
         style={{
-          fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
-          letterSpacing: "0.06em",
-          color: "#0D0D0D",
+          color: "var(--section-title-color)",
         }}
       >
         MY ACCOUNT
@@ -53,31 +52,31 @@ export default function AccountPage() {
       <div
         className="p-6"
         style={{
-          background: "#FFFFFF",
-          border: "2px solid #0D0D0D",
-          boxShadow: "3px 3px 0px #0D0D0D",
+          background: "var(--card-bg)",
+          border: "var(--card-border)",
+          boxShadow: "var(--card-shadow)",
         }}
       >
-        <h2 className="mb-4 text-sm font-black uppercase tracking-widest" style={{ color: "#6B6B6B" }}>
+        <h2 className="mb-4 text-sm font-black uppercase tracking-widest" style={{ color: "var(--color-muted)" }}>
           Profile
         </h2>
         <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
           <div>
-            <dt style={{ color: "#6B6B6B" }}>Name</dt>
-            <dd className="font-bold" style={{ color: "#0D0D0D" }}>
+            <dt style={{ color: "var(--color-muted)" }}>Name</dt>
+            <dd className="font-bold" style={{ color: "var(--color-black)" }}>
               {profile?.displayName ?? user?.displayName ?? "—"}
             </dd>
           </div>
           <div>
-            <dt style={{ color: "#6B6B6B" }}>Email</dt>
-            <dd className="font-bold" style={{ color: "#0D0D0D" }}>
+            <dt style={{ color: "var(--color-muted)" }}>Email</dt>
+            <dd className="font-bold" style={{ color: "var(--color-black)" }}>
               {profile?.email ?? user?.email ?? "—"}
             </dd>
           </div>
           {profile?.phone && (
             <div>
-              <dt style={{ color: "#6B6B6B" }}>Phone</dt>
-              <dd className="font-bold" style={{ color: "#0D0D0D" }}>{profile.phone}</dd>
+              <dt style={{ color: "var(--color-muted)" }}>Phone</dt>
+              <dd className="font-bold" style={{ color: "var(--color-black)" }}>{profile.phone}</dd>
             </div>
           )}
         </dl>
@@ -101,10 +100,10 @@ export default function AccountPage() {
             href={href}
             className="flex items-center justify-center p-5 text-sm font-black uppercase transition-transform hover:-translate-y-1"
             style={{
-              border: "2px solid #0D0D0D",
-              boxShadow: "3px 3px 0px #0D0D0D",
-              background: "#FFFFFF",
-              color: "#0D0D0D",
+              border: "var(--card-border)",
+              boxShadow: "var(--card-shadow)",
+              background: "var(--card-bg)",
+              color: "var(--color-black)",
               letterSpacing: "0.04em",
             }}
           >

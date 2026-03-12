@@ -17,10 +17,10 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
 
   return (
     <section
-      className="py-14"
+      className="py-10 sm:py-16"
       style={{
-        background: "#0D0D0D",
-        borderTop: "4px solid #FFE500",
+        background: "var(--surface-warm)",
+        borderTop: "4px solid var(--color-yellow)",
       }}
     >
       <div className="mx-auto max-w-3xl px-4">
@@ -30,7 +30,7 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
             fontFamily: "var(--font-bangers, Bangers, cursive)",
             fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
             letterSpacing: "0.08em",
-            color: "#FFE500",
+            color: "var(--color-yellow)",
           }}
         >
           FREQUENTLY ASKED QUESTIONS

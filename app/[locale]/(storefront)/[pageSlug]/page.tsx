@@ -45,12 +45,10 @@ export default async function InfoPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       <h1
-        className="mb-8"
+        className="font-comic mb-8"
         style={{
-          fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "clamp(2rem, 5vw, 2.8rem)",
-          letterSpacing: "0.06em",
-          color: "#0D0D0D",
+          color: "var(--section-title-color)",
         }}
       >
         {title.toUpperCase()}
@@ -58,7 +56,7 @@ export default async function InfoPage({ params }: Props) {
       {page?.body ? (
         <RichTextRenderer html={page.body} />
       ) : (
-        <p style={{ color: "#6B6B6B" }}>
+        <p style={{ color: "var(--color-muted)" }}>
           Content for this page is coming soon.
         </p>
       )}

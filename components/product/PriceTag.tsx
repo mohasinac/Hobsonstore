@@ -20,7 +20,7 @@ export function PriceTag({
 
   return (
     <div className={cn("flex flex-wrap items-baseline gap-2", className)}>
-      <span className="text-2xl font-black" style={{ color: "#E8001C" }}>
+      <span className="text-2xl font-black" style={{ color: "var(--color-red)" }}>
         {formatINR(salePrice)}
       </span>
       {isOnSale && (

@@ -28,28 +28,28 @@ export function AddressCard({ address, uid, onRemoved }: AddressCardProps) {
     <div
       className="relative p-5"
       style={{
-        background: "#FFFFFF",
-        border: "2px solid #0D0D0D",
-        boxShadow: "3px 3px 0px #0D0D0D",
+        background: "var(--surface-elevated)",
+        border: "2px solid var(--border-ink)",
+        boxShadow: "3px 3px 0px var(--border-ink)",
       }}
     >
       {address.isDefault && (
         <span
           className="absolute right-4 top-4 px-2 py-0.5 text-xs font-black uppercase"
-          style={{ background: "#FFE500", border: "2px solid #0D0D0D", color: "#0D0D0D" }}
+          style={{ background: "var(--color-yellow)", border: "2px solid var(--border-ink)", color: "#1A1A1A" }}
         >
           Default
         </span>
       )}
-      <p className="font-bold" style={{ color: "#0D0D0D" }}>{address.name}</p>
-      <p className="mt-1 text-sm" style={{ color: "#1A1A2E" }}>
+      <p className="font-bold" style={{ color: "var(--color-black)" }}>{address.name}</p>
+      <p className="mt-1 text-sm" style={{ color: "var(--color-black)" }}>
         {address.line1}
         {address.line2 ? `, ${address.line2}` : ""}
       </p>
-      <p className="text-sm" style={{ color: "#1A1A2E" }}>
+      <p className="text-sm" style={{ color: "var(--color-black)" }}>
         {address.city}, {address.state} – {address.pincode}
       </p>
-      <p className="text-sm" style={{ color: "#1A1A2E" }}>{address.phone}</p>
+      <p className="text-sm" style={{ color: "var(--color-black)" }}>{address.phone}</p>
       <Button
         variant="ghost"
         onClick={handleRemove}

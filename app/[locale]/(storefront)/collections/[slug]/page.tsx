@@ -51,7 +51,10 @@ export default async function CollectionPage({
   }).catch(() => []);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
+    <div
+      className="mx-auto max-w-7xl px-4 py-8"
+      style={{ minHeight: "calc(100svh - var(--header-height))" }}
+    >
       {/* Collection header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold" style={{ fontFamily: "var(--font-bangers)", color: "#1A1A2E", letterSpacing: "0.06em" }}>{col.name}</h1>

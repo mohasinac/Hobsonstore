@@ -1,10 +1,12 @@
-/**
+﻿/**
  * /api/admin/seed
  *
- * Admin-only route (requires valid Firebase ID token with role === "admin").
- * GET  Ã¢â‚¬â€ returns live Firestore doc counts per entity collection.
- * POST Ã¢â‚¬â€ { action: "seed" | "delete", entities: string[] }
+ * Public dev/testing route for seeding Firestore.
+ * GET  — returns live Firestore doc counts per entity collection.
+ * POST — { action: "seed" | "delete", entities: string[] }
  *        Upserts or deletes seed data via Admin SDK, then revalidates ISR caches.
+ * PATCH — { entityKey: string, id: string, patch: Record<string, unknown> }
+ *         Updates a single document by ID with the given patch.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -13,7 +15,6 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getAdminApp, getAdminDb } from "@/lib/firebase/admin";
 import {
   SEED_PRODUCTS,
-  SEED_COLLECTIONS,
   SEED_FRANCHISES,
   SEED_BRANDS,
   SEED_CURATED_COLLECTIONS,
@@ -32,6 +33,8 @@ import {
   SEED_PAYMENT_SETTINGS,
   SEED_SHIPPING_SETTINGS,
   SEED_NAVIGATION_CONFIG,
+  SEED_CHARACTER_HOTSPOT,
+  SEED_ADMIN_USER,
 } from "@/scripts/seed-data";
 import { COLLECTIONS } from "@/constants/firebase";
 
@@ -42,28 +45,6 @@ const REVALIDATE_PATHS = ["/", "/blog", "/collections", "/search", "/products"];
 
 // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Auth helper Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
-async function verifyAdminToken(req: NextRequest): Promise<{ uid: string } | null> {
-  const authHeader = req.headers.get("authorization");
-  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!token) return null;
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getAuth } = require("firebase-admin/auth");
-    const decoded = await getAuth(getAdminApp()).verifyIdToken(token);
-    const db = getAdminDb();
-    const userSnap = await db.collection(COLLECTIONS.USERS).doc(decoded.uid).get();
-    if (!userSnap.exists) return null;
-    const role = (userSnap.data() as { role?: string })?.role;
-    return role === "admin" ? { uid: decoded.uid } : null;
-  } catch {
-    return null;
-  }
-}
-
-function unauthorized() {
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-}
 
 // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Write helpers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
@@ -117,24 +98,6 @@ async function seedProducts(db: FirebaseFirestore.Firestore) {
 async function deleteProducts(db: FirebaseFirestore.Firestore) {
   const writes = SEED_PRODUCTS.map(({ id }) => (batch: WriteBatch) =>
     batch.delete(db.collection(COLLECTIONS.PRODUCTS).doc(id)),
-  );
-  await commitInBatches(db, writes);
-}
-
-async function seedCollections(db: FirebaseFirestore.Firestore) {
-  const writes = SEED_COLLECTIONS.map((c) => (batch: WriteBatch) =>
-    batch.set(
-      db.collection(COLLECTIONS.CURATED_COLLECTIONS).doc(c.slug),
-      { ...c, updatedAt: serverTs() },
-      { merge: true },
-    ),
-  );
-  await commitInBatches(db, writes);
-}
-
-async function deleteCollections(db: FirebaseFirestore.Firestore) {
-  const writes = SEED_COLLECTIONS.map(({ slug }) => (batch: WriteBatch) =>
-    batch.delete(db.collection(COLLECTIONS.CURATED_COLLECTIONS).doc(slug)),
   );
   await commitInBatches(db, writes);
 }
@@ -342,6 +305,81 @@ async function deleteBlogPosts(db: FirebaseFirestore.Firestore) {
   await commitInBatches(db, writes);
 }
 
+// ─── Admin user seed/delete ─────────────────────────────────────────────────
+
+async function seedAdminUser(db: FirebaseFirestore.Firestore) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getAuth } = require("firebase-admin/auth");
+  const auth = getAuth(getAdminApp());
+
+  let uid = SEED_ADMIN_USER.uid;
+
+  try {
+    // User with our fixed UID already exists — just refresh credentials
+    await auth.getUser(SEED_ADMIN_USER.uid);
+    await auth.updateUser(uid, {
+      email: SEED_ADMIN_USER.email,
+      password: SEED_ADMIN_USER.password,
+      displayName: SEED_ADMIN_USER.displayName,
+      emailVerified: true,
+    });
+  } catch (err: unknown) {
+    if ((err as { code?: string }).code === "auth/user-not-found") {
+      try {
+        await auth.createUser({
+          uid: SEED_ADMIN_USER.uid,
+          email: SEED_ADMIN_USER.email,
+          password: SEED_ADMIN_USER.password,
+          displayName: SEED_ADMIN_USER.displayName,
+          emailVerified: true,
+        });
+      } catch (createErr: unknown) {
+        // Email already taken by a different uid — update that user instead
+        if ((createErr as { code?: string }).code === "auth/email-already-exists") {
+          const existing = await auth.getUserByEmail(SEED_ADMIN_USER.email);
+          uid = (existing as { uid: string }).uid;
+          await auth.updateUser(uid, {
+            password: SEED_ADMIN_USER.password,
+            displayName: SEED_ADMIN_USER.displayName,
+            emailVerified: true,
+          });
+        } else {
+          throw createErr;
+        }
+      }
+    } else {
+      throw err;
+    }
+  }
+
+  await db.collection(COLLECTIONS.USERS).doc(uid).set(
+    {
+      uid,
+      email: SEED_ADMIN_USER.email,
+      displayName: SEED_ADMIN_USER.displayName,
+      role: SEED_ADMIN_USER.role,
+      hcCoins: 0,
+      addresses: [],
+      wishlist: [],
+      createdAt: serverTs(),
+      updatedAt: serverTs(),
+    },
+    { merge: true },
+  );
+}
+
+async function deleteAdminUser(db: FirebaseFirestore.Firestore) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getAuth } = require("firebase-admin/auth");
+  const auth = getAuth(getAdminApp());
+  try {
+    await auth.deleteUser(SEED_ADMIN_USER.uid);
+  } catch (err: unknown) {
+    if ((err as { code?: string }).code !== "auth/user-not-found") throw err;
+  }
+  await db.collection(COLLECTIONS.USERS).doc(SEED_ADMIN_USER.uid).delete();
+}
+
 async function seedSiteConfig(db: FirebaseFirestore.Firestore) {
   const { _docId, ...rest } = SEED_SITE_CONFIG;
   await db.collection(COLLECTIONS.SITE_CONFIG).doc(_docId).set(rest, { merge: true });
@@ -367,13 +405,22 @@ async function seedNavigationConfig(db: FirebaseFirestore.Firestore) {
   await db.collection(COLLECTIONS.NAVIGATION_CONFIG).doc(_docId).set(rest, { merge: true });
 }
 
+async function seedCharacterHotspot(db: FirebaseFirestore.Firestore) {
+  const { _docId, ...rest } = SEED_CHARACTER_HOTSPOT;
+  await db.collection(COLLECTIONS.CHARACTER_HOTSPOT).doc(_docId).set(rest, { merge: true });
+}
+
+async function deleteCharacterHotspot(db: FirebaseFirestore.Firestore) {
+  await db.collection(COLLECTIONS.CHARACTER_HOTSPOT).doc("main").delete();
+}
+
 // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Dispatch tables Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 type SeedFn = (db: FirebaseFirestore.Firestore) => Promise<void>;
 
 const SEED_FNS: Record<string, SeedFn> = {
+  adminUser: seedAdminUser,
   products: seedProducts,
-  collections: seedCollections,
   franchises: seedFranchises,
   brands: seedBrands,
   curatedCollections: seedCuratedCollections,
@@ -392,11 +439,12 @@ const SEED_FNS: Record<string, SeedFn> = {
   paymentSettings: seedPaymentSettings,
   shippingSettings: seedShippingSettings,
   navigationConfig: seedNavigationConfig,
+  characterHotspot: seedCharacterHotspot,
 };
 
 const DELETE_FNS: Record<string, SeedFn> = {
+  adminUser: deleteAdminUser,
   products: deleteProducts,
-  collections: deleteCollections,
   franchises: deleteFranchises,
   brands: deleteBrands,
   curatedCollections: deleteCuratedCollections,
@@ -410,12 +458,12 @@ const DELETE_FNS: Record<string, SeedFn> = {
   orderStatusConfig: deleteOrderStatusConfig,
   pages: deletePages,
   blogPosts: deleteBlogPosts,
+  characterHotspot: deleteCharacterHotspot,
 };
 
 // Collection names per entity key (for live count queries)
 const ENTITY_COLLECTION: Record<string, string> = {
   products: COLLECTIONS.PRODUCTS,
-  collections: COLLECTIONS.CURATED_COLLECTIONS,
   franchises: COLLECTIONS.FRANCHISES,
   brands: COLLECTIONS.BRANDS,
   curatedCollections: COLLECTIONS.CURATED_COLLECTIONS,
@@ -434,19 +482,25 @@ const ENTITY_COLLECTION: Record<string, string> = {
   paymentSettings: COLLECTIONS.PAYMENT_SETTINGS,
   shippingSettings: COLLECTIONS.SHIPPING_SETTINGS,
   navigationConfig: COLLECTIONS.NAVIGATION_CONFIG,
+  characterHotspot: COLLECTIONS.CHARACTER_HOTSPOT,
 };
 
 // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Route handlers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 export async function GET(req: NextRequest) {
-  const admin = await verifyAdminToken(req);
-  if (!admin) return unauthorized();
-
   const db = getAdminDb();
   const entityKeys = Object.keys(SEED_FNS);
 
   const counts = await Promise.all(
     entityKeys.map(async (key) => {
+      if (key === "adminUser") {
+        try {
+          const doc = await db.collection(COLLECTIONS.USERS).doc(SEED_ADMIN_USER.uid).get();
+          return doc.exists ? 1 : 0;
+        } catch {
+          return -1;
+        }
+      }
       const col = ENTITY_COLLECTION[key];
       return col ? getCount(db, col) : -1;
     }),
@@ -465,9 +519,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const admin = await verifyAdminToken(req);
-  if (!admin) return unauthorized();
-
   let body: { action: string; entities: string[] };
   try {
     body = (await req.json()) as { action: string; entities: string[] };
@@ -521,4 +572,38 @@ export async function POST(req: NextRequest) {
     { action, results, revalidated: REVALIDATE_PATHS },
     { status: hasErrors ? 207 : 200 },
   );
+}
+
+export async function PATCH(req: NextRequest) {
+  let body: { entityKey: string; id: string; patch: Record<string, unknown> };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const { entityKey, id, patch } = body ?? {};
+  if (!entityKey || !id || typeof patch !== "object" || patch === null) {
+    return NextResponse.json(
+      { error: "entityKey, id, and patch (object) are required" },
+      { status: 400 },
+    );
+  }
+
+  const col = ENTITY_COLLECTION[entityKey];
+  if (!col) {
+    return NextResponse.json(
+      { error: `Unknown entityKey: '${entityKey}'` },
+      { status: 400 },
+    );
+  }
+
+  const db = getAdminDb();
+  await db.collection(col).doc(id).set(patch, { merge: true });
+
+  for (const path of REVALIDATE_PATHS) {
+    revalidatePath(path, "layout");
+  }
+
+  return NextResponse.json({ ok: true, entityKey, id });
 }

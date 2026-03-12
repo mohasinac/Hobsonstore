@@ -10,51 +10,80 @@ interface BrandStripProps {
 export function BrandStrip({ brands }: BrandStripProps) {
   if (brands.length === 0) return null;
 
+  // Duplicate for seamless infinite loop
+  const items = [...brands, ...brands];
+
   return (
     <section
-      className="py-8"
       style={{
-        background: "#0D0D0D",
-        borderBottom: "3px solid #0D0D0D",
+        background: "var(--card-bg)",
+        borderTop: "var(--section-border)",
+        borderBottom: "var(--section-border)",
+        paddingBlock: "clamp(24px, 3.5vh, 48px)",
+        overflow: "hidden",
       }}
     >
-      <div className="mx-auto max-w-7xl px-4">
+      {/* Section heading — centered */}
+      <div className="mx-auto max-w-5xl px-4 mb-6 text-center">
         <h2
-          className="mb-5 text-center"
           style={{
             fontFamily: "var(--font-bangers, Bangers, cursive)",
-            fontSize: "clamp(1.2rem, 3vw, 1.6rem)",
-            letterSpacing: "0.12em",
-            color: "#FFE500",
+            fontSize: "clamp(1.4rem, 3.5vw, 2rem)",
+            letterSpacing: "0.1em",
+            color: "var(--section-title-color)",
+            lineHeight: 1,
           }}
         >
-          BROWSE BY BRAND
+          OFFICIAL BRANDS
         </h2>
-        <div className="flex items-center gap-8 overflow-x-auto pb-2 scrollbar-none justify-center flex-wrap">
-          {brands.map((brand) => (
+      </div>
+
+      {/* Infinite marquee track */}
+      <div className="marquee-track overflow-hidden">
+        <div className="animate-marquee-slow items-center gap-12">
+          {items.map((brand, i) => (
             <Link
-              key={brand.slug}
+              key={`${brand.slug}-${i}`}
               href={ROUTES.BRAND(brand.slug)}
-              className="group flex-shrink-0 transition-transform hover:-translate-y-0.5"
+              className="group flex-shrink-0 inline-flex flex-col items-center gap-2 transition-all hover:-translate-y-0.5"
+              style={{
+                border: "var(--card-border)",
+                boxShadow: "var(--card-shadow)",
+                background: "var(--card-bg)",
+                padding: "12px",
+              }}
             >
-              <div className="relative h-12 w-28 opacity-60 grayscale transition group-hover:opacity-100 group-hover:grayscale-0">
+              <div
+                className="relative transition-all duration-300 group-hover:opacity-90"
+                style={{ height: 180, width: 180 }}
+              >
                 {brand.logoImage ? (
                   <Image
                     src={brand.logoImage}
                     alt={brand.name}
                     fill
                     className="object-contain"
-                    sizes="112px"
+                    sizes="110px"
                   />
                 ) : (
                   <span
-                    className="flex h-full items-center justify-center text-xs font-bold"
-                    style={{ color: "#CBD5E1" }}
+                    className="flex h-full items-center justify-center text-xs font-black"
+                    style={{
+                      fontFamily: "var(--font-bangers, Bangers, cursive)",
+                      letterSpacing: "0.08em",
+                      color: "var(--card-text)",
+                    }}
                   >
                     {brand.name}
                   </span>
                 )}
               </div>
+              <p
+                className="text-xs font-bold uppercase tracking-wide"
+                style={{ color: "var(--color-muted)", letterSpacing: "0.06em" }}
+              >
+                {brand.name}
+              </p>
             </Link>
           ))}
         </div>

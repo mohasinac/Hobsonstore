@@ -26,9 +26,9 @@ export function CoinRedeemToggle({
     <div
       className="px-4 py-3"
       style={{
-        border: "2px solid #0D0D0D",
-        background: "#FFFEF0",
-        boxShadow: "3px 3px 0px #0D0D0D",
+        border: "2px solid var(--border-ink)",
+        background: "var(--surface-warm)",
+        boxShadow: "3px 3px 0px var(--border-ink)",
       }}
     >
       <Checkbox

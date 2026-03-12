@@ -12,7 +12,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { slug, name, images, salePrice, regularPrice, inStock, isPreorder, franchise, brand } =
+  const { slug, name, images, salePrice, regularPrice, inStock, isPreorder, franchise, brand, description } =
     product;
   const firstImage = images[0] ?? "/placeholder.png";
   const secondImage = images[1] ?? firstImage;
@@ -21,22 +21,10 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={ROUTES.PRODUCT(slug)}
-      className="group relative flex flex-col overflow-hidden bg-white transition-all"
-      style={{
-        border: "3px solid #0D0D0D",
-        boxShadow: "4px 4px 0px #0D0D0D",
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLAnchorElement).style.transform = "translate(-2px,-2px)";
-        (e.currentTarget as HTMLAnchorElement).style.boxShadow = "6px 6px 0px #0D0D0D";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLAnchorElement).style.transform = "";
-        (e.currentTarget as HTMLAnchorElement).style.boxShadow = "4px 4px 0px #0D0D0D";
-      }}
+      className="group relative product-card"
     >
       {/* Image */}
-      <div className="relative aspect-square overflow-hidden" style={{ background: "#F5F5F0" }}>
+      <div className="relative aspect-square overflow-hidden product-card__img-bg">
         <Image
           src={firstImage}
           alt={name}
@@ -61,34 +49,36 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Details */}
-      <div
-        className="flex flex-col gap-1 p-3"
-        style={{ borderTop: "2px solid #0D0D0D" }}
-      >
-        <p
-          className="line-clamp-2 text-sm font-bold"
-          style={{ color: "#0D0D0D" }}
-        >
+      <div className="flex flex-col gap-1 p-3 product-card__divider">
+        <p className="line-clamp-2 text-sm font-bold product-card__name">
           {name}
         </p>
         <div className="flex items-center gap-2">
           <span
             className="font-black"
-            style={{ color: "#E8001C", fontSize: "0.95rem" }}
+            style={{ color: "var(--color-red)", fontSize: "0.95rem" }}
           >
             {formatINR(salePrice)}
           </span>
           {isOnSale && (
-            <span className="text-xs line-through" style={{ color: "#9CA3AF" }}>
+            <span className="text-xs line-through" style={{ color: "var(--color-muted)" }}>
               {formatINR(regularPrice)}
             </span>
           )}
         </div>
         {(franchise || brand) && (
-          <p className="text-xs truncate" style={{ color: "#9CA3AF" }}>
+          <p className="text-xs truncate" style={{ color: "var(--color-muted)" }}>
             {franchise && <span>{franchise}</span>}
             {franchise && brand && <span> · </span>}
             {brand && <span>{brand}</span>}
+          </p>
+        )}
+        {description && (
+          <p
+            className="line-clamp-2 text-xs leading-relaxed"
+            style={{ color: "var(--color-muted)" }}
+          >
+            {description.replace(/<[^>]+>/g, "")}
           </p>
         )}
       </div>

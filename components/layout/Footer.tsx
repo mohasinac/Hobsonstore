@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type React from "react";
 import Link from "next/link";
@@ -18,27 +18,27 @@ export function Footer({ siteConfig }: FooterProps) {
     fontFamily: "var(--font-bangers, Bangers, cursive)",
     letterSpacing: "0.1em",
     fontSize: "1rem",
-    color: "#FFE500",
+    color: "var(--color-yellow)",
   } as React.CSSProperties;
 
   const linkStyle = {
-    color: "#CBD5E1",
+    color: "var(--dark-section-text)",
     transition: "color 0.12s",
   } as React.CSSProperties;
 
   return (
     <footer
       style={{
-        background: "#0D0D0D",
-        color: "#CBD5E1",
-        borderTop: "4px solid #FFE500",
+        background: "var(--dark-section-bg)",
+        color: "var(--dark-section-text)",
+        borderTop: "4px solid var(--color-yellow)",
       }}
     >
       <div className="mx-auto max-w-7xl px-4 py-12">
         {/* Brand tagline strip */}
         <div
           className="mb-10 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-          style={{ borderBottom: "2px solid #2D2D2D" }}
+          style={{ borderBottom: "2px solid var(--dark-section-border)" }}
         >
           <div>
             <p
@@ -46,12 +46,12 @@ export function Footer({ siteConfig }: FooterProps) {
               style={{
                 fontFamily: "var(--font-bangers, Bangers, cursive)",
                 letterSpacing: "0.08em",
-                color: "#FFE500",
+                color: "var(--color-yellow)",
               }}
             >
               HOBSON COLLECTIBLES
             </p>
-            <p className="text-sm mt-1" style={{ color: "#94A3B8" }}>
+            <p className="text-sm mt-1" style={{ color: "var(--dark-section-muted)" }}>
               {siteConfig?.siteTagline ?? "India's Premier Collectibles Destination"}
             </p>
           </div>
@@ -62,17 +62,17 @@ export function Footer({ siteConfig }: FooterProps) {
                 href={`mailto:${siteConfig.contactEmail}`}
                 className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded transition-colors"
                 style={{
-                  border: "2px solid #FFE500",
-                  color: "#FFE500",
+                  border: "2px solid var(--color-yellow)",
+                  color: "var(--color-yellow)",
                   letterSpacing: "0.05em",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.background = "#FFE500";
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
+                  (e.currentTarget as HTMLAnchorElement).style.background = "var(--color-yellow)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-bg)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-yellow)";
                 }}
               >
                 ✉ EMAIL US
@@ -86,9 +86,9 @@ export function Footer({ siteConfig }: FooterProps) {
                 className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded transition-colors"
                 style={{
                   background: "#25D366",
-                  border: "2px solid #0D0D0D",
+                  border: "2px solid var(--border-ink)",
                   color: "#fff",
-                  boxShadow: "3px 3px 0px #0D0D0D",
+                  boxShadow: "3px 3px 0px var(--border-ink)",
                   letterSpacing: "0.05em",
                 }}
               >
@@ -116,8 +116,8 @@ export function Footer({ siteConfig }: FooterProps) {
                   <Link
                     href={href}
                     style={linkStyle}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#FFE500")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#CBD5E1")}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--color-yellow)")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-text)")}
                   >
                     {label}
                   </Link>
@@ -142,8 +142,8 @@ export function Footer({ siteConfig }: FooterProps) {
                   <Link
                     href={href}
                     style={linkStyle}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#FFE500")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#CBD5E1")}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--color-yellow)")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-text)")}
                   >
                     {label}
                   </Link>
@@ -168,8 +168,8 @@ export function Footer({ siteConfig }: FooterProps) {
                   <Link
                     href={href}
                     style={linkStyle}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#FFE500")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#CBD5E1")}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--color-yellow)")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-text)")}
                   >
                     {label}
                   </Link>
@@ -189,8 +189,8 @@ export function Footer({ siteConfig }: FooterProps) {
                   <a
                     href={`mailto:${siteConfig.contactEmail}`}
                     style={linkStyle}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#FFE500")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#CBD5E1")}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--color-yellow)")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-text)")}
                   >
                     ✉ {siteConfig.contactEmail}
                   </a>
@@ -204,20 +204,20 @@ export function Footer({ siteConfig }: FooterProps) {
                     rel="noopener noreferrer"
                     style={linkStyle}
                     onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#25D366")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#CBD5E1")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-text)")}
                   >
                     💬 WhatsApp: +{siteConfig.whatsappCustomerCare}
                   </a>
                 </li>
               )}
               {siteConfig?.supportHours && (
-                <li style={{ color: "#64748B", fontSize: "0.75rem" }}>
+                <li style={{ color: "var(--dark-section-dim)", fontSize: "0.75rem" }}>
                   🕐 {siteConfig.supportHours}
                 </li>
               )}
               {siteConfig?.locations?.map((loc) =>
                 loc.active ? (
-                  <li key={loc.city} style={{ color: "#64748B", fontSize: "0.75rem" }}>
+                  <li key={loc.city} style={{ color: "var(--dark-section-dim)", fontSize: "0.75rem" }}>
                     📍 {loc.city}: {loc.address}
                   </li>
                 ) : null,
@@ -229,7 +229,7 @@ export function Footer({ siteConfig }: FooterProps) {
         {/* Bottom bar */}
         <div
           className="relative mt-10 pt-6 flex items-center justify-center text-xs"
-          style={{ borderTop: "2px solid #2D2D2D", color: "#64748B" }}
+          style={{ borderTop: "2px solid var(--dark-section-border)", color: "var(--dark-section-dim)" }}
         >
           <span>{copyright}</span>
           <a
@@ -247,7 +247,7 @@ export function Footer({ siteConfig }: FooterProps) {
               pointerEvents: "auto",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color = "#64748B";
+              (e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-dim)";
               (e.currentTarget as HTMLAnchorElement).style.opacity = "0.6";
             }}
             onMouseLeave={(e) => {

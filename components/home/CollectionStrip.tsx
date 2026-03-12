@@ -12,8 +12,8 @@ export function CollectionStrip({ collections }: CollectionStripProps) {
 
   return (
     <section
-      className="overflow-hidden py-10"
-      style={{ background: "#FFFEF0", borderBottom: "3px solid #0D0D0D" }}
+      className="overflow-hidden py-8 sm:py-12"
+      style={{ background: "var(--surface-elevated)", borderBottom: "3px solid var(--border-ink)" }}
     >
       <div className="mx-auto max-w-7xl px-4">
         <h2
@@ -22,7 +22,7 @@ export function CollectionStrip({ collections }: CollectionStripProps) {
             fontFamily: "var(--font-bangers, Bangers, cursive)",
             fontSize: "clamp(1.4rem, 3.5vw, 2rem)",
             letterSpacing: "0.1em",
-            color: "#0D0D0D",
+            color: "var(--color-black)",
           }}
         >
           BROWSE BY FRANCHISE
@@ -32,13 +32,13 @@ export function CollectionStrip({ collections }: CollectionStripProps) {
             <Link
               key={col.slug}
               href={ROUTES.COLLECTION(col.slug)}
-              className="group flex flex-shrink-0 flex-col items-center gap-2"
+              className="group flex shrink-0 flex-col items-center gap-2"
             >
               <div
-                className="relative h-[76px] w-[76px] overflow-hidden bg-gray-100 transition-transform group-hover:-translate-y-1"
+                className="relative h-19 w-19 overflow-hidden bg-gray-100 transition-transform group-hover:-translate-y-1"
                 style={{
-                  border: "3px solid #0D0D0D",
-                  boxShadow: "3px 3px 0px #0D0D0D",
+                  border: "3px solid var(--border-ink)",
+                  boxShadow: "3px 3px 0px var(--border-ink)",
                   borderRadius: "50%",
                 }}
               >
@@ -54,7 +54,7 @@ export function CollectionStrip({ collections }: CollectionStripProps) {
               </div>
               <span
                 className="max-w-[84px] text-center text-xs font-bold transition-colors"
-                style={{ color: "#1A1A2E" }}
+                style={{ color: "var(--color-black)" }}
               >
                 {col.name}
               </span>

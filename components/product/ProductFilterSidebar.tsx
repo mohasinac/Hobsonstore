@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback } from "react";
 import { Button } from "@/components/ui/Button";
@@ -27,6 +28,7 @@ export function ProductFilterSidebar({
   franchises = [],
   brands = [],
 }: ProductFilterSidebarProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -67,11 +69,19 @@ export function ProductFilterSidebar({
     current.franchise !== "" ||
     current.brand !== "";
 
-  return (
-    <aside className="flex flex-col gap-6 text-sm">
+  const filterCount = [
+    current.inStock,
+    current.priceMin !== "",
+    current.priceMax !== "",
+    current.franchise !== "",
+    current.brand !== "",
+  ].filter(Boolean).length;
+
+  const filterBody = (
+    <div className="flex flex-col gap-6 text-sm">
       {/* Sort */}
       <div>
-        <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Sort by</p>
+        <p className="mb-2 font-black uppercase" style={{ color: "var(--color-black)", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Sort by</p>
         <Select
           options={SORT_OPTIONS}
           value={current.sort}
@@ -81,7 +91,7 @@ export function ProductFilterSidebar({
 
       {/* Availability */}
       <div>
-        <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Availability</p>
+        <p className="mb-2 font-black uppercase" style={{ color: "var(--color-black)", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Availability</p>
         <Checkbox
           label="In stock only"
           checked={current.inStock}
@@ -91,8 +101,8 @@ export function ProductFilterSidebar({
 
       {/* Price range */}
       <div>
-        <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Price (₹)</p>
-        <div className="flex gap-2">
+        <p className="mb-2 font-black uppercase" style={{ color: "var(--color-black)", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Price (₹)</p>
+        <div className="flex flex-col gap-2">
           <Input
             label="Min"
             type="number"
@@ -110,10 +120,10 @@ export function ProductFilterSidebar({
         </div>
       </div>
 
-      {/* Franchise filter (shown only when franchises are provided) */}
+      {/* Franchise filter */}
       {franchises.length > 0 && (
         <div>
-          <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Franchise</p>
+          <p className="mb-2 font-black uppercase" style={{ color: "var(--color-black)", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Franchise</p>
           <Select
             placeholder="All franchises"
             options={franchises.map((f) => ({ value: f.slug, label: f.name }))}
@@ -123,10 +133,10 @@ export function ProductFilterSidebar({
         </div>
       )}
 
-      {/* Brand filter (shown only when brands are provided) */}
+      {/* Brand filter */}
       {brands.length > 0 && (
         <div>
-          <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Brand</p>
+          <p className="mb-2 font-black uppercase" style={{ color: "var(--color-black)", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Brand</p>
           <Select
             placeholder="All brands"
             options={brands.map((b) => ({ value: b.slug, label: b.name }))}
@@ -141,6 +151,52 @@ export function ProductFilterSidebar({
           Clear all filters
         </Button>
       )}
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile: toggle button + collapsible panel */}
+      <div className="md:hidden">
+        <button
+          onClick={() => setMobileOpen((v) => !v)}
+          className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-black uppercase"
+          style={{
+            border: "2px solid var(--border-ink)",
+            boxShadow: "3px 3px 0px var(--border-ink)",
+            background: "var(--surface-elevated)",
+            color: "var(--color-black)",
+            letterSpacing: "0.06em",
+          }}
+        >
+          <span>Filters {filterCount > 0 && `(${filterCount})`}</span>
+          <span style={{ fontSize: "1rem" }}>{mobileOpen ? "▲" : "▼"}</span>
+        </button>
+        {mobileOpen && (
+          <div
+            className="mt-2 p-4"
+            style={{
+              border: "2px solid var(--border-ink)",
+              background: "var(--surface-elevated)",
+            }}
+          >
+            {filterBody}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop: sticky sidebar */}
+      <aside
+        className="hidden md:flex flex-col gap-6 text-sm"
+        style={{
+          position: "sticky",
+          top: "calc(var(--header-height) + 1rem)",
+          alignSelf: "flex-start",
+        }}
+      >
+        {filterBody}
+      </aside>
+    </>
   );
 }
+

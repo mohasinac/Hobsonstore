@@ -81,7 +81,12 @@ const SITE_LINKS = [
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function SearchDialog() {
+interface SearchDialogProps {
+  iconColor?: string;
+  iconHoverBg?: string;
+}
+
+export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(255,229,0,0.12)" }: SearchDialogProps = {}) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResults | null>(null);
@@ -166,14 +171,14 @@ export function SearchDialog() {
         className={cn(
           "hidden lg:flex items-center gap-1.5 rounded-md px-2 py-2 transition-colors",
         )}
-        style={{ color: "#0D0D0D" }}
+        style={{ color: iconColor }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.background = "#0D0D0D";
-          (e.currentTarget as HTMLButtonElement).style.color = "#FFE500";
+          (e.currentTarget as HTMLButtonElement).style.background = iconHoverBg;
+          (e.currentTarget as HTMLButtonElement).style.color = "var(--color-yellow)";
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-          (e.currentTarget as HTMLButtonElement).style.color = "#0D0D0D";
+          (e.currentTarget as HTMLButtonElement).style.color = iconColor;
         }}
         aria-label="Search (Ctrl+K)"
       >
@@ -200,7 +205,7 @@ export function SearchDialog() {
       {/* Panel */}
       <div
         className="relative w-full max-w-xl overflow-hidden"
-        style={{ background: "#FFFEF0", border: "3px solid #0D0D0D", boxShadow: "8px 8px 0px #0D0D0D" }}
+        style={{ background: "var(--surface-elevated)", border: "3px solid var(--border-ink)", boxShadow: "8px 8px 0px var(--border-ink)" }}
         role="dialog"
         aria-modal="true"
         aria-label="Search"
@@ -209,7 +214,7 @@ export function SearchDialog() {
         <form
           onSubmit={handleSubmit}
           className="flex items-center gap-3 px-4 py-3"
-          style={{ borderBottom: "2px solid #0D0D0D" }}
+          style={{ borderBottom: "2px solid var(--border-ink)" }}
         >
           <SearchIcon className="h-5 w-5 shrink-0 text-gray-500" />
           <input
@@ -249,7 +254,7 @@ export function SearchDialog() {
                 >
                   {product.images?.[0] ? (
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded"
-                      style={{ border: "1.5px solid #0D0D0D" }}>
+                      style={{ border: "1.5px solid var(--border-ink)" }}>
                       <Image
                         src={product.images[0]}
                         alt={product.name}
@@ -260,7 +265,7 @@ export function SearchDialog() {
                     </div>
                   ) : (
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-gray-100"
-                      style={{ border: "1.5px solid #0D0D0D" }}>
+                      style={{ border: "1.5px solid var(--border-ink)" }}>
                       <BoxIcon className="h-4 w-4 text-gray-400" />
                     </div>
                   )}
@@ -275,7 +280,7 @@ export function SearchDialog() {
                 href={`${ROUTES.SEARCH}?q=${encodeURIComponent(query)}`}
                 onClick={handleClose}
                 className="flex items-center justify-center rounded-md px-3 py-2 text-xs font-bold transition-colors hover:bg-yellow-100"
-                style={{ color: "#E8001C" }}
+                style={{ color: "var(--color-red)" }}
               >
                 See all results for &ldquo;{query}&rdquo; →
               </Link>
@@ -294,12 +299,12 @@ export function SearchDialog() {
                 >
                   {f.thumbnailImage ? (
                     <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded"
-                      style={{ border: "1.5px solid #0D0D0D" }}>
+                      style={{ border: "1.5px solid var(--border-ink)" }}>
                       <Image src={f.thumbnailImage} alt={f.name} fill sizes="36px" className="object-cover" />
                     </div>
                   ) : (
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-gray-100"
-                      style={{ border: "1.5px solid #0D0D0D" }}>
+                      style={{ border: "1.5px solid var(--border-ink)" }}>
                       <span className="text-lg">🎬</span>
                     </div>
                   )}
@@ -324,12 +329,12 @@ export function SearchDialog() {
                 >
                   {b.logoImage ? (
                     <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded"
-                      style={{ border: "1.5px solid #0D0D0D" }}>
+                      style={{ border: "1.5px solid var(--border-ink)" }}>
                       <Image src={b.logoImage} alt={b.name} fill sizes="36px" className="object-contain p-1" />
                     </div>
                   ) : (
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-gray-100"
-                      style={{ border: "1.5px solid #0D0D0D" }}>
+                      style={{ border: "1.5px solid var(--border-ink)" }}>
                       <span className="text-lg">🏭</span>
                     </div>
                   )}
@@ -351,7 +356,7 @@ export function SearchDialog() {
 
           {/* Quick links (always shown) */}
           {matchedLinks.length > 0 && (
-            <ResultGroup label="Quick Links" accent="#0D0D0D">
+            <ResultGroup label="Quick Links" accent="var(--border-ink)">
               <div className="grid grid-cols-2 gap-1">
                 {matchedLinks.map((l) => (
                   <Link

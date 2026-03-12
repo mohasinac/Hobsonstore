@@ -17,19 +17,17 @@ export default async function FranchisesPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <h1
-        className="mb-8 text-center"
+        className="font-comic mb-8 text-center"
         style={{
-          fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "clamp(2rem, 5vw, 3rem)",
-          letterSpacing: "0.08em",
-          color: "#0D0D0D",
+          color: "var(--section-title-color)",
         }}
       >
         BROWSE BY FRANCHISE
       </h1>
 
       {franchises.length === 0 ? (
-        <p className="text-center text-gray-500">No franchises available yet.</p>
+        <p className="text-center" style={{ color: "var(--color-muted)" }}>No franchises available yet.</p>
       ) : (
         <div className="grid grid-cols-3 gap-6 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
           {franchises.map((franchise) => (
@@ -39,10 +37,11 @@ export default async function FranchisesPage() {
               className="group flex flex-col items-center gap-2"
             >
               <div
-                className="relative h-24 w-24 overflow-hidden bg-gray-100 transition-transform group-hover:-translate-y-1"
+                className="relative h-24 w-24 overflow-hidden transition-transform group-hover:-translate-y-1"
                 style={{
-                  border: "3px solid #0D0D0D",
-                  boxShadow: "3px 3px 0px #0D0D0D",
+                  background: "var(--card-img-bg)",
+                  border: "var(--card-border)",
+                  boxShadow: "var(--card-shadow)",
                   borderRadius: "50%",
                 }}
               >
@@ -57,8 +56,8 @@ export default async function FranchisesPage() {
                 )}
               </div>
               <span
-                className="max-w-[100px] text-center text-sm font-bold"
-                style={{ color: "#1A1A2E" }}
+                className="max-w-25 text-center text-sm font-bold"
+                style={{ color: "var(--card-text)" }}
               >
                 {franchise.name}
               </span>

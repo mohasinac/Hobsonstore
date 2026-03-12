@@ -10,11 +10,11 @@ export function ProductSpecsTable({ specs }: ProductSpecsTableProps) {
     <table className="w-full border-collapse text-sm">
       <tbody>
         {entries.map(([key, value]) => (
-          <tr key={key} style={{ borderBottom: "1px solid #E5E0C4" }}>
-            <td className="w-1/3 py-1.5 pr-4 font-bold" style={{ color: "#6B6B6B" }}>
+          <tr key={key} style={{ borderBottom: "1px solid var(--table-row-border)" }}>
+            <td className="w-1/3 py-1.5 pr-4 font-bold" style={{ color: "var(--color-muted)" }}>
               {key}
             </td>
-            <td className="py-1.5" style={{ color: "#0D0D0D" }}>{value}</td>
+            <td className="py-1.5" style={{ color: "var(--color-black)" }}>{value}</td>
           </tr>
         ))}
       </tbody>

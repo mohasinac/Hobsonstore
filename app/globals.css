@@ -8,24 +8,117 @@
   --font-bangers: "Bangers", cursive;
   --font-inter: "Inter", sans-serif;
 
-  /* Comic colour palette */
-  --color-black:   #0D0D0D;
-  --color-white:   #FFFFFF;
-  --color-yellow:  #FFE500;
-  --color-red:     #E8001C;
-  --color-blue:    #0057FF;
-  --color-ink:     #1A1A2E;
-  --color-surface: #FFFEF0;
-  --color-muted:   #6B6B6B;
+  /* Brand colour palette — aligned with FatCat Collectibles */
+  --color-black: #1A1A1A;
+  --color-white: #FFFFFF;
+  --color-yellow: #F0C417;
+  --color-red: #F83A3A;
+  --color-blue: #0057FF;
+  --color-purple: #803CEE;
+  --color-ink: #1A1A1A;
+  --color-surface: #F0F0F0;
+  --color-muted: #737373;
 
   /* Comic shadows */
-  --shadow-comic-sm: 3px 3px 0px #0D0D0D;
-  --shadow-comic-md: 4px 4px 0px #0D0D0D;
-  --shadow-comic-lg: 6px 6px 0px #0D0D0D;
+  --shadow-comic-sm: 3px 3px 0px #1A1A1A;
+  --shadow-comic-md: 4px 4px 0px #1A1A1A;
+  --shadow-comic-lg: 6px 6px 0px #1A1A1A;
+
+  /* Layout heights — used by hero pull-under + content padding */
+  --announcement-height: 36px;
+  --navbar-height: 64px;
+  --header-height: calc(var(--announcement-height) + var(--navbar-height));
 
   /* Background / Foreground (legacy) */
   --background: var(--color-surface);
   --foreground: var(--color-black);
+
+  /* ── Theme-aware surface tokens (light default) ── */
+  --card-bg: #FFFFFF;
+  --card-border: 3px solid #1A1A1A;
+  --card-shadow: 4px 4px 0px #1A1A1A;
+  --card-shadow-hover: 6px 6px 0px #1A1A1A;
+  --card-text: #1A1A1A;
+  --card-img-bg: #F5F5F5;
+  --card-divider: 2px solid #1A1A1A;
+
+  --section-bg: #F0F0F0;
+  --section-title-color: #1A1A1A;
+  --section-label-color: #F83A3A;
+  --section-border: 1px solid rgba(0, 0, 0, 0.06);
+
+  --menu-bg: #FFFFFF;
+  --menu-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+  --menu-border: rgba(0, 0, 0, 0.08);
+  --menu-link: #737373;
+  --menu-link-hover: #F0C417;
+  --menu-divider: rgba(0, 0, 0, 0.08);
+
+  --navbar-solid-text: #1A1A1A;
+  --navbar-solid-accent: #F0C417;
+  --navbar-solid-hover-bg: rgba(0, 0, 0, 0.06);
+  --navbar-logo-filter: none;
+
+  /* Adaptive surfaces (flip in dark mode) */
+  --surface-elevated: #FFFFFF;
+  --surface-warm: #F5F5F0;
+  --border-ink: #1A1A1A;
+  --text-secondary: #374151;
+  --text-muted-strong: #6B6B6B;
+  --skeleton-bg: #E5E5D8;
+  --table-row-border: #E5E0C4;
+
+  /* Always-dark section vars — intentionally dark regardless of theme */
+  --dark-section-bg: #0D0D0D;
+  --dark-section-alt: #111118;
+  --dark-section-deep: #0A0A12;
+  --dark-section-card: #1A1A2E;
+  --dark-section-text: #CBD5E1;
+  --dark-section-muted: #94A3B8;
+  --dark-section-dim: #64748B;
+  --dark-section-border: #2D2D2D;
+  --dark-section-inner-border: #2D2D4E;
+}
+
+/* ── Dark theme overrides ── */
+.dark {
+  --color-surface: #0D0D0D;
+  --color-black: #E2E8F0;
+  --color-muted: #94A3B8;
+
+  --card-bg: #111118;
+  --card-border: 1px solid rgba(255, 255, 255, 0.10);
+  --card-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  --card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.7);
+  --card-text: #E2E8F0;
+  --card-img-bg: #1A1A28;
+  --card-divider: 1px solid rgba(255, 255, 255, 0.08);
+
+  --section-bg: #0D0D0D;
+  --section-title-color: #FFFFFF;
+  --section-label-color: #F83A3A;
+  --section-border: 1px solid rgba(255, 255, 255, 0.06);
+
+  --menu-bg: #0D0D0D;
+  --menu-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+  --menu-border: rgba(255, 255, 255, 0.12);
+  --menu-link: #94A3B8;
+  --menu-link-hover: #F0C417;
+  --menu-divider: rgba(255, 255, 255, 0.1);
+
+  --navbar-solid-text: #FFFFFF;
+  --navbar-solid-accent: #F0C417;
+  --navbar-solid-hover-bg: rgba(255, 229, 0, 0.12);
+  --navbar-logo-filter: drop-shadow(2px 2px 0px #1A1A1A);
+
+  /* Adaptive surfaces — dark mode overrides */
+  --surface-elevated: #111118;
+  --surface-warm: #1A1A28;
+  --border-ink: rgba(255, 255, 255, 0.15);
+  --text-secondary: #CBD5E1;
+  --text-muted-strong: #94A3B8;
+  --skeleton-bg: #2D2D2D;
+  --table-row-border: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
@@ -36,7 +129,11 @@
 }
 
 /* ── Base resets ── */
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   background: var(--color-surface);
@@ -46,18 +143,40 @@ body {
 }
 
 /* ── Comic utility classes ── */
-.font-comic        { font-family: var(--font-bangers), cursive; letter-spacing: 0.04em; }
-.border-comic      { border: 3px solid var(--color-black); }
-.border-comic-sm   { border: 2px solid var(--color-black); }
-.border-comic-lg   { border: 4px solid var(--color-black); }
-.shadow-comic      { box-shadow: var(--shadow-comic-md); }
-.shadow-comic-sm   { box-shadow: var(--shadow-comic-sm); }
-.shadow-comic-lg   { box-shadow: var(--shadow-comic-lg); }
+.font-comic {
+  font-family: var(--font-bangers), cursive;
+  letter-spacing: 0.04em;
+}
+
+.border-comic {
+  border: 3px solid var(--color-black);
+}
+
+.border-comic-sm {
+  border: 2px solid var(--color-black);
+}
+
+.border-comic-lg {
+  border: 4px solid var(--color-black);
+}
+
+.shadow-comic {
+  box-shadow: var(--shadow-comic-md);
+}
+
+.shadow-comic-sm {
+  box-shadow: var(--shadow-comic-sm);
+}
+
+.shadow-comic-lg {
+  box-shadow: var(--shadow-comic-lg);
+}
 
 /* Hard-offset hover lift */
 .hover-lift {
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
+
 .hover-lift:hover {
   transform: translate(-2px, -2px);
   box-shadow: var(--shadow-comic-lg);
@@ -66,7 +185,7 @@ body {
 /* ── Halftone background pattern ── */
 .bg-halftone {
   background-color: var(--color-yellow);
-  background-image: radial-gradient(circle, rgba(0,0,0,0.15) 1.5px, transparent 1.5px);
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.15) 1.5px, transparent 1.5px);
   background-size: 12px 12px;
 }
 
@@ -74,6 +193,309 @@ body {
 .scrollbar-none {
   scrollbar-width: none;
 }
+
 .scrollbar-none::-webkit-scrollbar {
   display: none;
+}
+
+/* ── Popup fade-in-up used by CharacterHotspot ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Ping pulse for active hotspot ring ── */
+/* Pulse fires over the first 15% of the cycle, sits invisible the rest */
+@keyframes ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+
+  15% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.animate-ping {
+  animation: ping 8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ── Infinite marquee ticker (AnnouncementBar / BrandStrip) ── */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee 28s linear infinite;
+}
+
+.animate-marquee-slow {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee 48s linear infinite;
+}
+
+/* Pause on hover */
+.marquee-track:hover .animate-marquee,
+.marquee-track:hover .animate-marquee-slow {
+  animation-play-state: paused;
+}
+
+/* ── Unified site header — announcement bar + navbar as one transparent unit ── */
+
+/* Transparent state (hero overlay, not scrolled) */
+/* --nb-* vars cascade to both AnnouncementBar and Navbar children.
+   A dark gradient scrim ensures white text is readable over any hero,
+   regardless of what loads behind it — this is the industry-standard pattern. */
+.site-header {
+  --nb-text: rgba(255, 255, 255, 0.95);
+  --nb-icon: rgba(255, 255, 255, 0.90);
+  --nb-logo: #FFFFFF;
+  --nb-hover: rgba(255, 255, 255, 0.15);
+  --nb-logo-filter: brightness(0) invert(1);
+  --nb-text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+
+  transition: background 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
+  /* Barely-visible scrim — just enough to lift white SVG icons; text contrast comes from text-shadow */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 0%, transparent 100%);
+}
+
+/* Strong inherited text-shadow makes white text readable over any hero without a visible background */
+.site-header:not(.site-header--scrolled) {
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85), 0 0 10px rgba(0, 0, 0, 0.45);
+}
+
+/* Solid state — light mode */
+.site-header.site-header--scrolled {
+  --nb-text: #1A1A1A;
+  --nb-icon: #1A1A1A;
+  --nb-logo: #1A1A1A;
+  --nb-hover: rgba(0, 0, 0, 0.06);
+  --nb-logo-filter: none;
+  --nb-text-shadow: none;
+
+  background: color-mix(in srgb, var(--color-surface) 97%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Solid state — dark mode */
+.dark .site-header.site-header--scrolled {
+  --nb-text: #FFFFFF;
+  --nb-icon: #FFFFFF;
+  --nb-logo: #F0C417;
+  --nb-hover: rgba(255, 229, 0, 0.12);
+  --nb-logo-filter: drop-shadow(2px 2px 0px #1A1A1A);
+  --nb-text-shadow: none;
+
+  background: rgba(13, 13, 13, 0.96);
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.7);
+}
+
+/* Structural helper for the navbar element inside .site-header — no background of its own */
+.navbar-overlay {
+  position: relative;
+  background: transparent;
+}
+
+/* Non-overlay navbar (e.g. standalone pages) — uses theme surface with its own vars */
+.navbar-static {
+  --nb-text: var(--navbar-solid-text);
+  --nb-icon: var(--navbar-solid-text);
+  --nb-logo: var(--navbar-solid-accent);
+  --nb-hover: var(--navbar-solid-hover-bg);
+  --nb-logo-filter: var(--navbar-logo-filter);
+  --nb-text-shadow: none;
+
+  position: relative !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+  border-bottom: 3px solid var(--color-yellow);
+}
+
+/* ── Hide scrollbar (webkit + Firefox) ── */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Product card — theme-aware via CSS vars ── */
+.product-card {
+  background: var(--card-bg);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border 0.12s ease;
+}
+
+.product-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.dark .product-card:hover {
+  transform: translateY(-3px);
+  border: 1px solid rgba(240, 196, 23, 0.35);
+}
+
+.product-card__img-bg {
+  background: var(--card-img-bg);
+}
+
+.product-card__divider {
+  border-top: var(--card-divider);
+}
+
+.product-card__name {
+  color: var(--card-text);
+}
+
+/* ── Home section ── */
+.home-section {
+  background: var(--section-bg);
+  border-bottom: var(--section-border);
+}
+
+.home-section__title {
+  color: var(--section-title-color);
+}
+
+.home-section__label {
+  color: var(--section-label-color);
+}
+
+/* ── Mega menu ── */
+.mega-menu {
+  background: var(--menu-bg);
+  border: 1px solid var(--menu-border);
+  box-shadow: var(--menu-shadow);
+}
+
+.mega-menu__link {
+  color: var(--menu-link);
+  transition: color 0.15s ease;
+}
+
+.mega-menu__link:hover {
+  color: var(--menu-link-hover);
+}
+
+.mega-menu__divider {
+  border-top: 1px solid var(--menu-divider);
+}
+
+/* ── Badge variants ── */
+.badge-sale {
+  background: var(--color-red);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--color-red) 60%, #000);
+}
+
+.badge-preorder {
+  background: #FF8C00;
+  color: #fff;
+  border-color: #CC7000;
+}
+
+.badge-soldout {
+  background: var(--color-muted);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--color-muted) 60%, #000);
+}
+
+.badge-new {
+  background: var(--color-blue);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--color-blue) 60%, #000);
+}
+
+.badge-coin {
+  background: var(--color-yellow);
+  color: var(--border-ink);
+  border-color: color-mix(in srgb, var(--color-yellow) 60%, #000);
+}
+
+/* ── Button variants ── */
+.btn-primary {
+  background: var(--color-red);
+  color: #fff;
+  border-color: var(--border-ink);
+  box-shadow: 3px 3px 0px var(--border-ink);
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(0.88);
+}
+
+.btn-primary:active:not(:disabled) {
+  filter: brightness(0.78);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+}
+
+.btn-secondary {
+  background: var(--surface-elevated);
+  color: var(--color-black);
+  border-color: var(--border-ink);
+  box-shadow: 3px 3px 0px var(--border-ink);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-warm);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-black);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-yellow) 30%, transparent);
+}
+
+.btn-ghost:active:not(:disabled) {
+  background: color-mix(in srgb, var(--color-yellow) 50%, transparent);
+}
+
+.btn-ghost:disabled {
+  opacity: 0.5;
 }

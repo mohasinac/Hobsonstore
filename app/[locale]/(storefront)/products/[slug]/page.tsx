@@ -59,7 +59,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               fontFamily: "var(--font-bangers, Bangers, cursive)",
               fontSize: "clamp(1.6rem, 4vw, 2.4rem)",
               letterSpacing: "0.05em",
-              color: "#0D0D0D",
+              color: "var(--section-title-color)",
             }}
           >
             {product.name.toUpperCase()}
@@ -85,10 +85,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </p>
           )}
 
-          {product.description && (
-            <RichTextRenderer html={product.description} />
-          )}
-
           {/* Specs */}
           {Object.keys(product.specs ?? {}).length > 0 && (
             <ProductSpecsTable specs={product.specs} />
@@ -103,7 +99,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {/* Trust badges */}
           <div
             className="flex flex-wrap gap-3 pt-4 text-xs font-bold"
-            style={{ borderTop: "2px solid #0D0D0D", color: "#1A1A2E" }}
+            style={{ borderTop: "var(--section-border)", color: "var(--section-title-color)" }}
           >
             <span>🚚 Free Shipping</span>
             <span>💬 WhatsApp Support</span>
@@ -112,6 +108,33 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
       </div>
+
+      {/* Description */}
+      {product.description && (
+        <section
+          className="mt-10"
+          style={{
+            borderTop: "var(--section-border)",
+            paddingTop: "clamp(1.5rem, 3vh, 2.5rem)",
+          }}
+        >
+          <h2
+            className="mb-4"
+            style={{
+              fontFamily: "var(--font-bangers, Bangers, cursive)",
+              fontSize: "clamp(1.2rem, 2.5vw, 1.6rem)",
+              letterSpacing: "0.08em",
+              color: "var(--section-title-color)",
+            }}
+          >
+            PRODUCT DESCRIPTION
+          </h2>
+          <RichTextRenderer
+            html={product.description}
+            className="prose-headings:font-black prose-headings:uppercase prose-headings:tracking-wide"
+          />
+        </section>
+      )}
 
       {/* Related products */}
       {related.length > 0 && (

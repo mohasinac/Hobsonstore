@@ -51,13 +51,13 @@ export function Modal({
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "relative w-full max-w-lg bg-white p-6",
+          "relative w-full max-w-lg p-6",
           className,
         )}
-        style={{ border: '2px solid #0D0D0D', boxShadow: '4px 4px 0px #0D0D0D' }}
+        style={{ background: "var(--surface-elevated)", border: "2px solid var(--border-ink)", boxShadow: "4px 4px 0px var(--border-ink)" }}
       >
         {title && (
-          <h2 className="mb-4 text-lg font-bold" style={{ fontFamily: 'var(--font-bangers)', color: '#1A1A2E', letterSpacing: '0.06em' }}>{title}</h2>
+          <h2 className="mb-4 text-lg font-bold" style={{ fontFamily: 'var(--font-bangers)', color: 'var(--color-black)', letterSpacing: '0.06em' }}>{title}</h2>
         )}
         {children}
       </div>

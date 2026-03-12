@@ -17,7 +17,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <label
             htmlFor={inputId}
             className="text-sm font-bold"
-            style={{ color: "#0D0D0D", letterSpacing: "0.02em" }}
+            style={{ color: "var(--color-black)", letterSpacing: "0.02em" }}
           >
             {label}
           </label>
@@ -30,10 +30,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             className,
           )}
           style={{
-            border: error ? "2px solid #E8001C" : "2px solid #0D0D0D",
-            boxShadow: "3px 3px 0px #0D0D0D",
-            background: "#FFFFFF",
-            color: "#0D0D0D",
+            border: error ? "2px solid var(--color-red)" : "2px solid var(--border-ink)",
+            boxShadow: "3px 3px 0px var(--border-ink)",
+            background: "var(--surface-elevated)",
+            color: "var(--color-black)",
           }}
           {...props}
         >
@@ -44,7 +44,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        {error && <p className="text-xs font-bold" style={{ color: "#E8001C" }}>{error}</p>}
+        {error && <p className="text-xs font-bold" style={{ color: "var(--color-red)" }}>{error}</p>}
       </div>
     );
   },

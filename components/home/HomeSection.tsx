@@ -15,38 +15,50 @@ export function HomeSection({ section, products }: HomeSectionProps) {
 
   return (
     <section
-      className="py-10"
-      style={{ background: "#FFFEF0", borderBottom: "2px solid #E5E0C4" }}
+      className="home-section"
+      style={{
+        minHeight: "calc(100svh - var(--header-height))",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        paddingBlock: "clamp(3rem, 6vh, 5rem)",
+      }}
     >
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="mx-auto w-full max-w-7xl px-6 sm:px-8">
         {/* Header */}
-        <div className="mb-6 flex items-end justify-between">
+        <div className="mb-7 flex flex-wrap items-end justify-between gap-y-2">
           <div>
+            {section.subtitle && (
+              <p
+                className="mb-1 text-xs font-black uppercase tracking-widest home-section__label"
+                style={{ letterSpacing: "0.18em" }}
+              >
+                {section.subtitle}
+              </p>
+            )}
             <h2
+              className="home-section__title"
               style={{
                 fontFamily: "var(--font-bangers, Bangers, cursive)",
-                fontSize: "clamp(1.4rem, 4vw, 2rem)",
+                fontSize: "clamp(1.7rem, 4.5vw, 2.6rem)",
                 letterSpacing: "0.08em",
-                color: "#0D0D0D",
+                lineHeight: 1,
               }}
             >
               {section.title}
             </h2>
-            {section.subtitle && (
-              <p className="mt-1 text-sm font-medium" style={{ color: "#6B6B6B" }}>
-                {section.subtitle}
-              </p>
-            )}
           </div>
           {section.collectionSlug && (
             <Link
               href={ROUTES.COLLECTION(section.collectionSlug)}
-              className="text-sm font-black uppercase transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-black uppercase transition-all hover:-translate-y-0.5"
               style={{
-                color: "#E8001C",
                 fontFamily: "var(--font-bangers, Bangers, cursive)",
-                letterSpacing: "0.08em",
-                fontSize: "0.95rem",
+                letterSpacing: "0.1em",
+                fontSize: "0.9rem",
+                color: "var(--color-black)",
+                background: "var(--color-yellow)",
+                padding: "6px 14px",
               }}
             >
               VIEW ALL →
@@ -54,13 +66,13 @@ export function HomeSection({ section, products }: HomeSectionProps) {
           )}
         </div>
 
-        {/* Products — horizontal scroll on mobile */}
+        {/* Products — horizontal scroll on mobile, grid on sm+ */}
         <div className="hidden sm:block">
           <ProductGrid products={products.slice(0, section.itemLimit)} />
         </div>
         <div className="flex gap-4 overflow-x-auto pb-2 sm:hidden scrollbar-none">
           {products.slice(0, section.itemLimit).map((product) => (
-            <div key={product.id} className="w-44 flex-shrink-0">
+            <div key={product.id} className="w-44 shrink-0">
               <ProductCard product={product} />
             </div>
           ))}

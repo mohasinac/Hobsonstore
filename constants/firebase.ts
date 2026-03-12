@@ -22,6 +22,9 @@ export const COLLECTIONS = {
   REVIEW_FLAGS: "reviewFlags",
   SUPPORT_TICKETS: "supportTickets",
   NEWSLETTER_SIGNUPS: "newsletterSignups",
+  // ─── Homepage features ──────────────────────────────────────────────────
+  CHARACTER_HOTSPOT: "characterHotspot",
+  TRUST_BADGES: "trustBadges",
   // ─── Config singletons ────────────────────────────────────────────────────
   LOYALTY_CONFIG: "loyaltyConfig",
   ORDER_STATUS_CONFIG: "orderStatusConfig",

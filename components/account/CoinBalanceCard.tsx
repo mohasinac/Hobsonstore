@@ -44,9 +44,9 @@ export function CoinBalanceCard({
     <div
       className="p-5"
       style={{
-        background: "#FFFEF0",
-        border: "3px solid #0D0D0D",
-        boxShadow: "4px 4px 0px #0D0D0D",
+        background: "var(--surface-warm)",
+        border: "3px solid var(--border-ink)",
+        boxShadow: "4px 4px 0px var(--border-ink)",
       }}
     >
       {/* Balance row */}
@@ -78,7 +78,7 @@ export function CoinBalanceCard({
               <li
                 key={i}
                 className="flex items-center justify-between text-xs"
-                style={{ color: "#1A1A2E" }}
+                style={{ color: "var(--color-black)" }}
               >
                 <span>{REASON_LABELS[entry.reason] ?? entry.reason}</span>
                 <span
@@ -91,7 +91,7 @@ export function CoinBalanceCard({
                   {entry.delta >= 0 ? "+" : ""}
                   {entry.delta.toLocaleString("en-IN")}
                   {entry.timestamp && (
-                    <span className="ml-1.5 font-normal" style={{ color: '#6B6B6B' }}>
+                    <span className="ml-1.5 font-normal" style={{ color: 'var(--color-muted)' }}>
                       {formatTs(entry.timestamp as Timestamp)}
                     </span>
                   )}

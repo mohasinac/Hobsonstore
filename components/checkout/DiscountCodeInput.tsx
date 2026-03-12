@@ -27,20 +27,20 @@ export function DiscountCodeInput({
       <div
         className="flex items-center justify-between px-4 py-2 text-sm"
         style={{
-          border: "2px solid #0D0D0D",
-          background: "#FFFEF0",
-          boxShadow: "3px 3px 0px #0D0D0D",
+          border: "2px solid var(--border-ink)",
+          background: "var(--surface-warm)",
+          boxShadow: "3px 3px 0px var(--border-ink)",
         }}
       >
-        <span style={{ color: "#1A1A2E" }}>
-          Code <strong style={{ color: "#E8001C" }}>{appliedCode}</strong> applied — you save{" "}
+        <span style={{ color: "var(--color-black)" }}>
+          Code <strong style={{ color: "var(--color-red)" }}>{appliedCode}</strong> applied — you save{" "}
           <strong>{formatINR(discountAmount)}</strong>
         </span>
         <button
           type="button"
           onClick={onRemove}
           className="ml-3 text-xs font-bold underline"
-          style={{ color: "#6B6B6B" }}
+          style={{ color: "var(--color-muted)" }}
         >
           Remove
         </button>

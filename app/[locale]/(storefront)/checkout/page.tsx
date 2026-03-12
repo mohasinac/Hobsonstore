@@ -153,12 +153,10 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <h1
-        className="mb-8"
+        className="font-comic mb-8"
         style={{
-          fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
-          letterSpacing: "0.06em",
-          color: "#0D0D0D",
+          color: "var(--section-title-color)",
         }}
       >
         CHECKOUT
@@ -166,7 +164,7 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Address + offers */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-lg font-black uppercase" style={{ color: "#0D0D0D", letterSpacing: "0.04em" }}>Delivery Address</h2>
+          <h2 className="text-lg font-black uppercase" style={{ color: "var(--section-title-color)", letterSpacing: "0.04em" }}>Delivery Address</h2>
           <AddressForm value={address} onChange={setAddress} />
 
           {/* Coins toggle - shown only to logged-in users with active loyalty */}
@@ -192,13 +190,13 @@ export default function CheckoutPage() {
 
         {/* Order summary */}
         <div>
-          <h2 className="mb-4 text-lg font-black uppercase" style={{ color: "#0D0D0D", letterSpacing: "0.04em" }}>Order Summary</h2>
+          <h2 className="mb-4 text-lg font-black uppercase" style={{ color: "var(--section-title-color)", letterSpacing: "0.04em" }}>Order Summary</h2>
           <div
             className="p-5"
             style={{
-              border: "2px solid #0D0D0D",
-              boxShadow: "3px 3px 0px #0D0D0D",
-              background: "#FFFEF0",
+              border: "var(--card-border)",
+              boxShadow: "var(--card-shadow)",
+              background: "var(--surface-warm)",
             }}
           >
             <OrderSummary

@@ -227,7 +227,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
       <section className="space-y-2">
         <h3 className="font-semibold text-gray-900">Description</h3>
         <textarea
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 min-h-[120px]"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 min-h-30"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Product description (HTML allowed)"
@@ -239,7 +239,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
         <h3 className="font-semibold text-gray-900">Specs</h3>
         <p className="text-xs text-gray-500">One spec per line: <code>Scale: 1:6</code></p>
         <textarea
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-red-500 min-h-[80px]"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-red-500 min-h-20"
           value={specsRaw}
           onChange={(e) => setSpecsRaw(e.target.value)}
         />
@@ -314,7 +314,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
         <div className="flex flex-wrap gap-2">
           {videos.map((url, i) => (
             <div key={i} className="relative group flex items-center gap-1 rounded border px-2 py-1 text-xs bg-gray-50">
-              <span className="max-w-[120px] truncate">{url.split("/").pop()}</span>
+              <span className="max-w-30 truncate">{url.split("/").pop()}</span>
               <button
                 type="button"
                 onClick={() => setVideos((prev) => prev.filter((_, j) => j !== i))}

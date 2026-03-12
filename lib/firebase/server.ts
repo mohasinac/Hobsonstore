@@ -19,6 +19,8 @@ import type {
   ContentPage,
   PromoBanner,
   Collection,
+  CharacterHotspotConfig,
+  TrustBadge,
 } from "@/types/content";
 import type { SiteConfig, IntegrationKeys } from "@/types/config";
 import type { Product } from "@/types/product";
@@ -263,14 +265,21 @@ export const getSiteConfigServer = cache(async function (): Promise<SiteConfig |
 
 export const getProductServer = cache(async function (slug: string): Promise<Product | null> {
   try {
+    // Try slug field first (primary lookup)
     const snap = await db()
       .collection(COLLECTIONS.PRODUCTS)
       .where("slug", "==", slug)
       .limit(1)
       .get();
-    if (snap.empty) return null;
-    return toData<Product>(snap.docs[0]!);
-  } catch {
+    if (!snap.empty) return toData<Product>(snap.docs[0]!);
+
+    // Fallback: try document ID directly (handles cases where slug === doc id)
+    const docSnap = await db().collection(COLLECTIONS.PRODUCTS).doc(slug).get();
+    if (docSnap.exists) return { id: docSnap.id, ...docSnap.data() } as Product;
+
+    return null;
+  } catch (err) {
+    console.error("[getProductServer] Firestore error for slug:", slug, err);
     return null;
   }
 });
@@ -421,4 +430,30 @@ export async function getIntegrationKeysServer(): Promise<IntegrationKeys> {
 export async function updateIntegrationKeysServer(updates: Partial<IntegrationKeys>): Promise<void> {
   await db().collection(COLLECTIONS.INTEGRATION_KEYS).doc("main").set(updates, { merge: true });
 }
+
+// ─── Character Hotspot ───────────────────────────────────────────────────────────
+
+export const getCharacterHotspotConfigServer = cache(async function (): Promise<CharacterHotspotConfig | null> {
+  try {
+    const snap = await db().collection(COLLECTIONS.CHARACTER_HOTSPOT).doc("main").get();
+    if (!snap.exists) return null;
+    return serializeTimestamps(snap.data()) as CharacterHotspotConfig;
+  } catch {
+    return null;
+  }
+});
+
+// ─── Trust Badges ────────────────────────────────────────────────
+
+export const getTrustBadgesServer = cache(async function (): Promise<TrustBadge[]> {
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.TRUST_BADGES)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs.map((d) => toData<TrustBadge>(d)).filter((b) => b.active);
+  } catch {
+    return [];
+  }
+});
 

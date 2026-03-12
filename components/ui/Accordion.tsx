@@ -23,14 +23,14 @@ export function Accordion({ items, className }: AccordionProps) {
         <div
           key={item.id}
           style={{
-            border: "2px solid #FFE500",
-            background: openId === item.id ? "#1A1A2E" : "#161625",
+            border: "2px solid var(--color-yellow)",
+            background: openId === item.id ? "var(--dark-section-card)" : "var(--dark-section-alt)",
           }}
         >
           <button
             className="flex w-full items-center justify-between px-5 py-4 text-left font-bold transition-colors"
             style={{
-              color: openId === item.id ? "#FFE500" : "#FFFFFF",
+              color: openId === item.id ? "var(--color-yellow)" : "#FFFFFF",
               background: "transparent",
               fontSize: "0.9rem",
               letterSpacing: "0.02em",
@@ -40,8 +40,8 @@ export function Accordion({ items, className }: AccordionProps) {
           >
             {item.question}
             <span
-              className="ml-4 flex-shrink-0 text-xl font-black leading-none"
-              style={{ color: "#FFE500" }}
+              className="ml-4 shrink-0 text-xl font-black leading-none"
+              style={{ color: "var(--color-yellow)" }}
             >
               {openId === item.id ? "−" : "+"}
             </span>
@@ -49,7 +49,7 @@ export function Accordion({ items, className }: AccordionProps) {
           {openId === item.id && (
             <div
               className="px-5 pb-4 text-sm leading-relaxed"
-              style={{ color: "#CBD5E1", borderTop: "1px solid #2D2D4E" }}
+              style={{ color: "var(--dark-section-text)", borderTop: "1px solid var(--dark-section-inner-border)" }}
             >
               {item.answer}
             </div>

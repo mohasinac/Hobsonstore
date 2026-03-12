@@ -4,10 +4,13 @@ import Link from "next/link";
 
 const contentSections = [
   { href: "/admin/content/banners", label: "Banners", description: "Hero banners for the homepage" },
+  { href: "/admin/content/promo-banners", label: "Promo Banners", description: "Mid-page promotional image grid" },
   { href: "/admin/content/home-sections", label: "Home Sections", description: "Featured / bestseller product sections" },
   { href: "/admin/content/testimonials", label: "Testimonials", description: "Customer reviews carousel" },
   { href: "/admin/content/faq", label: "FAQ", description: "Frequently asked questions" },
   { href: "/admin/content/announcements", label: "Announcements", description: "Top-of-page announcement bar" },
+  { href: "/admin/content/trust-badges", label: "Trust Badges", description: "Shipping, support, rewards & secure payment indicators" },
+  { href: "/admin/content/character-hotspot", label: "Character Hotspot", description: "Interactive pin map with characters on a panoramic scene" },
 ];
 
 export default function AdminContentPage() {

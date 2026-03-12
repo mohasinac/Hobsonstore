@@ -14,7 +14,6 @@ export function middleware(req: NextRequest) {
   const isInternal =
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/") ||
-    pathname.startsWith("/seed") ||
     /\.(.+)$/.test(pathname); // static files with extension
 
   if (isInternal) return NextResponse.next();
@@ -45,6 +44,6 @@ export function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     // Match all paths except static/api
-    "/((?!_next|api|seed|.*\\..*).*)",
+    "/((?!_next|api|.*\\..*).*)",
   ],
 };

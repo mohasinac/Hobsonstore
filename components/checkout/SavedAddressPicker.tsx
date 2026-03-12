@@ -13,7 +13,7 @@ export function SavedAddressPicker({ user, onSelect }: SavedAddressPickerProps) 
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm font-black uppercase" style={{ color: "#0D0D0D", letterSpacing: "0.04em" }}>Saved Addresses</p>
+      <p className="text-sm font-black uppercase" style={{ color: "var(--color-black)", letterSpacing: "0.04em" }}>Saved Addresses</p>
       <div className="flex flex-col gap-2">
         {user.addresses.map((addr) => (
           <button
@@ -32,17 +32,17 @@ export function SavedAddressPicker({ user, onSelect }: SavedAddressPickerProps) 
             }
             className="px-4 py-2 text-left text-sm transition-all"
             style={{
-              border: "2px solid #0D0D0D",
-              boxShadow: "3px 3px 0px #0D0D0D",
-              background: "#FFFFFF",
+              border: "2px solid var(--border-ink)",
+              boxShadow: "3px 3px 0px var(--border-ink)",
+              background: "var(--surface-elevated)",
             }}
           >
-            <span className="font-bold" style={{ color: "#0D0D0D" }}>{addr.name}</span>
+            <span className="font-bold" style={{ color: "var(--color-black)" }}>{addr.name}</span>
             {addr.isDefault && (
-              <span className="ml-2 text-xs font-black" style={{ color: "#E8001C" }}>Default</span>
+              <span className="ml-2 text-xs font-black" style={{ color: "var(--color-red)" }}>Default</span>
             )}
             <br />
-            <span style={{ color: "#6B6B6B" }}>
+            <span style={{ color: "var(--color-muted)" }}>
               {addr.line1}, {addr.city} - {addr.pincode}
             </span>
           </button>

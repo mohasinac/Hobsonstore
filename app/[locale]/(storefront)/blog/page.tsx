@@ -17,12 +17,10 @@ export default async function BlogPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <h1
-        className="mb-8"
+        className="font-comic mb-8"
         style={{
-          fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "clamp(2rem, 5vw, 3rem)",
-          letterSpacing: "0.08em",
-          color: "#0D0D0D",
+          color: "var(--section-title-color)",
         }}
       >
         BLOG
@@ -31,26 +29,22 @@ export default async function BlogPage() {
       {posts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <p
-            className="text-xl"
-            style={{
-              fontFamily: "var(--font-bangers, Bangers, cursive)",
-              letterSpacing: "0.06em",
-              color: "#0D0D0D",
-            }}
+            className="font-comic text-xl"
+            style={{ color: "var(--section-title-color)" }}
           >
             THIS BLOG IS EMPTY.
           </p>
-          <p className="mt-2" style={{ color: "#6B6B6B" }}>
+          <p className="mt-2" style={{ color: "var(--color-muted)" }}>
             Check back soon — stories are coming.
           </p>
           <Link
             href="/collections"
             className="mt-6 inline-block px-5 py-2.5 text-sm font-black uppercase"
             style={{
-              background: "#E8001C",
-              color: "#FFFFFF",
-              border: "2px solid #0D0D0D",
-              boxShadow: "3px 3px 0px #0D0D0D",
+              background: "var(--color-red)",
+              color: "var(--color-white)",
+              border: "var(--card-border)",
+              boxShadow: "var(--card-shadow)",
               letterSpacing: "0.06em",
             }}
           >

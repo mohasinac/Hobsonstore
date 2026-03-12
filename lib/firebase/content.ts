@@ -25,6 +25,8 @@ import type {
   BlogPost,
   ContentPage,
   PromoBanner,
+  CharacterHotspotConfig,
+  TrustBadge,
 } from "@/types/content";
 
 function getDb() {
@@ -232,4 +234,38 @@ export async function deleteBlogPost(id: string): Promise<void> {
 // Static pages
 export async function upsertPage(slug: string, data: Omit<ContentPage, "slug"> & { slug?: string }): Promise<void> {
   await setDoc(doc(getDb(), COLLECTIONS.PAGES, slug), { ...data, slug, updatedAt: serverTimestamp() }, { merge: true });
+}
+
+// ─── Character Hotspot (singleton "main") ─────────────────────────────────────
+
+export async function getCharacterHotspotConfig(): Promise<CharacterHotspotConfig | null> {
+  const snap = await getDoc(doc(getDb(), COLLECTIONS.CHARACTER_HOTSPOT, "main"));
+  if (!snap.exists()) return null;
+  return snap.data() as CharacterHotspotConfig;
+}
+
+export async function saveCharacterHotspotConfig(data: CharacterHotspotConfig): Promise<void> {
+  await setDoc(
+    doc(getDb(), COLLECTIONS.CHARACTER_HOTSPOT, "main"),
+    { ...data, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
+}
+
+// ─── Trust Badges ──────────────────────────────────────────────────
+
+export async function getTrustBadges(): Promise<TrustBadge[]> {
+  const q = query(collection(getDb(), COLLECTIONS.TRUST_BADGES), orderBy("sortOrder", "asc"));
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as TrustBadge);
+}
+export async function createTrustBadge(data: Omit<TrustBadge, "id">): Promise<string> {
+  const ref = await addDoc(collection(getDb(), COLLECTIONS.TRUST_BADGES), { ...data, updatedAt: serverTimestamp() });
+  return ref.id;
+}
+export async function updateTrustBadge(id: string, data: Partial<Omit<TrustBadge, "id">>): Promise<void> {
+  await updateDoc(doc(getDb(), COLLECTIONS.TRUST_BADGES, id), { ...data, updatedAt: serverTimestamp() });
+}
+export async function deleteTrustBadge(id: string): Promise<void> {
+  await deleteDoc(doc(getDb(), COLLECTIONS.TRUST_BADGES, id));
 }

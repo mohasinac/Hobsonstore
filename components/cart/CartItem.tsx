@@ -15,8 +15,8 @@ export function CartItem({ item }: CartItemProps) {
   return (
     <div className="flex gap-3">
       <div
-        className="relative h-16 w-16 flex-shrink-0"
-        style={{ border: "2px solid #0D0D0D", background: "#F5F5F0" }}
+        className="relative h-16 w-16 shrink-0"
+        style={{ border: "2px solid var(--border-ink)", background: "var(--card-img-bg)" }}
       >
         <Image
           src={item.image}
@@ -27,7 +27,7 @@ export function CartItem({ item }: CartItemProps) {
         />
       </div>
       <div className="flex flex-1 flex-col justify-between">
-        <p className="text-sm font-bold line-clamp-2" style={{ color: "#0D0D0D" }}>
+        <p className="text-sm font-bold line-clamp-2" style={{ color: "var(--color-black)" }}>
           {item.name}
         </p>
         <div className="flex items-center justify-between">
@@ -38,29 +38,29 @@ export function CartItem({ item }: CartItemProps) {
                 else updateQty(item.productId, item.qty - 1);
               }}
               className="flex h-6 w-6 items-center justify-center text-sm font-bold"
-              style={{ border: "2px solid #0D0D0D", background: "#FFFEF0" }}
+              style={{ border: "2px solid var(--border-ink)", background: "var(--surface-warm)" }}
               aria-label="Decrease quantity"
             >
               −
             </button>
-            <span className="w-6 text-center text-sm font-bold" style={{ color: "#0D0D0D" }}>{item.qty}</span>
+            <span className="w-6 text-center text-sm font-bold" style={{ color: "var(--color-black)" }}>{item.qty}</span>
             <button
               onClick={() => updateQty(item.productId, item.qty + 1)}
               className="flex h-6 w-6 items-center justify-center text-sm font-bold"
-              style={{ border: "2px solid #0D0D0D", background: "#FFFEF0" }}
+              style={{ border: "2px solid var(--border-ink)", background: "var(--surface-warm)" }}
               aria-label="Increase quantity"
             >
               +
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-black" style={{ color: "#E8001C" }}>
+            <span className="text-sm font-black" style={{ color: "var(--color-red)" }}>
               {formatINR(item.salePrice * item.qty)}
             </span>
             <button
               onClick={() => remove(item.productId)}
               className="text-xs font-bold"
-              style={{ color: "#6B6B6B" }}
+              style={{ color: "var(--color-muted)" }}
               aria-label="Remove item"
             >
               ✕

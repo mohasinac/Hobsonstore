@@ -35,21 +35,21 @@ export function MobileMenu({
     <Drawer open={open} onClose={onClose} side="left">
       <div
         className="flex flex-col h-full overflow-y-auto"
-        style={{ background: "#FFFEF0" }}
+        style={{ background: "var(--dark-section-bg)" }}
       >
         {/* Header */}
         <div
           className="flex items-center justify-between px-4 py-3"
           style={{
-            background: "#FFE500",
-            borderBottom: "3px solid #0D0D0D",
+            background: "var(--dark-section-alt)",
+            borderBottom: "1px solid rgba(255,255,255,0.1)",
           }}
         >
           <span
             className="text-xl tracking-widest"
             style={{
               fontFamily: "var(--font-bangers, Bangers, cursive)",
-              color: "#0D0D0D",
+              color: "var(--color-yellow)",
             }}
           >
             MENU
@@ -58,7 +58,7 @@ export function MobileMenu({
             onClick={onClose}
             aria-label="Close menu"
             className="p-1 rounded"
-            style={{ color: "#0D0D0D", fontWeight: 900, fontSize: "1.2rem" }}
+            style={{ color: "var(--dark-section-muted)", fontWeight: 900, fontSize: "1.2rem" }}
           >
             ✕
           </button>
@@ -75,7 +75,7 @@ export function MobileMenu({
               onClose();
             }}
             className="flex items-center gap-2 rounded-md px-3 py-2"
-            style={{ background: "#fff", border: "2px solid #0D0D0D", boxShadow: "2px 2px 0px #0D0D0D" }}
+            style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "none" }}
           >
             <svg className="h-4 w-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
@@ -85,7 +85,7 @@ export function MobileMenu({
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search collectibles…"
-              className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 outline-none"
+              className="flex-1 bg-transparent text-sm text-white/90 placeholder-gray-600 outline-none"
             />
           </form>
 
@@ -100,16 +100,16 @@ export function MobileMenu({
                 style={{
                   fontFamily: "var(--font-bangers, Bangers, cursive)",
                   letterSpacing: "0.08em",
-                  color: "#0D0D0D",
+                  color: "var(--dark-section-text)",
                   border: "2px solid transparent",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.background = "#0D0D0D";
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
+                  (e.currentTarget as HTMLAnchorElement).style.background = "var(--color-yellow)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-bg)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-text)";
                 }}
               >
                 {label}
@@ -124,7 +124,7 @@ export function MobileMenu({
                 className="mb-2 text-xs uppercase tracking-widest px-3"
                 style={{
                   fontFamily: "var(--font-bangers, Bangers, cursive)",
-                  color: "#E8001C",
+                  color: "var(--color-red)",
                   letterSpacing: "0.12em",
                 }}
               >
@@ -137,9 +137,9 @@ export function MobileMenu({
                     href={ROUTES.FRANCHISE(c.slug)}
                     onClick={onClose}
                     className="block px-3 py-1.5 text-sm font-semibold rounded transition-colors"
-                    style={{ color: "#1A1A2E" }}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#E8001C")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#1A1A2E")}
+                    style={{ color: "var(--dark-section-muted)" }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--color-red)")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-muted)")}
                   >
                     {c.name}
                   </Link>
@@ -155,7 +155,7 @@ export function MobileMenu({
                 className="mb-2 text-xs uppercase tracking-widest px-3"
                 style={{
                   fontFamily: "var(--font-bangers, Bangers, cursive)",
-                  color: "#0057FF",
+                  color: "var(--color-blue)",
                   letterSpacing: "0.12em",
                 }}
               >
@@ -168,9 +168,9 @@ export function MobileMenu({
                     href={ROUTES.BRAND(c.slug)}
                     onClick={onClose}
                     className="block px-3 py-1.5 text-sm font-semibold rounded transition-colors"
-                    style={{ color: "#1A1A2E" }}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#0057FF")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#1A1A2E")}
+                    style={{ color: "var(--dark-section-muted)" }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--color-blue)")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--dark-section-muted)")}
                   >
                     {c.name}
                   </Link>

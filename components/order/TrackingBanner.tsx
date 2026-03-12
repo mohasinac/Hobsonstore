@@ -17,16 +17,16 @@ export function TrackingBanner({
     <div
       className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between"
       style={{
-        border: '2px solid #0D0D0D',
-        background: '#FFFEF0',
-        boxShadow: '3px 3px 0px #0D0D0D',
+        border: '2px solid var(--border-ink)',
+        background: 'var(--surface-warm)',
+        boxShadow: '3px 3px 0px var(--border-ink)',
       }}
     >
       <div>
         <p className="text-sm font-bold uppercase tracking-wide" style={{ color: '#0057FF', fontFamily: 'var(--font-bangers)', letterSpacing: '0.06em' }}>
           Shipment Dispatched 📦
         </p>
-        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs font-semibold" style={{ color: '#1A1A2E' }}>
+          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs font-semibold" style={{ color: 'var(--color-black)' }}>
           {courierName && <span>Courier: <strong>{courierName}</strong></span>}
           {trackingNumber && <span>AWB: <strong>{trackingNumber}</strong></span>}
         </div>
@@ -39,9 +39,9 @@ export function TrackingBanner({
           rel="noopener noreferrer"
           className="inline-flex shrink-0 items-center gap-1.5 px-4 py-2 text-sm font-bold uppercase tracking-wide text-white"
           style={{
-            background: '#E8001C',
-            border: '2px solid #0D0D0D',
-            boxShadow: '3px 3px 0px #0D0D0D',
+            background: 'var(--color-red)',
+            border: '2px solid var(--border-ink)',
+            boxShadow: '3px 3px 0px var(--border-ink)',
           }}
         >
           Track Shipment

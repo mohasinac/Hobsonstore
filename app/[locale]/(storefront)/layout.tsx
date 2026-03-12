@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
-import { Navbar } from "@/components/layout/Navbar";
+import { SiteHeader } from "@/components/layout/SiteHeader";
 import { Footer } from "@/components/layout/Footer";
-import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
+import { BackToTop } from "@/components/ui/BackToTop";
+import { MainContent } from "@/components/layout/MainContent";
 import {
   getAllFranchisesServer,
   getAllBrandsServer,
@@ -23,10 +24,17 @@ export default async function StorefrontLayout({
 
   return (
     <>
-      <AnnouncementBar announcements={announcements} />
-      <Navbar franchises={franchises} brands={brands} siteConfig={siteConfig} />
-      <main>{children}</main>
+      {/* Unified fixed header — transparent over hero, solid on scroll */}
+      <SiteHeader
+        franchises={franchises}
+        brands={brands}
+        siteConfig={siteConfig}
+        announcements={announcements}
+      />
+      {/* Hero fills behind the transparent header; non-home pages offset by full header height */}
+      <MainContent>{children}</MainContent>
       <Footer siteConfig={siteConfig} />
+      <BackToTop />
     </>
   );
 }

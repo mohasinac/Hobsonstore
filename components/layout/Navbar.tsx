@@ -2,47 +2,75 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ROUTES } from "@/constants/routes";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
+import { useAuth } from "@/hooks/useAuth";
+import { getUser } from "@/lib/firebase/users";
 import type { Franchise } from "@/types/franchise";
 import type { Brand } from "@/types/brand";
 import type { SiteConfig } from "@/types/config";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { MobileMenu } from "./MobileMenu";
 import { SearchDialog } from "./SearchDialog";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface NavbarProps {
   franchises: Franchise[];
   brands: Brand[];
   siteConfig: SiteConfig | null;
+  /** When true the navbar starts transparent and overlays the hero */
+  overlay?: boolean;
+  /** Scroll state provided by SiteHeader; when omitted Navbar tracks scroll internally */
+  scrolled?: boolean;
 }
 
-export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
+export function Navbar({ franchises, brands, siteConfig, overlay = true, scrolled: externalScrolled }: NavbarProps) {
   const { itemCount } = useCart();
   const { productIds } = useWishlist();
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [localScrolled, setLocalScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Use externally-provided scrolled state (from SiteHeader) when available,
+  // otherwise track internally for standalone overlay usage.
+  const scrolled = externalScrolled ?? localScrolled;
+
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    // Skip internal tracking when SiteHeader controls the scroll state
+    if (externalScrolled !== undefined || !overlay) return;
+    const onScroll = () => setLocalScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [overlay, externalScrolled]);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    getUser(user.uid).then((profile) => setIsAdmin(profile?.role === "admin"));
+  }, [user]);
+
+  // Colour tokens are fully CSS-var driven via .navbar-overlay / .navbar-scrolled classes.
+  // This eliminates the resolvedTheme flash where dark users saw dark-on-dark text pre-hydration.
 
   return (
     <>
-      {/* ── Comic-style sticky navbar ── */}
+      {/* ── Transparent-overlay / solid-on-scroll navbar ── */}
       <header
-        className="sticky top-0 z-30"
-        style={{
-          background: "#FFE500",
-          borderBottom: "3px solid #0D0D0D",
-          boxShadow: "0 3px 0px #0D0D0D",
-        }}
+        className={`navbar-overlay${!overlay ? " navbar-static" : ""}`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 gap-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 sm:px-8 gap-4" style={{ height: "var(--navbar-height, 64px)" }}>
 
           {/* ── Logo ── */}
           <Link
             href={ROUTES.HOME}
-            className="flex-shrink-0"
-            style={{ fontFamily: "var(--font-bangers, Bangers, cursive)" }}
+            className="shrink-0 min-w-0"
           >
             {siteConfig?.logoUrl ? (
               <Image
@@ -51,19 +79,21 @@ export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
                 width={150}
                 height={44}
                 priority
-                style={{ filter: "drop-shadow(2px 2px 0px #0D0D0D)" }}
+                style={{ filter: "var(--nb-logo-filter)" }}
               />
             ) : (
               <span
-                className="text-2xl tracking-widest"
+                className="tracking-widest transition-colors duration-300 whitespace-nowrap"
                 style={{
                   fontFamily: "var(--font-bangers, Bangers, cursive)",
-                  color: "#0D0D0D",
-                  textShadow: "2px 2px 0px rgba(0,0,0,0.25)",
+                  color: "var(--nb-logo)",
+                  textShadow: "var(--nb-text-shadow)",
                   letterSpacing: "0.08em",
+                  fontSize: "clamp(1rem, 3.5vw, 1.5rem)",
                 }}
               >
-                HOBSON COLLECTIBLES
+                <span className="sm:hidden">HOBSON</span>
+                <span className="hidden sm:inline">HOBSON COLLECTIBLES</span>
               </span>
             )}
           </Link>
@@ -74,15 +104,15 @@ export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
             {/* Collections mega-menu */}
             <div className="group relative">
               <button
-                className="flex items-center gap-1 px-3 py-2 rounded-md transition-colors"
-                style={{ color: "#0D0D0D" }}
+                className="flex items-center gap-1 px-3 py-2 rounded-md transition-colors duration-200"
+                style={{ color: "var(--nb-text)" }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = "#0D0D0D";
-                  (e.currentTarget as HTMLButtonElement).style.color = "#FFE500";
+                  (e.currentTarget as HTMLButtonElement).style.background = "var(--nb-hover)";
+                  (e.currentTarget as HTMLButtonElement).style.color = "var(--color-yellow)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                  (e.currentTarget as HTMLButtonElement).style.color = "#0D0D0D";
+                  (e.currentTarget as HTMLButtonElement).style.color = "var(--nb-text)";
                 }}
               >
                 <span style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", letterSpacing: "0.06em", fontSize: "1rem" }}>
@@ -93,18 +123,13 @@ export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
 
               {/* Mega-menu */}
               <div
-                className="invisible group-hover:visible absolute left-0 top-full z-40 w-[620px] grid grid-cols-2 gap-6 p-6"
-                style={{
-                  background: "#FFFEF0",
-                  border: "3px solid #0D0D0D",
-                  boxShadow: "6px 6px 0px #0D0D0D",
-                  marginTop: "3px",
-                }}
+                className="invisible group-hover:visible absolute left-0 top-full z-40 w-155 grid grid-cols-2 gap-6 p-6 mega-menu"
+                style={{ marginTop: "0px" }}
               >
                 <div>
                   <p
                     className="mb-3 text-xs uppercase tracking-widest"
-                    style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", color: "#E8001C", letterSpacing: "0.1em", fontSize: "0.8rem" }}
+                    style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", color: "var(--section-label-color)", letterSpacing: "0.1em", fontSize: "0.8rem" }}
                   >
                     By Franchise
                   </p>
@@ -113,10 +138,7 @@ export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
                       <Link
                         key={c.slug}
                         href={ROUTES.FRANCHISE(c.slug)}
-                        className="text-sm font-semibold truncate transition-colors"
-                        style={{ color: "#1A1A2E" }}
-                        onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.color = "#E8001C")}
-                        onMouseLeave={(e) => ((e.target as HTMLAnchorElement).style.color = "#1A1A2E")}
+                        className="text-sm font-semibold truncate mega-menu__link"
                       >
                         {c.name}
                       </Link>
@@ -126,7 +148,7 @@ export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
                 <div>
                   <p
                     className="mb-3 text-xs uppercase tracking-widest"
-                    style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", color: "#0057FF", letterSpacing: "0.1em", fontSize: "0.8rem" }}
+                    style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", color: "var(--color-blue)", letterSpacing: "0.1em", fontSize: "0.8rem" }}
                   >
                     By Brand
                   </p>
@@ -135,28 +157,25 @@ export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
                       <Link
                         key={c.slug}
                         href={ROUTES.BRAND(c.slug)}
-                        className="text-sm font-semibold truncate transition-colors"
-                        style={{ color: "#1A1A2E" }}
-                        onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.color = "#0057FF")}
-                        onMouseLeave={(e) => ((e.target as HTMLAnchorElement).style.color = "#1A1A2E")}
+                        className="text-sm font-semibold truncate mega-menu__link"
                       >
                         {c.name}
                       </Link>
                     ))}
                   </div>
                 </div>
-                <div className="col-span-2 pt-3" style={{ borderTop: "2px solid #0D0D0D" }}>
+                <div className="col-span-2 pt-3 mega-menu__divider">
                   <Link
                     href={ROUTES.FRANCHISES}
                     className="inline-flex items-center gap-1 text-sm font-bold mr-6"
-                    style={{ color: "#E8001C" }}
+                    style={{ color: "var(--section-label-color)" }}
                   >
                     All franchises →
                   </Link>
                   <Link
                     href={ROUTES.BRANDS}
                     className="inline-flex items-center gap-1 text-sm font-bold"
-                    style={{ color: "#0057FF" }}
+                    style={{ color: "var(--color-blue)" }}
                   >
                     All brands →
                   </Link>
@@ -174,45 +193,67 @@ export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
               <Link
                 key={href}
                 href={href}
-                className="px-3 py-2 rounded-md text-sm transition-colors"
+                className="px-3 py-2 rounded-md text-sm transition-colors duration-200"
                 style={{
                   fontFamily: "var(--font-bangers, Bangers, cursive)",
                   letterSpacing: "0.06em",
                   fontSize: "1rem",
-                  color: "#0D0D0D",
+                  color: "var(--nb-text)",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.background = "#0D0D0D";
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
+                  (e.currentTarget as HTMLAnchorElement).style.background = "var(--nb-hover)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-yellow)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--nb-text)";
                 }}
               >
                 {label}
               </Link>
             ))}
+
+            {isAdmin && (
+              <Link
+                href="/seed"
+                className="px-3 py-2 rounded-md text-sm transition-colors duration-200"
+                style={{
+                  fontFamily: "var(--font-bangers, Bangers, cursive)",
+                  letterSpacing: "0.06em",
+                  fontSize: "1rem",
+                  color: "var(--color-yellow)",
+                  background: "rgba(248,58,58,0.18)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = "rgba(248,58,58,0.35)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = "rgba(248,58,58,0.18)";
+                }}
+              >
+                SEED
+              </Link>
+            )}
           </nav>
 
           {/* ── Action icons ── */}
           <div className="flex items-center gap-2">
             {/* Search dialog (desktop) */}
-            <SearchDialog />
+            <SearchDialog iconColor="var(--nb-icon)" iconHoverBg="var(--nb-hover)" />
 
             {/* Account */}
             <Link
               href={ROUTES.ACCOUNT}
               aria-label="Account"
-              className="p-2 rounded-md transition-colors"
-              style={{ color: "#0D0D0D" }}
+              className="p-2 rounded-md transition-colors duration-200"
+              style={{ color: "var(--nb-icon)" }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.background = "#0D0D0D";
-                (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
+                (e.currentTarget as HTMLAnchorElement).style.background = "var(--nb-hover)";
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-yellow)";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--nb-icon)";
               }}
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -223,25 +264,25 @@ export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
             {/* Wishlist */}
             <Link
               href={ROUTES.ACCOUNT_WISHLIST}
-              aria-label={`Wishlist (${productIds.length})`}
-              className="relative p-2 rounded-md transition-colors"
-              style={{ color: "#0D0D0D" }}
+              aria-label={`Wishlist (${mounted ? productIds.length : 0})`}
+              className="relative p-2 rounded-md transition-colors duration-200"
+              style={{ color: "var(--nb-icon)" }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.background = "#0D0D0D";
-                (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
+                (e.currentTarget as HTMLAnchorElement).style.background = "var(--nb-hover)";
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-yellow)";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--nb-icon)";
               }}
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 0 1 6.364 0L12 7.636l1.318-1.318a4.5 4.5 0 1 1 6.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 0 1 0-6.364z" />
               </svg>
-              {productIds.length > 0 && (
+              {mounted && productIds.length > 0 && (
                 <span
                   className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center text-[10px] font-black"
-                  style={{ background: "#E8001C", color: "#fff", border: "2px solid #0D0D0D", borderRadius: "50%" }}
+                  style={{ background: "var(--color-red)", color: "#fff", border: "2px solid rgba(0,0,0,0.6)", borderRadius: "50%" }}
                 >
                   {productIds.length}
                 </span>
@@ -251,44 +292,47 @@ export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
             {/* Cart */}
             <button
               onClick={() => setCartOpen(true)}
-              aria-label={`Cart (${itemCount()} items)`}
-              className="relative p-2 rounded-md transition-colors"
-              style={{ color: "#0D0D0D" }}
+              aria-label={`Cart (${mounted ? itemCount() : 0} items)`}
+              className="relative p-2 rounded-md transition-colors duration-200"
+              style={{ color: "var(--nb-icon)" }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "#0D0D0D";
-                (e.currentTarget as HTMLButtonElement).style.color = "#FFE500";
+                (e.currentTarget as HTMLButtonElement).style.background = "var(--nb-hover)";
+                (e.currentTarget as HTMLButtonElement).style.color = "var(--color-yellow)";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                (e.currentTarget as HTMLButtonElement).style.color = "#0D0D0D";
+                (e.currentTarget as HTMLButtonElement).style.color = "var(--nb-icon)";
               }}
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9" />
               </svg>
-              {itemCount() > 0 && (
+              {mounted && itemCount() > 0 && (
                 <span
                   className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center text-[10px] font-black"
-                  style={{ background: "#E8001C", color: "#fff", border: "2px solid #0D0D0D", borderRadius: "50%" }}
+                  style={{ background: "var(--color-red)", color: "#fff", border: "2px solid rgba(0,0,0,0.6)", borderRadius: "50%" }}
                 >
                   {itemCount()}
                 </span>
               )}
             </button>
 
+            {/* ThemeToggle */}
+            <ThemeToggle iconColor="var(--nb-icon)" iconHoverBg="var(--nb-hover)" />
+
             {/* Mobile hamburger */}
             <button
-              className="lg:hidden p-2 rounded-md transition-colors"
-              style={{ color: "#0D0D0D" }}
+              className="lg:hidden p-2 rounded-md transition-colors duration-200"
+              style={{ color: "var(--nb-icon)" }}
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "#0D0D0D";
-                (e.currentTarget as HTMLButtonElement).style.color = "#FFE500";
+                (e.currentTarget as HTMLButtonElement).style.background = "var(--nb-hover)";
+                (e.currentTarget as HTMLButtonElement).style.color = "var(--color-yellow)";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                (e.currentTarget as HTMLButtonElement).style.color = "#0D0D0D";
+                (e.currentTarget as HTMLButtonElement).style.color = "var(--nb-icon)";
               }}
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

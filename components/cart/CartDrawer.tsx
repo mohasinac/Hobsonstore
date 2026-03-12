@@ -22,14 +22,14 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       <div className="flex h-full flex-col">
         <div
           className="flex items-center justify-between p-4"
-          style={{ background: "#FFE500", borderBottom: "3px solid #0D0D0D" }}
+          style={{ background: "var(--color-yellow)", borderBottom: "3px solid var(--border-ink)" }}
         >
           <h2
             style={{
               fontFamily: "var(--font-bangers, Bangers, cursive)",
               fontSize: "1.3rem",
               letterSpacing: "0.08em",
-              color: "#0D0D0D",
+              color: "#1A1A1A",
             }}
           >
             YOUR CART
@@ -37,7 +37,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
           <button
             onClick={onClose}
             aria-label="Close cart"
-            style={{ color: "#0D0D0D", fontWeight: 900, fontSize: "1.2rem" }}
+            style={{ color: "#1A1A1A", fontWeight: 900, fontSize: "1.2rem" }}
           >
             ✕
           </button>
@@ -56,7 +56,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         </div>
 
         {items.length > 0 && (
-          <div className="p-4" style={{ borderTop: "3px solid #0D0D0D" }}>
+          <div className="p-4" style={{ borderTop: "3px solid var(--border-ink)" }}>
             <CartSummary />
             <Link href={ROUTES.CHECKOUT} onClick={onClose}>
               <Button fullWidth className="mt-3">

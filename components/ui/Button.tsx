@@ -14,12 +14,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    "bg-[#E8001C] text-white hover:bg-[#B50016] active:bg-[#8C0012] disabled:bg-red-300",
-  secondary:
-    "bg-white text-[#0D0D0D] border-2 border-[#0D0D0D] hover:bg-[#FFFEF0] active:bg-gray-100 disabled:opacity-50",
-  ghost:
-    "bg-transparent text-[#0D0D0D] hover:bg-[#FFE500]/30 active:bg-[#FFE500]/50 disabled:opacity-50",
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  ghost: "btn-ghost",
   danger:
     "bg-red-50 text-red-700 border-2 border-red-200 hover:bg-red-100 disabled:opacity-50",
 };
@@ -42,8 +39,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        "inline-flex items-center justify-center gap-2 font-bold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E8001C] focus-visible:ring-offset-2",
-        "border-2 border-[#0D0D0D] shadow-[3px_3px_0px_#0D0D0D] hover:-translate-y-px hover:shadow-[4px_4px_0px_#0D0D0D] active:translate-y-px active:shadow-[1px_1px_0px_#0D0D0D]",
+        "inline-flex items-center justify-center gap-2 font-bold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-red) focus-visible:ring-offset-2",
+        "border-2 hover:-translate-y-px active:translate-y-px",
         size === "sm" && "px-3 py-1.5 text-xs",
         size === "md" && "px-4 py-2 text-sm",
         size === "lg" && "px-6 py-3 text-base",

@@ -14,7 +14,7 @@ export function EmptyCart({ onClose }: EmptyCartProps) {
           fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "1.2rem",
           letterSpacing: "0.06em",
-          color: "#0D0D0D",
+          color: "var(--color-black)",
         }}
       >
         YOUR CART IS EMPTY!
@@ -23,7 +23,7 @@ export function EmptyCart({ onClose }: EmptyCartProps) {
         href={ROUTES.COLLECTIONS}
         onClick={onClose}
         className="text-sm font-bold hover:underline"
-        style={{ color: "#E8001C" }}
+        style={{ color: "var(--color-red)" }}
       >
         Continue shopping →
       </Link>

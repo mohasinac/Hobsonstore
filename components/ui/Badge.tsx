@@ -1,13 +1,14 @@
 import { cn } from "@/lib/cn";
+import type { CSSProperties } from "react";
 
 export type BadgeVariant = "sale" | "preorder" | "soldout" | "new" | "coin";
 
-const variantClasses: Record<BadgeVariant, string> = {
-  sale:     "bg-[#E8001C] text-white border-[#B50016]",
-  preorder: "bg-[#FF8C00] text-white border-[#CC7000]",
-  soldout:  "bg-[#6B6B6B] text-white border-[#4A4A4A]",
-  new:      "bg-[#0057FF] text-white border-[#0040CC]",
-  coin:     "bg-[#FFE500] text-[#0D0D0D] border-[#D4BF00]",
+const variantStyles: Record<BadgeVariant, CSSProperties> = {
+  sale:     { background: "var(--color-red)",    color: "#fff" },
+  preorder: { background: "#FF8C00",              color: "#fff", borderColor: "#CC7000" },
+  soldout:  { background: "var(--color-muted)",  color: "#fff" },
+  new:      { background: "var(--color-blue)",   color: "#fff" },
+  coin:     { background: "var(--color-yellow)", color: "var(--border-ink)" },
 };
 
 interface BadgeProps {
@@ -22,9 +23,9 @@ export function Badge({ variant, className, children }: BadgeProps) {
       className={cn(
         "inline-flex items-center px-1.5 py-0.5 text-xs font-black uppercase tracking-wide",
         "border-2",
-        variantClasses[variant],
         className,
       )}
+      style={variantStyles[variant]}
     >
       {children}
     </span>

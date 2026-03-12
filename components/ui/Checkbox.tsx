@@ -21,12 +21,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           type="checkbox"
           id={inputId}
           className={cn(
-            "h-4 w-4 accent-[#E8001C]",
+            "h-4 w-4 accent-[var(--color-red)]",
             className,
           )}
           {...props}
         />
-        <span className="text-sm font-medium" style={{ color: "#0D0D0D" }}>{label}</span>
+        <span className="text-sm font-medium" style={{ color: "var(--color-black)" }}>{label}</span>
       </label>
     );
   },

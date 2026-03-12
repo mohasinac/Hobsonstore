@@ -65,6 +65,17 @@ export interface FAQItem {
   active: boolean;
 }
 
+export type TrustBadgeIconKey = "shipping" | "support" | "rewards" | "secure";
+
+export interface TrustBadge {
+  id: string;
+  title: string;
+  sub: string;
+  iconKey: TrustBadgeIconKey;
+  sortOrder: number;
+  active: boolean;
+}
+
 export interface BlogPost {
   id: string;
   title: string;
@@ -89,6 +100,32 @@ export interface ContentPage {
   updatedAt: Timestamp;
   seoTitle?: string;
   seoDescription?: string;
+}
+
+export interface HotspotPin {
+  id: string;
+  name: string;
+  universe: string;
+  description: string;
+  href: string;
+  /** Percentage from left edge 0–100 */
+  xPct: number;
+  /** Percentage from top edge 0–100 */
+  yPct: number;
+  /** Accent hex colour for the popup header */
+  accent: string;
+  /** Small badge label shown on pin */
+  badge?: string;
+  /** CTA button label */
+  buyText: string;
+}
+
+export interface CharacterHotspotConfig {
+  imageUrl: string;
+  imageAlt: string;
+  active: boolean;
+  pins: HotspotPin[];
+  updatedAt?: string;
 }
 
 /** Curated/featured groupings only (What's New, 1/6 Scale, Action Figures, etc.).

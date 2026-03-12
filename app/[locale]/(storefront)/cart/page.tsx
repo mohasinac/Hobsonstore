@@ -15,16 +15,15 @@ export default function CartPage() {
       <div className="mx-auto flex max-w-xl flex-col items-center gap-6 px-4 py-20 text-center">
         <span style={{ fontSize: "3rem" }}>🛒</span>
         <h1
+          className="font-comic"
           style={{
-            fontFamily: "var(--font-bangers, Bangers, cursive)",
             fontSize: "clamp(1.6rem, 4vw, 2rem)",
-            letterSpacing: "0.06em",
-            color: "#0D0D0D",
+            color: "var(--section-title-color)",
           }}
         >
           YOUR CART IS EMPTY
         </h1>
-        <p style={{ color: "#6B6B6B" }}>
+        <p style={{ color: "var(--color-muted)" }}>
           Looks like you haven&apos;t added anything yet.
         </p>
         <Link href={ROUTES.COLLECTIONS}>
@@ -37,12 +36,10 @@ export default function CartPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       <h1
-        className="mb-8"
+        className="font-comic mb-8"
         style={{
-          fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "clamp(1.6rem, 4vw, 2rem)",
-          letterSpacing: "0.06em",
-          color: "#0D0D0D",
+          color: "var(--section-title-color)",
         }}
       >
         YOUR CART
@@ -60,13 +57,13 @@ export default function CartPage() {
           <div
             className="p-5"
             style={{
-              border: "2px solid #0D0D0D",
-              boxShadow: "3px 3px 0px #0D0D0D",
-              background: "#FFFEF0",
+              border: "var(--card-border)",
+              boxShadow: "var(--card-shadow)",
+              background: "var(--surface-warm)",
             }}
           >
             <CartSummary />
-            <p className="mt-2 text-xs" style={{ color: "#6B6B6B" }}>
+            <p className="mt-2 text-xs" style={{ color: "var(--color-muted)" }}>
               Taxes + free shipping included.
             </p>
             <Link href={ROUTES.CHECKOUT} className="mt-4 block">
