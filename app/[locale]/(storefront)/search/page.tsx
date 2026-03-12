@@ -30,20 +30,30 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const sp = await searchParams;
   const query = sp.q?.trim() ?? "";
 
+  const hasFilter =
+    !!query ||
+    !!sp.franchise ||
+    !!sp.brand ||
+    sp.inStock === "true" ||
+    !!sp.priceMin ||
+    !!sp.priceMax;
+
   const [products, franchises, brands] = await Promise.all([
-    query
-      ? searchProductsServer(query).catch(() => [])
-      : getProductsServer(
-          {
-            franchise: sp.franchise,
-            brand: sp.brand,
-            inStock: sp.inStock === "true" ? true : undefined,
-            sort: (sp.sort as "price_asc" | "price_desc" | "newest" | "name_asc") ?? "newest",
-            priceMin: sp.priceMin ? Number(sp.priceMin) : undefined,
-            priceMax: sp.priceMax ? Number(sp.priceMax) : undefined,
-          },
-          200,
-        ).catch(() => []),
+    hasFilter
+      ? query
+        ? searchProductsServer(query).catch(() => [])
+        : getProductsServer(
+            {
+              franchise: sp.franchise,
+              brand: sp.brand,
+              inStock: sp.inStock === "true" ? true : undefined,
+              sort: (sp.sort as "price_asc" | "price_desc" | "newest" | "name_asc") ?? "newest",
+              priceMin: sp.priceMin ? Number(sp.priceMin) : undefined,
+              priceMax: sp.priceMax ? Number(sp.priceMax) : undefined,
+            },
+            200,
+          ).catch(() => [])
+      : Promise.resolve([]),
     getAllFranchisesServer().catch(() => []),
     getAllBrandsServer().catch(() => []),
   ]);
@@ -64,7 +74,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       >
         {title}
       </h1>
-      {!query && (
+      {hasFilter && !query && (
         <p className="mb-6 text-sm font-semibold" style={{ color: "var(--color-muted)" }}>
           {products.length} products
         </p>
@@ -78,13 +88,25 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {/* Results */}
         <div className="flex-1 min-w-0">
-          {query && products.length === 0 ? (
-            <div className="py-16 text-center">
+          {!hasFilter ? (
+            <div className="py-20 text-center">
+              <p
+                className="font-comic text-xl"
+                style={{ color: "var(--section-title-color)" }}
+              >
+                Use the filters to find your figures
+              </p>
+              <p className="mt-2 text-sm" style={{ color: "var(--color-muted)" }}>
+                Filter by franchise, brand, price or stock availability
+              </p>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="py-20 text-center">
               <p
                 className="font-comic text-lg"
                 style={{ color: "var(--section-title-color)" }}
               >
-                No products found for &ldquo;{query}&rdquo;
+                {query ? `No products found for "${query}"` : "No products match your filters"}
               </p>
             </div>
           ) : (
