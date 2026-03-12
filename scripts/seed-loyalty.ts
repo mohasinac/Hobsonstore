@@ -2,7 +2,7 @@
  * seed-loyalty.ts
  *
  * Populates Firestore with:
- *   - loyaltyConfig/main   — FCC Coins program settings
+ *   - loyaltyConfig/main   — HC Coins program settings
  *   - discounts/{code}     — Sample promo codes
  *
  * Usage (against local emulator):

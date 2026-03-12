@@ -17,9 +17,7 @@ interface CollectionFormProps {
 export function CollectionForm({ initial, onSubmit, submitLabel = "Save" }: CollectionFormProps) {
   const [name, setName] = useState(initial?.name ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
-  const [type, setType] = useState<"franchise" | "brand">(initial?.type ?? "franchise");
   const [bannerImage, setBannerImage] = useState(initial?.bannerImage ?? "");
-  const [logoImage, setLogoImage] = useState(initial?.logoImage ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [sortOrder, setSortOrder] = useState(String(initial?.sortOrder ?? 0));
   const [active, setActive] = useState(initial?.active ?? true);
@@ -38,7 +36,7 @@ export function CollectionForm({ initial, onSubmit, submitLabel = "Save" }: Coll
     if (!name || !slug) { setError("Name and slug are required"); return; }
     setLoading(true);
     try {
-      await onSubmit({ name, slug, type, bannerImage, logoImage, description, sortOrder: parseInt(sortOrder) || 0, active, seoTitle: seoTitle || undefined, seoDescription: seoDescription || undefined });
+      await onSubmit({ name, slug, bannerImage, description, sortOrder: parseInt(sortOrder) || 0, active, seoTitle: seoTitle || undefined, seoDescription: seoDescription || undefined });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
@@ -51,15 +49,7 @@ export function CollectionForm({ initial, onSubmit, submitLabel = "Save" }: Coll
       {error && <p className="text-sm text-red-600">{error}</p>}
       <Input label="Name *" value={name} onChange={(e) => { setName(e.target.value); if (!initial?.slug) setSlug(autoSlug(e.target.value)); }} required />
       <Input label="Slug *" value={slug} onChange={(e) => setSlug(e.target.value)} required />
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-        <select className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" value={type} onChange={(e) => setType(e.target.value as "franchise" | "brand")}>
-          <option value="franchise">Franchise</option>
-          <option value="brand">Brand</option>
-        </select>
-      </div>
       <Input label="Banner Image URL" value={bannerImage} onChange={(e) => setBannerImage(e.target.value)} />
-      <Input label="Logo Image URL (brand only)" value={logoImage} onChange={(e) => setLogoImage(e.target.value)} />
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
         <textarea className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />

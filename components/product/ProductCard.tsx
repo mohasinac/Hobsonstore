@@ -12,7 +12,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { slug, name, images, salePrice, regularPrice, inStock, isPreorder } =
+  const { slug, name, images, salePrice, regularPrice, inStock, isPreorder, franchise, brand } =
     product;
   const firstImage = images[0] ?? "/placeholder.png";
   const secondImage = images[1] ?? firstImage;
@@ -84,6 +84,13 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           )}
         </div>
+        {(franchise || brand) && (
+          <p className="text-xs truncate" style={{ color: "#9CA3AF" }}>
+            {franchise && <span>{franchise}</span>}
+            {franchise && brand && <span> · </span>}
+            {brand && <span>{brand}</span>}
+          </p>
+        )}
       </div>
     </Link>
   );

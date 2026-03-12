@@ -6,24 +6,24 @@ import { useState } from "react";
 import { ROUTES } from "@/constants/routes";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
-import type { Collection } from "@/types/content";
+import type { Franchise } from "@/types/franchise";
+import type { Brand } from "@/types/brand";
 import type { SiteConfig } from "@/types/config";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { MobileMenu } from "./MobileMenu";
+import { SearchDialog } from "./SearchDialog";
 
 interface NavbarProps {
-  collections: Collection[];
+  franchises: Franchise[];
+  brands: Brand[];
   siteConfig: SiteConfig | null;
 }
 
-export function Navbar({ collections, siteConfig }: NavbarProps) {
+export function Navbar({ franchises, brands, siteConfig }: NavbarProps) {
   const { itemCount } = useCart();
   const { productIds } = useWishlist();
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const franchiseCollections = collections.filter((c) => c.type === "franchise");
-  const brandCollections = collections.filter((c) => c.type === "brand");
 
   return (
     <>
@@ -109,10 +109,10 @@ export function Navbar({ collections, siteConfig }: NavbarProps) {
                     By Franchise
                   </p>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                    {franchiseCollections.slice(0, 16).map((c) => (
+                    {franchises.slice(0, 16).map((c) => (
                       <Link
                         key={c.slug}
-                        href={ROUTES.COLLECTION(c.slug)}
+                        href={ROUTES.FRANCHISE(c.slug)}
                         className="text-sm font-semibold truncate transition-colors"
                         style={{ color: "#1A1A2E" }}
                         onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.color = "#E8001C")}
@@ -131,10 +131,10 @@ export function Navbar({ collections, siteConfig }: NavbarProps) {
                     By Brand
                   </p>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                    {brandCollections.slice(0, 16).map((c) => (
+                    {brands.slice(0, 16).map((c) => (
                       <Link
                         key={c.slug}
-                        href={ROUTES.COLLECTION(c.slug)}
+                        href={ROUTES.BRAND(c.slug)}
                         className="text-sm font-semibold truncate transition-colors"
                         style={{ color: "#1A1A2E" }}
                         onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.color = "#0057FF")}
@@ -147,11 +147,18 @@ export function Navbar({ collections, siteConfig }: NavbarProps) {
                 </div>
                 <div className="col-span-2 pt-3" style={{ borderTop: "2px solid #0D0D0D" }}>
                   <Link
-                    href={ROUTES.COLLECTIONS}
-                    className="inline-flex items-center gap-1 text-sm font-bold"
+                    href={ROUTES.FRANCHISES}
+                    className="inline-flex items-center gap-1 text-sm font-bold mr-6"
                     style={{ color: "#E8001C" }}
                   >
-                    View all collections →
+                    All franchises →
+                  </Link>
+                  <Link
+                    href={ROUTES.BRANDS}
+                    className="inline-flex items-center gap-1 text-sm font-bold"
+                    style={{ color: "#0057FF" }}
+                  >
+                    All brands →
                   </Link>
                 </div>
               </div>
@@ -190,25 +197,8 @@ export function Navbar({ collections, siteConfig }: NavbarProps) {
 
           {/* ── Action icons ── */}
           <div className="flex items-center gap-2">
-            {/* Search */}
-            <Link
-              href={ROUTES.SEARCH}
-              aria-label="Search"
-              className="p-2 rounded-md transition-colors"
-              style={{ color: "#0D0D0D" }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.background = "#0D0D0D";
-                (e.currentTarget as HTMLAnchorElement).style.color = "#FFE500";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                (e.currentTarget as HTMLAnchorElement).style.color = "#0D0D0D";
-              }}
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-              </svg>
-            </Link>
+            {/* Search dialog (desktop) */}
+            <SearchDialog />
 
             {/* Account */}
             <Link
@@ -313,8 +303,8 @@ export function Navbar({ collections, siteConfig }: NavbarProps) {
       <MobileMenu
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
-        franchiseCollections={franchiseCollections}
-        brandCollections={brandCollections}
+        franchises={franchises}
+        brands={brands}
       />
     </>
   );

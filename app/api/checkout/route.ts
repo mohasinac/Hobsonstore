@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
         if (loyaltySnap.exists && userSnap.exists) {
           const loyaltyConfig = loyaltySnap.data() as LoyaltyConfig;
           const userData = userSnap.data() as User;
-          const userBalance = userData.fccCoins ?? 0;
+          const userBalance = userData.hcCoins ?? 0;
 
           if (loyaltyConfig.active && userBalance >= safeCoinsToRedeem) {
             const postDiscountTotal = subtotal - discountAmount;
@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
               timestamp: FieldValue.serverTimestamp(),
             };
             tx.update(db.collection(COLLECTIONS.USERS).doc(userId), {
-              fccCoins: FieldValue.increment(-safeCoinsToRedeem),
+              hcCoins: FieldValue.increment(-safeCoinsToRedeem),
               coinHistory: FieldValue.arrayUnion(coinEntry),
             });
           }

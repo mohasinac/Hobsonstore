@@ -53,7 +53,7 @@ export function CoinBalanceCard({
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-widest text-amber-600">
-            FCC Coins
+            HC Coins
           </p>
           <p className="mt-1 text-3xl font-extrabold text-amber-700">
             {balance.toLocaleString("en-IN")}

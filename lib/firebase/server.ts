@@ -18,10 +18,12 @@ import type {
   BlogPost,
   ContentPage,
   PromoBanner,
+  Collection,
 } from "@/types/content";
-import type { Collection } from "@/types/content";
-import type { SiteConfig } from "@/types/config";
+import type { SiteConfig, IntegrationKeys } from "@/types/config";
 import type { Product } from "@/types/product";
+import type { Franchise } from "@/types/franchise";
+import type { Brand } from "@/types/brand";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -51,177 +53,261 @@ function toData<T>(snap: FirebaseFirestore.QueryDocumentSnapshot<any>): T {
 // ─── Banners ──────────────────────────────────────────────────────────────────
 
 export const getBannersServer = cache(async function (): Promise<Banner[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.BANNERS)
-    .orderBy("sortOrder", "asc")
-    .get();
-  return snap.docs
-    .map((d) => toData<Banner>(d))
-    .filter((b) => b.active);
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.BANNERS)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs.map((d) => toData<Banner>(d)).filter((b) => b.active);
+  } catch {
+    return [];
+  }
 });
 
 export const getPromoBannersServer = cache(async function (): Promise<PromoBanner[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.PROMO_BANNERS)
-    .orderBy("sortOrder", "asc")
-    .get();
-  return snap.docs
-    .map((d) => toData<PromoBanner>(d))
-    .filter((b) => b.active)
-    .slice(0, 4);
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.PROMO_BANNERS)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs
+      .map((d) => toData<PromoBanner>(d))
+      .filter((b) => b.active)
+      .slice(0, 4);
+  } catch {
+    return [];
+  }
 });
 
 // ─── Home sections ────────────────────────────────────────────────────────────
 
 export const getHomeSectionsServer = cache(async function (): Promise<HomeSection[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.HOME_SECTIONS)
-    .orderBy("sortOrder", "asc")
-    .get();
-  return snap.docs
-    .map((d) => toData<HomeSection>(d))
-    .filter((s) => s.active);
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.HOME_SECTIONS)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs.map((d) => toData<HomeSection>(d)).filter((s) => s.active);
+  } catch {
+    return [];
+  }
 });
 
 // ─── Testimonials / FAQ ───────────────────────────────────────────────────────
 
 export const getTestimonialsServer = cache(async function (featuredOnly = false): Promise<Testimonial[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.TESTIMONIALS)
-    .orderBy("sortOrder", "asc")
-    .get();
-  return snap.docs
-    .map((d) => toData<Testimonial>(d))
-    .filter((t) => t.active && (!featuredOnly || t.featured));
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.TESTIMONIALS)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs
+      .map((d) => toData<Testimonial>(d))
+      .filter((t) => t.active && (!featuredOnly || t.featured));
+  } catch {
+    return [];
+  }
 });
 
 export const getFAQServer = cache(async function (): Promise<FAQItem[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.FAQ)
-    .orderBy("sortOrder", "asc")
-    .get();
-  return snap.docs
-    .map((d) => toData<FAQItem>(d))
-    .filter((f) => f.active);
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.FAQ)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs.map((d) => toData<FAQItem>(d)).filter((f) => f.active);
+  } catch {
+    return [];
+  }
 });
 
 // ─── Announcements ────────────────────────────────────────────────────────────
 
 export const getAnnouncementsServer = cache(async function (): Promise<Announcement[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.ANNOUNCEMENTS)
-    .orderBy("sortOrder", "asc")
-    .get();
-  return snap.docs
-    .map((d) => toData<Announcement>(d))
-    .filter((a) => a.active);
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.ANNOUNCEMENTS)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs.map((d) => toData<Announcement>(d)).filter((a) => a.active);
+  } catch {
+    return [];
+  }
 });
 
 // ─── Pages / Blog ─────────────────────────────────────────────────────────────
 
 export const getPageServer = cache(async function (slug: string): Promise<ContentPage | null> {
-  const snap = await db().collection(COLLECTIONS.PAGES).doc(slug).get();
-  if (!snap.exists) return null;
-  return serializeTimestamps({ id: snap.id, ...snap.data() }) as ContentPage;
+  try {
+    const snap = await db().collection(COLLECTIONS.PAGES).doc(slug).get();
+    if (!snap.exists) return null;
+    return serializeTimestamps({ id: snap.id, ...snap.data() }) as ContentPage;
+  } catch {
+    return null;
+  }
 });
 
 export const getBlogPostServer = cache(async function (slug: string): Promise<BlogPost | null> {
-  const snap = await db()
-    .collection(COLLECTIONS.BLOG)
-    .where("slug", "==", slug)
-    .limit(1)
-    .get();
-  if (snap.empty) return null;
-  const post = toData<BlogPost>(snap.docs[0]!);
-  if (!post.published) return null;
-  return post;
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.BLOG)
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
+    if (snap.empty) return null;
+    const post = toData<BlogPost>(snap.docs[0]!);
+    if (!post.published) return null;
+    return post;
+  } catch {
+    return null;
+  }
 });
 
 export const getAllBlogPostsServer = cache(async function (): Promise<BlogPost[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.BLOG)
-    .orderBy("publishedAt", "desc")
-    .get();
-  return snap.docs
-    .map((d) => toData<BlogPost>(d))
-    .filter((p) => p.published);
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.BLOG)
+      .orderBy("publishedAt", "desc")
+      .get();
+    return snap.docs.map((d) => toData<BlogPost>(d)).filter((p) => p.published);
+  } catch {
+    return [];
+  }
 });
 
 // ─── Collections ──────────────────────────────────────────────────────────────
 
 export const getAllCollectionsServer = cache(async function (): Promise<Collection[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.COLLECTIONS)
-    .orderBy("sortOrder", "asc")
-    .get();
-  return snap.docs
-    .map((d) => toData<Collection>(d))
-    .filter((c) => c.active);
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.CURATED_COLLECTIONS)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs.map((d) => toData<Collection>(d)).filter((c) => c.active);
+  } catch {
+    return [];
+  }
 });
 
 export const getCollectionServer = cache(async function (slug: string): Promise<Collection | null> {
-  const snap = await db().collection(COLLECTIONS.COLLECTIONS).doc(slug).get();
-  if (!snap.exists) return null;
-  return serializeTimestamps({ id: snap.id, ...snap.data() }) as unknown as Collection;
+  try {
+    const snap = await db().collection(COLLECTIONS.CURATED_COLLECTIONS).doc(slug).get();
+    if (!snap.exists) return null;
+    return serializeTimestamps({ id: snap.id, ...snap.data() }) as unknown as Collection;
+  } catch {
+    return null;
+  }
 });
 
-export const getActiveCollectionsByTypeServer = cache(async function (
-  type: "franchise" | "brand",
-): Promise<Collection[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.COLLECTIONS)
-    .orderBy("sortOrder", "asc")
-    .get();
-  return snap.docs
-    .map((d) => toData<Collection>(d))
-    .filter((c) => c.active && c.type === type);
+// ─── Franchises ──────────────────────────────────────────────────────────────
+
+export const getAllFranchisesServer = cache(async function (): Promise<Franchise[]> {
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.FRANCHISES)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs.map((d) => toData<Franchise>(d)).filter((f) => f.active);
+  } catch {
+    return [];
+  }
+});
+
+export const getFranchiseServer = cache(async function (slug: string): Promise<Franchise | null> {
+  try {
+    const snap = await db().collection(COLLECTIONS.FRANCHISES).doc(slug).get();
+    if (!snap.exists) return null;
+    return serializeTimestamps({ ...snap.data() }) as Franchise;
+  } catch {
+    return null;
+  }
+});
+
+// ─── Brands ───────────────────────────────────────────────────────────────────
+
+export const getAllBrandsServer = cache(async function (): Promise<Brand[]> {
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.BRANDS)
+      .orderBy("sortOrder", "asc")
+      .get();
+    return snap.docs.map((d) => toData<Brand>(d)).filter((b) => b.active);
+  } catch {
+    return [];
+  }
+});
+
+export const getBrandServer = cache(async function (slug: string): Promise<Brand | null> {
+  try {
+    const snap = await db().collection(COLLECTIONS.BRANDS).doc(slug).get();
+    if (!snap.exists) return null;
+    return serializeTimestamps({ ...snap.data() }) as Brand;
+  } catch {
+    return null;
+  }
 });
 
 // ─── Site config ──────────────────────────────────────────────────────────────
 
 export const getSiteConfigServer = cache(async function (): Promise<SiteConfig | null> {
-  const snap = await db().collection(COLLECTIONS.SITE_CONFIG).doc("main").get();
-  if (!snap.exists) return null;
-  return serializeTimestamps(snap.data()) as SiteConfig;
+  try {
+    const snap = await db().collection(COLLECTIONS.SITE_CONFIG).doc("main").get();
+    if (!snap.exists) return null;
+    return serializeTimestamps(snap.data()) as SiteConfig;
+  } catch {
+    return null;
+  }
 });
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 
 export const getProductServer = cache(async function (slug: string): Promise<Product | null> {
-  const snap = await db()
-    .collection(COLLECTIONS.PRODUCTS)
-    .where("slug", "==", slug)
-    .limit(1)
-    .get();
-  if (snap.empty) return null;
-  return toData<Product>(snap.docs[0]!);
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.PRODUCTS)
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
+    if (snap.empty) return null;
+    return toData<Product>(snap.docs[0]!);
+  } catch {
+    return null;
+  }
 });
 
 export async function getRelatedProductsServer(product: Product, count = 4): Promise<Product[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.PRODUCTS)
-    .where("franchise", "==", product.franchise)
-    .where("active", "==", true)
-    .where("inStock", "==", true)
-    .limit(count + 1)
-    .get();
-  return snap.docs
-    .map((d) => toData<Product>(d))
-    .filter((p) => p.id !== product.id)
-    .slice(0, count);
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.PRODUCTS)
+      .where("franchise", "==", product.franchise)
+      .where("active", "==", true)
+      .where("inStock", "==", true)
+      .limit(count + 1)
+      .get();
+    return snap.docs
+      .map((d) => toData<Product>(d))
+      .filter((p) => p.id !== product.id)
+      .slice(0, count);
+  } catch {
+    return [];
+  }
 }
 
 export const searchProductsServer = cache(async function (searchQuery: string): Promise<Product[]> {
   if (!searchQuery.trim()) return [];
-  const end = searchQuery + "\uf8ff";
-  const snap = await db()
-    .collection(COLLECTIONS.PRODUCTS)
-    .where("active", "==", true)
-    .where("name", ">=", searchQuery)
-    .where("name", "<=", end)
-    .limit(30)
-    .get();
-  return snap.docs.map((d) => toData<Product>(d));
+  try {
+    const end = searchQuery + "\uf8ff";
+    const snap = await db()
+      .collection(COLLECTIONS.PRODUCTS)
+      .where("active", "==", true)
+      .where("name", ">=", searchQuery)
+      .where("name", "<=", end)
+      .limit(30)
+      .get();
+    return snap.docs.map((d) => toData<Product>(d));
+  } catch {
+    return [];
+  }
 });
 
 export interface ProductFiltersServer {
@@ -235,65 +321,104 @@ export interface ProductFiltersServer {
 
 export async function getProductsByIdsServer(ids: string[]): Promise<Product[]> {
   if (!ids.length) return [];
-  // Firestore `in` supports max 30 per query — batch if needed
-  const batches: string[][] = [];
-  for (let i = 0; i < ids.length; i += 30) batches.push(ids.slice(i, i + 30));
-  const results = await Promise.all(
-    batches.map((batch) =>
-      db().collection(COLLECTIONS.PRODUCTS).where("__name__", "in", batch).get(),
-    ),
-  );
-  return results.flatMap((snap) => snap.docs.map((d) => toData<Product>(d)));
+  try {
+    // Firestore `in` supports max 30 per query — batch if needed
+    const batches: string[][] = [];
+    for (let i = 0; i < ids.length; i += 30) batches.push(ids.slice(i, i + 30));
+    const results = await Promise.all(
+      batches.map((batch) =>
+        db().collection(COLLECTIONS.PRODUCTS).where("__name__", "in", batch).get(),
+      ),
+    );
+    return results.flatMap((snap) => snap.docs.map((d) => toData<Product>(d)));
+  } catch {
+    return [];
+  }
 }
 
 export async function getProductsServer(
   filters: ProductFiltersServer = {},
   pageSize = 24,
 ): Promise<Product[]> {
-  let ref = db().collection(COLLECTIONS.PRODUCTS).where("active", "==", true) as FirebaseFirestore.Query;
-  if (filters.franchise) ref = ref.where("franchise", "==", filters.franchise);
-  if (filters.brand) ref = ref.where("brand", "==", filters.brand);
-  if (filters.inStock) ref = ref.where("availableStock", ">", 0);
-  if (filters.priceMin !== undefined) ref = ref.where("salePrice", ">=", filters.priceMin);
-  if (filters.priceMax !== undefined) ref = ref.where("salePrice", "<=", filters.priceMax);
+  try {
+    let ref = db().collection(COLLECTIONS.PRODUCTS).where("active", "==", true) as FirebaseFirestore.Query;
+    if (filters.franchise) ref = ref.where("franchise", "==", filters.franchise);
+    if (filters.brand) ref = ref.where("brand", "==", filters.brand);
+    if (filters.inStock) ref = ref.where("availableStock", ">", 0);
+    if (filters.priceMin !== undefined) ref = ref.where("salePrice", ">=", filters.priceMin);
+    if (filters.priceMax !== undefined) ref = ref.where("salePrice", "<=", filters.priceMax);
 
-  switch (filters.sort) {
-    case "price_asc":  ref = ref.orderBy("salePrice", "asc"); break;
-    case "price_desc": ref = ref.orderBy("salePrice", "desc"); break;
-    case "name_asc":   ref = ref.orderBy("name", "asc"); break;
-    default:           ref = ref.orderBy("createdAt", "desc");
+    switch (filters.sort) {
+      case "price_asc":  ref = ref.orderBy("salePrice", "asc"); break;
+      case "price_desc": ref = ref.orderBy("salePrice", "desc"); break;
+      case "name_asc":   ref = ref.orderBy("name", "asc"); break;
+      default:           ref = ref.orderBy("createdAt", "desc");
+    }
+
+    const snap = await ref.limit(pageSize).get();
+    return snap.docs.map((d) => toData<Product>(d));
+  } catch {
+    return [];
   }
-
-  const snap = await ref.limit(pageSize).get();
-  return snap.docs.map((d) => toData<Product>(d));
 }
 
 export const getFeaturedProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.PRODUCTS)
-    .where("isFeatured", "==", true)
-    .where("active", "==", true)
-    .limit(pageSize)
-    .get();
-  return snap.docs.map((d) => toData<Product>(d));
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.PRODUCTS)
+      .where("isFeatured", "==", true)
+      .where("active", "==", true)
+      .limit(pageSize)
+      .get();
+    return snap.docs.map((d) => toData<Product>(d));
+  } catch {
+    return [];
+  }
 });
 
 export const getBestsellerProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.PRODUCTS)
-    .where("isBestseller", "==", true)
-    .where("active", "==", true)
-    .limit(pageSize)
-    .get();
-  return snap.docs.map((d) => toData<Product>(d));
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.PRODUCTS)
+      .where("isBestseller", "==", true)
+      .where("active", "==", true)
+      .limit(pageSize)
+      .get();
+    return snap.docs.map((d) => toData<Product>(d));
+  } catch {
+    return [];
+  }
 });
 
 export const getNewArrivalsProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
-  const snap = await db()
-    .collection(COLLECTIONS.PRODUCTS)
-    .where("active", "==", true)
-    .orderBy("createdAt", "desc")
-    .limit(pageSize)
-    .get();
-  return snap.docs.map((d) => toData<Product>(d));
+  try {
+    const snap = await db()
+      .collection(COLLECTIONS.PRODUCTS)
+      .where("active", "==", true)
+      .orderBy("createdAt", "desc")
+      .limit(pageSize)
+      .get();
+    return snap.docs.map((d) => toData<Product>(d));
+  } catch {
+    return [];
+  }
 });
+
+// ─── Integration Keys ─────────────────────────────────────────────────────────
+
+/** Read the `settings/integrationKeys` document. Returns empty object if not found. */
+export async function getIntegrationKeysServer(): Promise<IntegrationKeys> {
+  try {
+    const snap = await db().collection("settings").doc("integrationKeys").get();
+    if (!snap.exists) return {};
+    return serializeTimestamps(snap.data()) as IntegrationKeys;
+  } catch {
+    return {};
+  }
+}
+
+/** Merge-update the `settings/integrationKeys` document. */
+export async function updateIntegrationKeysServer(updates: Partial<IntegrationKeys>): Promise<void> {
+  await db().collection("settings").doc("integrationKeys").set(updates, { merge: true });
+}
+

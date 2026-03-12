@@ -19,10 +19,12 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
 ];
 
 interface ProductFilterSidebarProps {
+  franchises?: { slug: string; name: string }[];
   brands?: { slug: string; name: string }[];
 }
 
 export function ProductFilterSidebar({
+  franchises = [],
   brands = [],
 }: ProductFilterSidebarProps) {
   const router = useRouter();
@@ -34,6 +36,7 @@ export function ProductFilterSidebar({
     inStock: params.get("inStock") === "true",
     priceMin: params.get("priceMin") ?? "",
     priceMax: params.get("priceMax") ?? "",
+    franchise: params.get("franchise") ?? "",
     brand: params.get("brand") ?? "",
   };
 
@@ -61,6 +64,7 @@ export function ProductFilterSidebar({
     current.inStock ||
     current.priceMin !== "" ||
     current.priceMax !== "" ||
+    current.franchise !== "" ||
     current.brand !== "";
 
   return (
@@ -105,6 +109,19 @@ export function ProductFilterSidebar({
           />
         </div>
       </div>
+
+      {/* Franchise filter (shown only when franchises are provided) */}
+      {franchises.length > 0 && (
+        <div>
+          <p className="mb-2 font-black uppercase" style={{ color: "#0D0D0D", fontSize: "0.8rem", letterSpacing: "0.06em" }}>Franchise</p>
+          <Select
+            placeholder="All franchises"
+            options={franchises.map((f) => ({ value: f.slug, label: f.name }))}
+            value={current.franchise}
+            onChange={(e) => push({ franchise: e.target.value || null })}
+          />
+        </div>
+      )}
 
       {/* Brand filter (shown only when brands are provided) */}
       {brands.length > 0 && (

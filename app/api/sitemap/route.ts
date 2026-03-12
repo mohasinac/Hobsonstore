@@ -39,7 +39,7 @@ export async function GET() {
   try {
     [productSlugs, collectionSlugs, blogSlugs] = await Promise.all([
       getSlugs(COLLECTIONS.PRODUCTS, "slug"),
-      getSlugs(COLLECTIONS.COLLECTIONS, "slug", [{ field: "active", value: true }]),
+      getSlugs(COLLECTIONS.CURATED_COLLECTIONS, "slug", [{ field: "active", value: true }]),
       getSlugs(COLLECTIONS.BLOG, "slug", [{ field: "published", value: true }]),
     ]);
   } catch {

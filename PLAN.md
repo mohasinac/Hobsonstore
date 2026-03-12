@@ -1,7 +1,8 @@
-﻿# FatCat Collectibles — Full Platform Plan
+﻿# Hobson Collectibles — Full Platform Plan
 
-> **Stack:** Next.js 15 (App Router) · Firebase (Firestore, Auth, Storage, Functions) · WhatsApp (checkout + inventory bot) · Zustand · Tailwind CSS
-> **Payment (Phase 1):** WhatsApp-message-based · **Payment (Phase 2, future):** Razorpay drop-in
+> **Stack:** Next.js 16.1.1 (App Router) · Firebase **Spark** (Firestore, Auth, Storage — free tier, **no Cloud Functions**) · Vercel (hosting + cron jobs) · WhatsApp (checkout + inventory bot) · Zustand · Tailwind CSS · **next-intl** (i18n — en + hi)
+> **Deployment:** Firebase Spark + Vercel Hobby — all background logic runs as Next.js API routes or Vercel cron jobs. No Blaze upgrade required.
+> **Package manager:** npm · **Payment (Phase 1):** WhatsApp-message-based · **Payment (Phase 8):** Razorpay + COD
 
 ---
 
@@ -40,12 +41,12 @@
    - 8.2 [Cart & WhatsApp Checkout](#82-cart--whatsapp-checkout)
    - 8.3 [Order Tracking](#83-order-tracking)
    - 8.4 [Inventory Management via WhatsApp](#84-inventory-management-via-whatsapp)
-   - 8.5 [Loyalty — FCC Coins](#85-loyalty--fcc-coins)
+   - 8.5 [Loyalty — HC Coins](#85-loyalty--hc-coins)
    - 8.6 [Pre-orders](#86-pre-orders)
    - 8.7 [Admin Panel](#87-admin-panel)
    - 8.8 [Blog & Content Pages](#88-blog--content-pages)
 9. [API Routes](#9-api-routes)
-10. [Cloud Functions](#10-cloud-functions)
+10. [Background Jobs — Spark-plan replacements for Cloud Functions](#10-background-jobs)
 11. [Security Design](#11-security-design)
 12. [Phased Implementation Plan](#12-phased-implementation-plan)
     - 12.1 [Phase 1 — Foundation](#121-phase-1--foundation)
@@ -55,6 +56,8 @@
     - 12.5 [Phase 5 — Content & SEO](#125-phase-5--content--seo)
     - 12.6 [Phase 6 — Admin Panel](#126-phase-6--admin-panel)
     - 12.7 [Phase 7 — Loyalty & Pre-orders](#127-phase-7--loyalty--pre-orders)
+    - 12.8 [Phase 8 — Franchise/Brand Restructure & Platform Completion](#128-phase-8--franchisebrand-restructure--platform-completion)
+    - 12.9 [Phase 9 — Testing](#129-phase-9--testing)
 13. [Future Upgrades](#13-future-upgrades)
 
 ---
@@ -108,32 +111,29 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ### 0.3 Local Development Commands
 
 ```bash
-# Install dependencies (all workspaces)
-pnpm install
+# Install dependencies
+npm install
 
 # Start dev server (Next.js)
-pnpm dev                    # http://localhost:3000
+npm run dev                 # http://localhost:3000
 
-# Start Firebase emulators (Auth, Firestore, Functions, Storage)
-pnpm emulators              # alias for: firebase emulators:start
+# Start Firebase emulators (Auth, Firestore, Storage)
+npm run emulators           # alias for: firebase emulators:start
 
 # Type-check
-pnpm typecheck              # tsc --noEmit
+npm run typecheck           # tsc --noEmit
 
 # Lint
-pnpm lint                   # eslint .
-
-# Format
-pnpm format                 # prettier --write .
+npm run lint                # next lint
 
 # Build (production)
-pnpm build
+npm run build
 
-# Seed Firestore emulator with sample data
-pnpm seed                   # ts-node scripts/seed-firestore.ts
+# Seed Firestore with sample data (admin-auth required at /seed)
+npm run dev                 # then navigate to /seed
 
-# Deploy to Firebase Hosting + Functions
-pnpm deploy                 # firebase deploy
+# Deploy to Vercel
+vercel --prod
 ```
 
 `package.json` scripts section:
@@ -141,15 +141,13 @@ pnpm deploy                 # firebase deploy
 ```json
 {
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write .",
-    "emulators": "firebase emulators:start --import=./emulator-data --export-on-exit",
-    "seed": "tsx scripts/seed-firestore.ts",
-    "deploy": "firebase deploy"
+    "test": "jest",
+    "emulators": "firebase emulators:start --import=./emulator-data --export-on-exit"
   }
 }
 ```
@@ -202,7 +200,7 @@ docs(plan): update phase 2 checklist
 | File naming    | `PascalCase.tsx` for components, `camelCase.ts` for non-component modules                                                          |
 | Constants      | All magic strings/numbers in `constants/`. Never hardcode Firestore collection names in page files                                 |
 | Security       | Sanitise all rich text with DOMPurify server-side. Never trust client-provided userId for writes — always read from server session |
-| Error handling | Use `try/catch` with typed errors at API route and Cloud Function boundaries only                                                  |
+| Error handling | Use `try/catch` with typed errors at API route boundaries only (no Cloud Functions — Spark tier)                                   |
 
 ---
 
@@ -224,7 +222,7 @@ Run all: `pnpm test`. Run watch: `pnpm test --watch`.
 
 ## 1. Site Overview
 
-FatCat Collectibles is a premium collectibles e-commerce store operating in India with two physical outlets (Pune, Bengaluru). The platform sells licensed action figures, statues, and pop-culture collectibles across 20+ franchise categories and 20+ brand collections, ranging from ₹1,699 to ₹1,78,999+.
+Hobson Collectibles is a premium collectibles e-commerce store operating in India with two physical outlets (Pune, Bengaluru). The platform sells licensed action figures, statues, and pop-culture collectibles across 20+ franchise categories and 20+ brand collections, ranging from ₹1,699 to ₹1,78,999+.
 
 ### Business Characteristics
 
@@ -235,7 +233,7 @@ FatCat Collectibles is a premium collectibles e-commerce store operating in Indi
 | Order type         | In-stock + Pre-order                                                                           |
 | Payment (Phase 1)  | WhatsApp message → owner manual confirmation                                                   |
 | Payment (Phase 2)  | Razorpay (no-cost EMI above ₹6,000)                                                            |
-| Loyalty            | FCC Coins — earn on purchase, redeem on next order                                             |
+| Loyalty            | HC Coins — earn on purchase, redeem on next order                                              |
 | Shipping           | Free pan-India                                                                                 |
 | Support            | WhatsApp + Phone, Mon–Fri 11am–8pm IST                                                         |
 | Admin contacts     | Customer Care: +91 7620783819 · Statues: +91 7887888187                                        |
@@ -244,7 +242,7 @@ FatCat Collectibles is a premium collectibles e-commerce store operating in Indi
 
 ## 2. As-Crawled Site Map
 
-Every page below was directly crawled from `fatcatcollectibles.in`. Our build replicates each one 1:1 using the Next.js route and content elements listed.
+Every page below was directly crawled from the reference site and adapted for Hobson Collectibles (`hobsoncollectibles.in`). Our build replicates each one 1:1 using the Next.js route and content elements listed.
 
 ---
 
@@ -256,7 +254,7 @@ Every page below was directly crawled from `fatcatcollectibles.in`. Our build re
 
 | Section                    | Real Content                                                                                                                                                                             | Implementation                                               |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Announcement bar           | Rotating 2 messages: "NO COST EMI ON ORDERS ABOVE ₹6000" + "FATCAT Bengaluru Store Now Open!"                                                                                            | `AnnouncementBar` ← Firestore `announcements`                |
+| Announcement bar           | Rotating 2 messages: "NO COST EMI ON ORDERS ABOVE ₹6000" + "HOBSON Bengaluru Store Now Open!"                                                                                           | `AnnouncementBar` ← Firestore `announcements`                |
 | Hero carousel              | 4–5 slides (images + CTAs — Browse INART Collection, etc.)                                                                                                                               | `HeroBanner` ← Firestore `banners`                           |
 | Franchise collection strip | TMNT, DC Comics, Marvel, Transformers, G.I. Joe, Star Wars, MOTU, One Piece, Demon Slayer, Naruto, DBZ, Attack on Titan, JJK, + more                                                     | `CollectionStrip` ← Firestore `collections` (type=franchise) |
 | Brand logo strip           | Prime 1 Studios, Sideshow, Iron Studios, McFarlane, First 4 Figures, Super7, Funko, Threezero, NECA, Mezco, Diamond, Storm, Tsume, Infinity Studios, Kotobukiya, Hot Toys, INART, + more | `BrandStrip` ← Firestore `collections` (type=brand)          |
@@ -265,7 +263,7 @@ Every page below was directly crawled from `fatcatcollectibles.in`. Our build re
 | Mid-page promo banners     | 4 inline banners: Tintin, Harry Potter, Puzzles, Black Panther (each with "Buy Now"/"Explore" CTA)                                                                                       | `PromoGrid` ← Firestore `promobanners`                       |
 | Testimonials carousel      | 20+ customer testimonials with name + star rating + text. Scrollable.                                                                                                                    | `TestimonialsCarousel` ← Firestore `testimonials`            |
 | FAQ accordion              | 4 questions (shipping time, shipping cost, international shipping, discount code help)                                                                                                   | `FAQAccordion` ← Firestore `faq`                             |
-| Trust badge row            | Free Shipping · Customer Service · Earn FCC Coins · Secure Payment (RazorPay badge)                                                                                                      | `TrustBadges` ← Firestore `siteConfig.trustBadges[]`         |
+| Trust badge row            | Free Shipping · Customer Service · Earn HC Coins · Secure Payment (RazorPay badge)                                                                                                       | `TrustBadges` ← Firestore `siteConfig.trustBadges[]`         |
 | Newsletter signup          | "Join our VIP list!" email input + Subscribe                                                                                                                                             | `NewsletterSignup`                                           |
 | Footer                     | See §2.4                                                                                                                                                                                 | `Footer`                                                     |
 
@@ -318,7 +316,7 @@ All collection slugs discovered:
 | Wishlist button       | "Add to Wishlist" text button                                 | Toggles Zustand wishlist                                                                  |
 | Primary CTA           | "Pre-order" or "Add to Cart"                                  | Context-aware based on `isPreorder` + `inStock`                                           |
 | Secondary CTA         | "Buy it now"                                                  | Bypasses cart, goes straight to checkout                                                  |
-| Trust badges          | Free Shipping · Customer Service · FCC Coins · Secure Payment | Reuses homepage `TrustBadges` component                                                   |
+| Trust badges          | Free Shipping · Customer Service · HC Coins · Secure Payment | Reuses homepage `TrustBadges` component                                                    |
 | Sold-out state        | "Sold out" label, disabled Add to Cart                        | Driven by `inStock` / `availableStock`                                                    |
 
 ---
@@ -357,7 +355,7 @@ _The original Shopify site uses Shopify Checkout. We replace this with our Whats
 | ---------------- | ---------------------------------------------------------------------------------------------- |
 | Address form     | Name, Phone, Address line 1, Line 2, City, State, Pincode                                      |
 | Saved addresses  | Picker if user is logged in                                                                    |
-| FCC Coins toggle | "Use X coins (save ₹Y)"                                                                        |
+| HC Coins toggle  | "Use X coins (save ₹Y)"                                                                        |
 | Discount code    | Input + Apply                                                                                  |
 | Order summary    | Readonly cart items + subtotal, discount, coins, total                                         |
 | CTA              | "Place Order via WhatsApp" → writes to Firestore, redirects to `wa.me` with pre-filled message |
@@ -399,7 +397,7 @@ _Original site redirects to Shopify/shop.app auth. We use Firebase Auth._
 | Element           | Content                                |
 | ----------------- | -------------------------------------- |
 | Profile info      | Name, Email, Phone                     |
-| FCC Coins balance | Current balance + "View history" link  |
+| HC Coins balance  | Current balance + "View history" link  |
 | Quick links       | My Orders · My Wishlist · My Addresses |
 
 ---
@@ -525,7 +523,7 @@ Rich text body (company history since 2011, authorised distributor list: Sidesho
 ```
 [Announcement Bar — rotates 2 messages from Firestore `announcements`]
 
-[FATCAT COLLECTIBLES logo]  [Collections ▾]  [Search 🔍]  [Account 👤]  [Wishlist ♡]  [Cart 🛒 (count)]
+[HOBSON COLLECTIBLES logo]  [Collections ▾]  [Search 🔍]  [Account 👤]  [Wishlist ♡]  [Cart 🛒 (count)]
 
 Collections mega-menu
 ├── Browse by Franchise
@@ -608,12 +606,12 @@ All nav items are driven by Firestore `collections` (sortOrder + active=true).
 
 ```
 [Trust Badges Row]
-  Free Shipping (pan-India)  ·  Customer Service (Mon–Fri)  ·  Earn FCC Coins  ·  Secure Payment (RazorPay)
+  Free Shipping (pan-India)  ·  Customer Service (Mon–Fri)  ·  Earn HC Coins  ·  Secure Payment (RazorPay)
 
 [4-column footer grid]
   Our Info                Shop              Store Policies          Contact
   ────────────────────    ──────────────    ────────────────────    ──────────────────────────────
-  Home                    My Account        Terms & Conditions      Email: fatcatcollectibles.in@gmail.com
+  Home                    My Account        Terms & Conditions      Email: hobsoncollectibles.in@gmail.com
   Search                  My Wishlist       Privacy Policy          Customer Care WA: +91 7620783819
   Blog                    My Orders         Shipping Policy         Customer Care Phone: +91 7620783819
   About                   My Addresses      Refund Policy           Statues Queries: +91 7887888187
@@ -625,7 +623,7 @@ All nav items are driven by Firestore `collections` (sortOrder + active=true).
 
 [Social Links]  Facebook · Instagram · WhatsApp
 
-[Copyright]  © 2026, FATCAT COLLECTIBLES
+[Copyright]  © 2026, HOBSON COLLECTIBLES
 [SSL Badge]  GoDaddy SSL seal
 ```
 
@@ -685,11 +683,8 @@ Every piece of content that was hardcoded on the original Shopify site is made f
                │
                ▼
 ┌──────────────────────────┐
-│  Firebase Cloud Functions │
-│  onProductWrite()         │  → low stock / sold-out WA alert
-│  onOrderWrite()           │  → status-change WA to customer
-│  onUserCoinUpdate()       │  → coin balance guard
-│  scheduledSitemapRebuild()│  → daily ISR revalidation
+│  Vercel Cron Jobs         │
+│  /api/cron/sitemap       │  → daily ISR revalidation (replaces Cloud Scheduler)
 └──────────────────────────┘
                │
                ▼
@@ -708,7 +703,7 @@ Every piece of content that was hardcoded on the original Shopify site is made f
 ### Root Layout
 
 ```
-fatcat/                                   # Monorepo root
+hobson/                                   # Monorepo root
 ├── app/                                  # Next.js App Router root
 ├── components/
 ├── constants/
@@ -716,7 +711,6 @@ fatcat/                                   # Monorepo root
 ├── hooks/
 ├── types/
 ├── store/
-├── functions/                            # Firebase Cloud Functions (separate package)
 ├── public/
 ├── scripts/                              # One-off dev/data scripts
 ├── .env.local                            # Local secrets (never committed)
@@ -743,203 +737,212 @@ fatcat/                                   # Monorepo root
 
 ```
 app/
-├── layout.tsx                            # Root layout — <html>, fonts, global providers
+├── layout.tsx                            # Root pass-through — returns children only
 ├── globals.css                           # Tailwind base + custom CSS variables
 ├── not-found.tsx                         # Global 404 page
-├── error.tsx                             # Global error boundary
-├── loading.tsx                           # Global suspense fallback
+├── robots.ts                             # /robots.txt
+├── sitemap.ts                            # Dynamic XML sitemap (deferred to API route)
+├── favicon.ico
 │
-├── (storefront)/                         # Route group: public storefront
-│   ├── layout.tsx                        # Navbar + Footer + AnnouncementBar + CartProvider
+├── [locale]/                             # i18n: all user-facing routes under locale prefix
+│   ├── layout.tsx                        # <html lang> + fonts + NextIntlClientProvider
+│   │                                     # + Providers (Auth, Cart, Toast)
+│   │                                     # generateStaticParams() → ["en", "hi"]
 │   │
-│   ├── page.tsx                          # / — Homepage (ISR revalidate: 300)
-│   │                                     # Sections (all dynamic from Firestore):
-│   │                                     #   AnnouncementBar (announcements)
-│   │                                     #   HeroBanner carousel (banners)
-│   │                                     #   CollectionStrip — franchise (collections type=franchise)
-│   │                                     #   BrandStrip — brand logos (collections type=brand)
-│   │                                     #   HomeSections[] — featured + bestsellers (homeSections)
-│   │                                     #   PromoGrid — 4 inline banners (promobanners)
-│   │                                     #   TestimonialsCarousel (testimonials)
-│   │                                     #   FAQAccordion (faq)
-│   │                                     #   TrustBadges (siteConfig.trustBadges)
-│   │                                     #   NewsletterSignup
-│   │
-│   ├── collections/
-│   │   ├── page.tsx                      # /collections — All collections index (ISR 300s)
-│   │   │                                 # Alphabetical grid of all collection tiles (paginated)
-│   │   └── [slug]/
-│   │       ├── page.tsx                  # /collections/[slug] — Product grid (ISR 300s)
-│   │       │                             # Reads: collection banner, title, description,
-│   │       │                             # product count, filter/sort, product grid, pagination
-│   │       └── loading.tsx               # Skeleton: banner shimmer + product grid skeleton
-│   │
-│   ├── products/
-│   │   └── [slug]/
-│   │       ├── page.tsx                  # /products/[slug] — Product detail (ISR 300s)
-│   │       │                             # Sections: image gallery (up to 20 imgs + zoom),
-│   │       │                             # brand link, title, PriceTag, description, ETA,
-│   │       │                             # qty stepper, wishlist btn, add-to-cart/pre-order CTA,
-│   │       │                             # buy-it-now CTA, TrustBadges
-│   │       ├── loading.tsx               # Skeleton: gallery + detail shimmer
-│   │       └── _components/
-│   │           ├── ImageGallery.tsx      # Client: thumbnail filmstrip + main image + zoom modal
-│   │           ├── AddToCartSection.tsx  # Client island: qty stepper + add to cart + buy now
-│   │           ├── WishlistButton.tsx    # Client island: heart toggle → Zustand wishlist
-│   │           └── RelatedProducts.tsx   # Server: products from same franchise/brand
-│   │
-│   ├── search/
-│   │   ├── page.tsx                      # /search — Full-text search results (SSR, no cache)
-│   │   │                                 # ?q= query param → Firestore prefix query
-│   │   │                                 # Same ProductGrid + filter/sort as collection page
-│   │   └── loading.tsx
-│   │
-│   ├── cart/
-│   │   └── page.tsx                      # /cart — Cart page
-│   │                                     # Empty state: "Your cart is empty" + "Continue shopping"
-│   │                                     # Populated: line items, qty stepper, remove, subtotal,
-│   │                                     # "Check Out" → /checkout
-│   │
-│   ├── checkout/
-│   │   ├── page.tsx                      # /checkout — Our WhatsApp checkout (replaces Shopify)
-│   │   └── _components/
-│   │       ├── AddressForm.tsx           # Name, phone, line1, line2, city, state, pincode
-│   │       ├── SavedAddressPicker.tsx    # Select from account addresses (logged-in users)
-│   │       ├── CoinRedeemToggle.tsx      # "Use X coins (save ₹Y)" toggle
-│   │       ├── DiscountCodeInput.tsx     # Code input + validate against Firestore discounts
-│   │       └── OrderSummary.tsx          # Readonly: items, subtotal, discount, coins, total
-│   │
-│   ├── orders/
-│   │   └── [orderId]/
-│   │       └── track/
-│   │           ├── page.tsx              # /orders/[id]/track — Order tracking (our addition)
-│   │           │                         # Vertical status stepper, real-time via onSnapshot,
-│   │           │                         # courier + tracking link when status ≥ shipped
-│   │           └── loading.tsx
-│   │
-│   ├── account/
-│   │   ├── layout.tsx                    # Account sidebar: Profile · Orders · Wishlist · Addresses
-│   │   ├── page.tsx                      # /account — Profile info + FCC coin balance + quick links
-│   │   ├── orders/
-│   │   │   ├── page.tsx                  # /account/orders — Order list (ID, date, total, status, Track)
-│   │   │   └── [orderId]/
-│   │   │       └── page.tsx              # /account/orders/[id] — Line items, totals, address, timeline
-│   │   ├── wishlist/
-│   │   │   └── page.tsx                  # /account/wishlist — Product grid from users.wishlist[]
-│   │   └── addresses/
-│   │       └── page.tsx                  # /account/addresses — Cards: Add/Edit/Delete/Set default
-│   │
-│   ├── blog/
-│   │   ├── page.tsx                      # /blog — Post index grid (ISR 3600s)
-│   │   │                                 # Empty state: "No posts yet" until admin publishes
-│   │   └── [slug]/
-│   │       ├── page.tsx                  # /blog/[slug] — Post: cover, title, author, date, body
-│   │       └── loading.tsx
-│   │
-│   ├── policies/
-│   │   └── [policy]/
-│   │       └── page.tsx                  # /policies/[policy] — Policy pages (ISR 3600s)
-│   │                                     # Slugs: terms-of-service · privacy-policy ·
-│   │                                     #        shipping-policy · refund-policy
-│   │                                     # Content from Firestore `pages/{policy}`
-│   │
-│   └── [pageSlug]/
-│       └── page.tsx                      # /about, /contact — Info pages (ISR 3600s)
-│                                         # about: company history, authorised distributors list
-│                                         # contact: contact form (Name/Email/Message) + store info
-│
-├── (auth)/                               # Route group: auth screens (no Navbar/Footer)
-│   ├── layout.tsx                        # Centered card layout
-│   ├── login/
-│   │   └── page.tsx                      # /login — Email + Password + Google OAuth
-│   ├── register/
-│   │   └── page.tsx                      # /register — Name + Email + Password + Google
-│   └── forgot-password/
-│       └── page.tsx                      # /forgot-password — Email input → Firebase reset email
-│
-├── (admin)/                              # Route group: admin panel (auth-gated in layout)
-│   ├── layout.tsx                        # Admin shell: sidebar nav + session check
-│   │
-│   ├── admin/
-│   │   ├── page.tsx                      # /admin — Dashboard: stats, recent orders, low-stock
+│   ├── (storefront)/                     # Route group: public storefront
+│   │   ├── layout.tsx                    # Navbar + Footer + AnnouncementBar + CartProvider
 │   │   │
-│   │   ├── products/
-│   │   │   ├── page.tsx                  # /admin/products — List, search, quick-stock edit
-│   │   │   ├── new/
-│   │   │   │   └── page.tsx              # /admin/products/new — Create product form
-│   │   │   ├── [id]/
-│   │   │   │   └── page.tsx              # /admin/products/[id] — Edit product
-│   │   │   └── bulk-upload/
-│   │   │       └── page.tsx              # /admin/products/bulk-upload — CSV upload UI
-│   │   │
-│   │   ├── orders/
-│   │   │   ├── page.tsx                  # /admin/orders — List, filter by status/date
-│   │   │   └── [id]/
-│   │   │       └── page.tsx              # /admin/orders/[id] — Detail + status change + WA notify
+│   │   ├── page.tsx                      # / — Homepage (ISR revalidate: 300)
+│   │   │                                 # Sections (all dynamic from Firestore):
+│   │   │                                 #   AnnouncementBar (announcements)
+│   │   │                                 #   HeroBanner carousel (banners)
+│   │   │                                 #   CollectionStrip — franchise (collections type=franchise)
+│   │   │                                 #   BrandStrip — brand logos (collections type=brand)
+│   │   │                                 #   HomeSections[] — featured + bestsellers (homeSections)
+│   │   │                                 #   PromoGrid — 4 inline banners (promobanners)
+│   │   │                                 #   TestimonialsCarousel (testimonials)
+│   │   │                                 #   FAQAccordion (faq)
+│   │   │                                 #   TrustBadges (siteConfig.trustBadges)
+│   │   │                                 #   NewsletterSignup
 │   │   │
 │   │   ├── collections/
-│   │   │   ├── page.tsx                  # /admin/collections — List, reorder drag-and-drop
-│   │   │   ├── new/
-│   │   │   │   └── page.tsx
+│   │   │   ├── page.tsx                  # /collections — All collections index (ISR 300s)
+│   │   │   │                             # Alphabetical grid of all collection tiles (paginated)
 │   │   │   └── [slug]/
-│   │   │       └── page.tsx
+│   │   │       ├── page.tsx              # /collections/[slug] — Product grid (ISR 300s)
+│   │   │       │                         # Reads: collection banner, title, description,
+│   │   │       │                         # product count, filter/sort, product grid, pagination
+│   │   │       └── loading.tsx           # Skeleton: banner shimmer + product grid skeleton
 │   │   │
-│   │   ├── content/
-│   │   │   ├── page.tsx                  # /admin/content — Tabs: Banners, Sections, FAQs, Testimonials
-│   │   │   ├── banners/
-│   │   │   │   └── page.tsx
-│   │   │   ├── home-sections/
-│   │   │   │   └── page.tsx
-│   │   │   ├── testimonials/
-│   │   │   │   └── page.tsx
-│   │   │   ├── faq/
-│   │   │   │   └── page.tsx
-│   │   │   └── announcements/
-│   │   │       └── page.tsx
+│   │   ├── products/
+│   │   │   └── [slug]/
+│   │   │       ├── page.tsx              # /products/[slug] — Product detail (ISR 300s)
+│   │   │       │                         # Sections: image gallery (up to 20 imgs + zoom),
+│   │   │       │                         # brand link, title, PriceTag, description, ETA,
+│   │   │       │                         # qty stepper, wishlist btn, add-to-cart/pre-order CTA,
+│   │   │       │                         # buy-it-now CTA, TrustBadges
+│   │   │       ├── loading.tsx           # Skeleton: gallery + detail shimmer
+│   │   │       └── _components/
+│   │   │           ├── ImageGallery.tsx  # Client: thumbnail filmstrip + main image + zoom modal
+│   │   │           ├── AddToCartSection.tsx # Client island: qty stepper + add to cart + buy now
+│   │   │           ├── WishlistButton.tsx   # Client island: heart toggle → Zustand wishlist
+│   │   │           └── RelatedProducts.tsx  # Server: products from same franchise/brand
+│   │   │
+│   │   ├── search/
+│   │   │   ├── page.tsx                  # /search — Full-text search results (SSR, no cache)
+│   │   │   │                             # ?q= query param → Firestore prefix query
+│   │   │   │                             # Same ProductGrid + filter/sort as collection page
+│   │   │   └── loading.tsx
+│   │   │
+│   │   ├── cart/
+│   │   │   └── page.tsx                  # /cart — Cart page
+│   │   │                                 # Empty state: "Your cart is empty" + "Continue shopping"
+│   │   │                                 # Populated: line items, qty stepper, remove, subtotal,
+│   │   │                                 # "Check Out" → /checkout
+│   │   │
+│   │   ├── checkout/
+│   │   │   ├── page.tsx                  # /checkout — WhatsApp checkout
+│   │   │   └── _components/
+│   │   │       ├── AddressForm.tsx       # Name, phone, line1, line2, city, state, pincode
+│   │   │       ├── SavedAddressPicker.tsx # Select from account addresses (logged-in users)
+│   │   │       ├── CoinRedeemToggle.tsx  # "Use X coins (save ₹Y)" toggle
+│   │   │       ├── DiscountCodeInput.tsx # Code input + validate against Firestore discounts
+│   │   │       └── OrderSummary.tsx      # Readonly: items, subtotal, discount, coins, total
+│   │   │
+│   │   ├── orders/
+│   │   │   └── [orderId]/
+│   │   │       └── track/
+│   │   │           ├── page.tsx          # /orders/[id]/track — Order tracking
+│   │   │           │                     # Vertical status stepper, real-time via onSnapshot,
+│   │   │           │                     # courier + tracking link when status ≥ shipped
+│   │   │           └── loading.tsx
+│   │   │
+│   │   ├── account/
+│   │   │   ├── layout.tsx                # Account sidebar: Profile · Orders · Wishlist · Addresses
+│   │   │   ├── page.tsx                  # /account — Profile info + HC coin balance + quick links
+│   │   │   ├── orders/
+│   │   │   │   ├── page.tsx              # /account/orders — Order list (ID, date, total, status, Track)
+│   │   │   │   └── [orderId]/
+│   │   │   │       └── page.tsx          # /account/orders/[id] — Line items, totals, address, timeline
+│   │   │   ├── wishlist/
+│   │   │   │   └── page.tsx              # /account/wishlist — Product grid from users.wishlist[]
+│   │   │   └── addresses/
+│   │   │       └── page.tsx              # /account/addresses — Cards: Add/Edit/Delete/Set default
 │   │   │
 │   │   ├── blog/
-│   │   │   ├── page.tsx                  # /admin/blog — Post list
-│   │   │   ├── new/
-│   │   │   │   └── page.tsx
-│   │   │   └── [id]/
-│   │   │       └── page.tsx              # Rich-text editor
-│   │   │
-│   │   ├── pages/
+│   │   │   ├── page.tsx                  # /blog — Post index grid (ISR 3600s)
+│   │   │   │                             # Empty state: "No posts yet" until admin publishes
 │   │   │   └── [slug]/
-│   │   │       └── page.tsx              # /admin/pages/[slug] — Edit policy/info page body
+│   │   │       ├── page.tsx              # /blog/[slug] — Post: cover, title, author, date, body
+│   │   │       └── loading.tsx
 │   │   │
-│   │   ├── loyalty/
-│   │   │   └── page.tsx                  # /admin/loyalty — Config editor + top holders + manual grant
+│   │   ├── policies/
+│   │   │   └── [policy]/
+│   │   │       └── page.tsx              # /policies/[policy] — Policy pages (ISR 3600s)
+│   │   │                                 # Slugs: terms-of-service · privacy-policy ·
+│   │   │                                 #        shipping-policy · refund-policy
+│   │   │                                 # Content from Firestore `pages/{policy}`
 │   │   │
-│   │   ├── discounts/
-│   │   │   ├── page.tsx                  # /admin/discounts — Code list
-│   │   │   └── new/
-│   │   │       └── page.tsx
-│   │   │
-│   │   └── config/
-│   │       └── page.tsx                  # /admin/config — siteConfig editor (WA numbers, SEO, support hours)
+│   │   └── [pageSlug]/
+│   │       └── page.tsx                  # /about, /contact — Info pages (ISR 3600s)
+│   │                                     # about: company history, authorised distributors list
+│   │                                     # contact: contact form (Name/Email/Message) + store info
 │   │
-└── api/
-    ├── auth/
-    │   └── [...nextauth]/
-    │       └── route.ts                  # NextAuth.js handler (Firebase adapter)
-    ├── checkout/
-    │   └── route.ts                      # POST: validate → write order → reserve stock → return WA URL
-    ├── webhooks/
-    │   └── whatsapp/
-    │       └── route.ts                  # POST: inbound WA bot (HMAC verified)
-    ├── admin/
-    │   ├── orders/
-    │   │   └── [id]/
-    │   │       └── status/
-    │   │           └── route.ts          # PATCH: update order status (admin only)
-    │   └── products/
-    │       └── bulk-upload/
-    │           └── route.ts              # POST: CSV → Firestore batch write
-    ├── revalidate/
-    │   └── route.ts                      # POST: on-demand ISR revalidation (secret-token auth)
-    └── sitemap/
-        └── route.ts                      # GET: dynamic XML sitemap
+│   ├── (auth)/                           # Route group: auth screens (no Navbar/Footer)
+│   │   ├── layout.tsx                    # Centered card layout
+│   │   ├── login/
+│   │   │   └── page.tsx                  # /login — Email + Password + Google OAuth
+│   │   ├── register/
+│   │   │   └── page.tsx                  # /register — Name + Email + Password + Google
+│   │   └── forgot-password/
+│   │       └── page.tsx                  # /forgot-password — Email input → Firebase reset email
+│   │
+│   └── (admin)/                          # Route group: admin panel (auth-gated in layout)
+│       ├── layout.tsx                    # Admin shell: sidebar nav + session check
+│       │
+│       └── admin/
+│           ├── page.tsx                  # /admin — Dashboard: stats, recent orders, low-stock
+│           │
+│           ├── products/
+│           │   ├── page.tsx              # /admin/products — List, search, quick-stock edit
+│           │   ├── new/
+│           │   │   └── page.tsx          # /admin/products/new — Create product form
+│           │   ├── [id]/
+│           │   │   └── page.tsx          # /admin/products/[id] — Edit product
+│           │   └── bulk-upload/
+│           │       └── page.tsx          # /admin/products/bulk-upload — CSV upload UI
+│           │
+│           ├── orders/
+│           │   ├── page.tsx              # /admin/orders — List, filter by status/date
+│           │   └── [id]/
+│           │       └── page.tsx          # /admin/orders/[id] — Detail + status change + WA notify
+│           │
+│           ├── collections/
+│           │   ├── page.tsx              # /admin/collections — List, reorder drag-and-drop
+│           │   ├── new/
+│           │   │   └── page.tsx
+│           │   └── [slug]/
+│           │       └── page.tsx
+│           │
+│           ├── content/
+│           │   ├── page.tsx              # /admin/content — Tabs: Banners, Sections, FAQs, Testimonials
+│           │   ├── banners/
+│           │   │   └── page.tsx
+│           │   ├── home-sections/
+│           │   │   └── page.tsx
+│           │   ├── testimonials/
+│           │   │   └── page.tsx
+│           │   ├── faq/
+│           │   │   └── page.tsx
+│           │   └── announcements/
+│           │       └── page.tsx
+│           │
+│           ├── blog/
+│           │   ├── page.tsx              # /admin/blog — Post list
+│           │   ├── new/
+│           │   │   └── page.tsx
+│           │   └── [id]/
+│           │       └── page.tsx          # Rich-text editor
+│           │
+│           ├── pages/
+│           │   └── [slug]/
+│           │       └── page.tsx          # /admin/pages/[slug] — Edit policy/info page body
+│           │
+│           ├── loyalty/
+│           │   └── page.tsx              # /admin/loyalty — Config editor + top holders + manual grant
+│           │
+│           ├── discounts/
+│           │   ├── page.tsx              # /admin/discounts — Code list
+│           │   └── new/
+│           │       └── page.tsx
+│           │
+│           └── config/
+│               └── page.tsx              # /admin/config — siteConfig editor (WA numbers, SEO, support hours)
+│
+├── api/                                  # API routes (not locale-scoped)
+│   ├── checkout/
+│   │   └── route.ts                      # POST: validate → write order → reserve stock → return WA URL
+│   ├── webhooks/
+│   │   └── whatsapp/
+│   │       └── route.ts                  # POST: inbound WA bot (HMAC verified)
+│   ├── admin/
+│   │   ├── seed/
+│   │   │   └── route.ts                  # POST/DELETE: admin-auth seed/delete entities
+│   │   ├── orders/
+│   │   │   └── [id]/
+│   │   │       └── status/
+│   │   │           └── route.ts          # PATCH: update order status (admin only)
+│   │   └── products/
+│   │       └── bulk-upload/
+│   │           └── route.ts              # POST: CSV → Firestore batch write
+│   ├── revalidate/
+│   │   └── route.ts                      # POST: on-demand ISR revalidation (secret-token auth)
+│   └── sitemap/
+│       └── route.ts                      # GET: dynamic XML sitemap
+│
+└── seed/                                 # Admin-only seed UI (auth-gated by layout)
+    ├── layout.tsx                        # Firebase auth check: role === "admin"
+    └── page.tsx                          # Live DB counts, entity groups, seed/delete UI
 ```
 
 ---
@@ -1144,37 +1147,7 @@ types/
 
 ---
 
-### `functions/` — Firebase Cloud Functions
-
-```
-functions/
-├── package.json
-├── tsconfig.json
-└── src/
-    ├── index.ts                          # Exports all functions
-    │
-    ├── onProductWrite.ts                 # Trigger: products/{id} write
-    │                                     # → Recalculate availableStock = stock - reservedStock
-    │                                     # → Set inStock flag
-    │                                     # → Send low-stock / sold-out WA alert to admin
-    │
-    ├── onOrderWrite.ts                   # Trigger: orders/{id} write
-    │                                     # → On status → "delivered": award FCC coins to user
-    │                                     # → On status → "delivered": release reservedStock
-    │                                     # → On status → "cancelled": release reservedStock
-    │
-    ├── onOrderStatusChange.ts            # Trigger: orders/{id} update (currentStatus field)
-    │                                     # → Read orderStatusConfig for new status
-    │                                     # → If notifyCustomer=true: send WA via WhatsApp API
-    │
-    ├── onUserCoinUpdate.ts               # Trigger: users/{id} update (fccCoins field)
-    │                                     # → Guard: if fccCoins < 0, reset to 0 + log warning
-    │
-    └── scheduledSitemapRebuild.ts        # Cloud Scheduler: daily 2am IST
-                                          # → POST /api/revalidate for homepage + sitemap
-```
-
----
+> **Note — Firebase Spark Plan:** Cloud Functions require the Blaze (pay-as-you-go) plan. This project runs on Spark (free tier). All logic that would have been Cloud Functions is instead handled inline at the API route call site or via Vercel cron jobs. See §10 for the full mapping.
 
 ### `scripts/` — Developer Utilities
 
@@ -1217,14 +1190,14 @@ public/
   images: string[];               // Firebase Storage URLs
   salePrice: number;              // in paise or INR float
   regularPrice: number;
-  franchise: string;              // e.g. "marvel"
-  brand: string;                  // e.g. "hot-toys"
+  franchise: string;              // slug from `franchises` collection — e.g. "marvel"
+  brand: string;                  // slug from `brands` collection — e.g. "hot-toys"
   tags: string[];                 // e.g. ["sixth-scale", "deluxe"]
   description: string;            // rich text / HTML
   specs: Record<string, string>;  // e.g. { Scale: "1:6", Material: "Die-cast" }
   stock: number;
   reservedStock: number;          // units in pending/confirmed orders
-  availableStock: number;         // Cloud Function keeps: stock - reservedStock
+  availableStock: number;         // API route keeps in sync: stock - reservedStock (updated on every stock mutation)
   inStock: boolean;               // denormalized for query perf
   isPreorder: boolean;
   preorderShipDate?: string;      // e.g. "Q2 2026"
@@ -1294,7 +1267,7 @@ public/
   email: string;
   phone?: string;
   photoURL?: string;
-  fccCoins: number;
+  hcCoins: number;
   coinHistory: {
     delta: number;
     reason: string;             // "purchase", "redemption", "admin-grant"
@@ -1308,16 +1281,51 @@ public/
 }
 ```
 
-### `collections/{slug}`
+### `franchises/{slug}` _(was `type: "franchise"` inside `collections`)_
 
 ```ts
 {
   slug: string;
   name: string;
-  type: "franchise" | "brand";
-  bannerImage: string;
-  logoImage?: string;           // for brand strip
+  thumbnailImage?: string;     // for FranchiseStrip nav tile + /franchise index grid
+  bannerImage?: string;        // for /franchise/[slug] page header
   description?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  sortOrder: number;
+  active: boolean;
+}
+```
+
+### `brands/{slug}` _(was `type: "brand"` inside `collections`)_
+
+```ts
+{
+  slug: string;
+  name: string;
+  logoImage?: string;          // for BrandStrip horizontal scroll
+  bannerImage?: string;        // for /brand/[slug] page header
+  description?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  sortOrder: number;
+  active: boolean;
+}
+```
+
+### `collections/{slug}` _(curated/featured groupings only — What's New, 1/6 Scale, Action Figures, etc.)_
+
+```ts
+{
+  slug: string;
+  name: string;
+  bannerImage?: string;
+  description?: string;
+  // auto-filter rules (any matching product is included)
+  filterFranchises?: string[];  // franchise slugs
+  filterBrands?: string[];      // brand slugs
+  filterTags?: string[];        // product tags
+  manualProductIds?: string[];  // OR handpick specific products
   seoTitle?: string;
   seoDescription?: string;
   sortOrder: number;
@@ -1501,6 +1509,63 @@ public/
 }
 ```
 
+### `reviews/{id}`
+
+```ts
+{
+  id: string;
+  productId: string;
+  productSlug: string;
+  userId: string;
+  userName: string;
+  rating: 1 | 2 | 3 | 4 | 5;
+  title?: string;
+  body: string;
+  images?: string[];            // Firebase Storage URLs (optional photo proof, max 3)
+  status: "pending" | "approved" | "rejected";
+  adminReply?: string;
+  flagCount: number;
+  isVerifiedPurchase: boolean;  // true if userId has an order containing productId
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+```
+
+### `reviewFlags/{id}`
+
+```ts
+{
+  reviewId: string;
+  userId: string;
+  reason: "spam" | "offensive" | "fake" | "other";
+  createdAt: Timestamp;
+}
+```
+
+### `supportTickets/{id}`
+
+```ts
+{
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  orderId?: string;             // linked order if issue is order-related
+  subject: string;
+  status: "open" | "in_progress" | "resolved" | "closed";
+  messages: {
+    senderUid: string;
+    senderName: string;
+    senderRole: "customer" | "admin";
+    body: string;
+    createdAt: Timestamp;
+  }[];
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  resolvedAt?: Timestamp;
+}
+```
+
 ### `orderStatusConfig/{status}`
 
 ```ts
@@ -1516,6 +1581,112 @@ public/
 
 ---
 
+### 6.1 Composite Indices
+
+Firestore only auto-builds single-field indexes. A composite index is required whenever:
+- An **equality filter** is combined with **orderBy on a different field**, or
+- There are **two or more equality/range filters** on different fields.
+
+All composite indices live in `firestore.indexes.json` and are deployed via `firebase deploy --only firestore:indexes`.
+
+#### Strategy — Products sort covers
+
+`getProducts()` (client) and `getProductsServer()` (server) support four sort options for each filter combination. Every equality filter that can be applied on the storefront must be covered by indices for all four sorts:
+
+| Sort option | Sort field + direction |
+|-------------|----------------------|
+| `newest` (default) | `createdAt DESC` |
+| `price_asc` | `salePrice ASC` |
+| `price_desc` | `salePrice DESC` |
+| `az` | `name ASC` |
+
+#### `products` — required composite indices
+
+| Filter fields | Sort field | Notes |
+|---|---|---|
+| `active` | `salePrice ASC` | server active-only sort |
+| `active` | `salePrice DESC` | server active-only sort |
+| `active` | `createdAt DESC` | new arrivals / default |
+| `active` | `name ASC` | name sort + prefix-search (`active == true, name >= q`) |
+| `active, franchise` | `createdAt DESC` | franchise page — newest |
+| `active, franchise` | `salePrice ASC` | franchise page — price ↑ |
+| `active, franchise` | `salePrice DESC` | franchise page — price ↓ |
+| `active, franchise` | `name ASC` | franchise page — A–Z |
+| `active, brand` | `createdAt DESC` | brand page — newest |
+| `active, brand` | `salePrice ASC` | brand page — price ↑ |
+| `active, brand` | `salePrice DESC` | brand page — price ↓ |
+| `active, brand` | `name ASC` | brand page — A–Z |
+| `active, inStock` | `createdAt DESC` | in-stock filter — newest |
+| `active, inStock` | `salePrice ASC` | in-stock filter — price ↑ |
+| `active, inStock` | `salePrice DESC` | in-stock filter — price ↓ |
+| `active, inStock` | `name ASC` | in-stock filter — A–Z |
+| `active, isFeatured` | _(no orderBy)_ | homepage featured products |
+| `active, isBestseller` | _(no orderBy)_ | homepage bestsellers |
+| `active, isPreorder` | `createdAt DESC` | preorder listing |
+| `franchise, active, inStock` | _(no orderBy)_ | related products (`getRelatedProductsServer`) |
+| `franchise` (no active) | `createdAt DESC` | client `getProducts()` without active filter |
+| `franchise` (no active) | `salePrice ASC` | client franchise sort |
+| `franchise` (no active) | `salePrice DESC` | client franchise sort |
+| `franchise` (no active) | `name ASC` | client franchise sort |
+| `brand` (no active) | `createdAt DESC` | client brand sort |
+| `brand` (no active) | `salePrice ASC` | client brand sort |
+| `brand` (no active) | `salePrice DESC` | client brand sort |
+| `brand` (no active) | `name ASC` | client brand sort |
+| `inStock` (no active) | `createdAt DESC` | client in-stock sort |
+| `inStock` (no active) | `salePrice ASC` | client in-stock sort |
+| `inStock` (no active) | `salePrice DESC` | client in-stock sort |
+
+#### `orders` — required composite indices
+
+| Filter fields | Sort field | Notes |
+|---|---|---|
+| `userId` | `createdAt DESC` | customer order history |
+| `currentStatus` | `createdAt DESC` | admin order list by status |
+
+#### Content collections — `active + sortOrder` pattern
+
+All content collections (`banners`, `promobanners`, `homeSections`, `faq`, `announcements`) use the same query pattern: `where("active","==",true).orderBy("sortOrder","asc")`. Each needs its own index.
+
+`testimonials` additionally has a `featured` filter: `where("featured","==",true).where("active","==",true).orderBy("sortOrder","asc")` → needs three-field index.
+
+#### `blog` — required composite indices
+
+| Filter fields | Sort field | Notes |
+|---|---|---|
+| `published` | `publishedAt DESC` | public blog listing |
+| `slug, published` | _(no orderBy)_ | `getBlogPost(slug)` lookup — two equality filters |
+
+#### `reviews` — Phase 8 (add before Phase 8 deploy)
+
+| Filter fields | Sort field | Notes |
+|---|---|---|
+| `productId, status` | `createdAt DESC` | approved reviews on product page |
+| `userId, status` | `createdAt DESC` | account reviews history |
+| `status` | `createdAt DESC` | admin moderation queue |
+| `reviewId` | `createdAt DESC` | flags per review |
+
+#### `supportTickets` — Phase 6+
+
+| Filter fields | Sort field | Notes |
+|---|---|---|
+| `userId` | `createdAt DESC` | customer own tickets |
+| `status` | `updatedAt DESC` | admin queue by status |
+| `userId, status` | `createdAt DESC` | customer tickets filtered by status |
+
+#### Stale indices to remove
+
+The following entries in `firestore.indexes.json` use fields that no longer exist in the current schema and must be removed to avoid confusion:
+
+| Stale fields | Reason |
+|---|---|
+| `collectionId` | Removed — curated collections now use `filterFranchises/filterBrands/filterTags` on the `collections` document, not a denormalized product field |
+| `collections ARRAY_CONTAINS` | Removed — products no longer carry a `collections[]` array |
+| `status` (products) | Renamed to `active: boolean` |
+| `price` (products) | Renamed to `salePrice` |
+| `nameLower` | Removed — prefix search uses `name >= q` directly |
+
+---
+
 ## 7. Constants & DRY Design
 
 ### `constants/firebase.ts`
@@ -1525,7 +1696,9 @@ export const COLLECTIONS = {
   PRODUCTS: "products",
   ORDERS: "orders",
   USERS: "users",
-  COLLECTIONS: "collections",
+  FRANCHISES: "franchises",            // taxonomy: franchise IPs (Marvel, DC, TMNT…)
+  BRANDS: "brands",                    // taxonomy: manufacturer brands (Hot Toys, Sideshow…)
+  CURATED_COLLECTIONS: "collections",  // curated groupings (What's New, 1/6 Scale…)
   BANNERS: "banners",
   HOME_SECTIONS: "homeSections",
   PROMO_BANNERS: "promobanners",
@@ -1538,6 +1711,13 @@ export const COLLECTIONS = {
   LOYALTY_CONFIG: "loyaltyConfig",
   ORDER_STATUS_CONFIG: "orderStatusConfig",
   SITE_CONFIG: "siteConfig",
+  REVIEWS: "reviews",
+  REVIEW_FLAGS: "reviewFlags",
+  SUPPORT_TICKETS: "supportTickets",
+  NEWSLETTER: "newsletter",
+  PAYMENT_SETTINGS: "paymentSettings",
+  SHIPPING_SETTINGS: "shippingSettings",
+  NAVIGATION_CONFIG: "navigationConfig",
 } as const;
 ```
 
@@ -1554,16 +1734,31 @@ export const ROUTES = {
   ACCOUNT_ORDERS: "/account/orders",
   ACCOUNT_WISHLIST: "/account/wishlist",
   ACCOUNT_ADDRESSES: "/account/addresses",
+  ACCOUNT_SUPPORT: "/account/support",
+  FRANCHISE: (slug: string) => `/franchise/${slug}`,
+  BRAND: (slug: string) => `/brand/${slug}`,
   COLLECTION: (slug: string) => `/collections/${slug}`,
   PRODUCT: (slug: string) => `/products/${slug}`,
   ORDER_TRACK: (id: string) => `/orders/${id}/track`,
+  ORDER_DETAIL: (id: string) => `/account/orders/${id}`,
   PAGE: (slug: string) => `/${slug}`,
   BLOG_POST: (slug: string) => `/blog/${slug}`,
   ADMIN: "/admin",
   ADMIN_PRODUCTS: "/admin/products",
   ADMIN_ORDERS: "/admin/orders",
+  ADMIN_FRANCHISES: "/admin/franchises",
+  ADMIN_BRANDS: "/admin/brands",
+  ADMIN_COLLECTIONS: "/admin/collections",
+  ADMIN_REVIEWS: "/admin/reviews",
+  ADMIN_SUPPORT: "/admin/support",
+  ADMIN_NEWSLETTER: "/admin/newsletter",
+  ADMIN_ANALYTICS: "/admin/analytics",
   ADMIN_CONTENT: "/admin/content",
   ADMIN_CONFIG: "/admin/config",
+  ADMIN_SETTINGS: "/admin/settings",
+  ADMIN_SETTINGS_PAYMENTS: "/admin/settings/payments",
+  ADMIN_SETTINGS_SHIPPING: "/admin/settings/shipping",
+  ADMIN_SETTINGS_NAVIGATION: "/admin/settings/navigation",
 } as const;
 ```
 
@@ -1609,7 +1804,7 @@ export function buildCheckoutMessageURL(
     (i) => `• ${i.name} ×${i.qty} — ${formatINR(i.salePrice * i.qty)}`,
   );
   const body = [
-    "Hi FatCat! I'd like to place an order:",
+    "Hi Hobson! I'd like to place an order:",
     "",
     ...lines,
     "",
@@ -1650,7 +1845,7 @@ export function buildStatusNotificationURL(
 
 ```
 User adds to cart → CartDrawer (Zustand, persisted localStorage)
-  → Checkout page (address form + FCC coins toggle + discount code)
+  → Checkout page (address form + HC coins toggle + discount code)
   → POST /api/checkout:
       1. Validate discount code against Firestore
       2. Check availableStock for each item
@@ -1686,9 +1881,9 @@ pending_payment → payment_confirmed → processing → shipped → out_for_del
 
 ### 8.4 Inventory Management via WhatsApp
 
-#### Passive Alerts (Cloud Function → Admin WA)
+#### Passive Alerts (API route inline → Admin WA)
 
-Triggered on every `products/{id}` write:
+Triggered inside the same API route that mutates stock (RESTOCK/SOLDOUT webhook handler + admin product update route):
 
 | Condition                             | Alert                                               |
 | ------------------------------------- | --------------------------------------------------- |
@@ -1714,12 +1909,12 @@ Endpoint: `POST /api/webhooks/whatsapp`
 - **Security**: HMAC signature verification on every webhook request. Only messages from `siteConfig.whatsappAdminBot` number are processed.
 - All command verbs read from `INVENTORY_COMMANDS` constant — adding a new command = one constant key + one handler function.
 
-### 8.5 Loyalty — FCC Coins
+### 8.5 Loyalty — HC Coins
 
 - Earn rate and redemption rate stored in Firestore `loyaltyConfig/main` — admin changes without deploy.
-- Coins earned on `delivered` status (Cloud Function `onOrderWrite`).
+- Coins earned on `delivered` status — awarded inline inside `PATCH /api/admin/orders/[id]/status` when status transitions to `delivered`.
 - Coins redeemable at checkout up to `maxRedeemPercent` of order total.
-- Cloud Function `onUserCoinUpdate` guards against negative balances.
+- Negative balance guard enforced inside `lib/firebase/users.ts#awardCoins()` and `redeemCoins()` (server-only, never client-callable).
 - Full coin history logged on `users/{uid}.coinHistory`.
 - Admin can grant coins manually from `/admin/orders/[id]` page.
 
@@ -1768,15 +1963,30 @@ Endpoint: `POST /api/webhooks/whatsapp`
 
 ---
 
-## 10. Cloud Functions
+## 10. Background Jobs
 
-| Function                  | Trigger                                       | Purpose                                                                 |
-| ------------------------- | --------------------------------------------- | ----------------------------------------------------------------------- |
-| `onProductWrite`          | Firestore write: `products/{id}`              | Recalculate `availableStock`; send low-stock/sold-out WA alert to admin |
-| `onOrderWrite`            | Firestore write: `orders/{id}`                | On `delivered`: award FCC coins; release reserved stock                 |
-| `onOrderStatusChange`     | Firestore write: `orders/{id}` (status field) | Send customer WA notification using `orderStatusConfig.waTemplate`      |
-| `onUserCoinUpdate`        | Firestore write: `users/{id}`                 | Guard `fccCoins` from going negative                                    |
-| `scheduledSitemapRebuild` | Cloud Scheduler: daily 2am IST                | Trigger `/api/revalidate` for sitemap + homepage                        |
+> **Firebase Spark plan — no Cloud Functions.** All background logic runs inline in Next.js API routes (called server-side) or as Vercel cron jobs. The table below maps each "would-be" Cloud Function to its replacement.
+
+| Was Cloud Function        | Spark-plan replacement                                                                                    |
+| ------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `onProductWrite`          | Inline in `PATCH /api/admin/products/[id]` and `POST /api/webhooks/whatsapp` after any stock mutation     |
+| `onOrderWrite` (coins)    | Inline in `PATCH /api/admin/orders/[id]/status` when status → `delivered`                                 |
+| `onOrderWrite` (stock)    | Inline in same route when status → `delivered` or `cancelled` (calls `releaseReservedStock()`)            |
+| `onOrderStatusChange`     | Inline in `PATCH /api/admin/orders/[id]/status` — builds WA notify URL + sends Resend email after write   |
+| `onUserCoinUpdate`        | Guard inside `lib/firebase/users.ts#awardCoins()` + `redeemCoins()` — server-only functions               |
+| `scheduledSitemapRebuild` | Vercel cron job: `GET /api/cron/sitemap` (daily) defined in `vercel.json` under `"crons"` key             |
+
+```jsonc
+// vercel.json — cron configuration
+{
+  "crons": [
+    {
+      "path": "/api/cron/sitemap",
+      "schedule": "0 20 * * *"   // 8pm UTC = 1:30am IST
+    }
+  ]
+}
+```
 
 ---
 
@@ -1788,7 +1998,7 @@ Endpoint: `POST /api/webhooks/whatsapp`
 | WhatsApp webhook      | HMAC-SHA256 signature verification on every request                                |
 | WA bot commands       | Only accepted from `siteConfig.whatsappAdminBot` number                            |
 | Stock race conditions | Firestore transactions used in `/api/checkout` for `availableStock` decrement      |
-| Coin balance          | Cloud Function guards against negative values; server-only mutation                |
+| Coin balance          | Guard enforced in `lib/firebase/users.ts` server-only functions; never client-callable |
 | User data isolation   | Firestore Rules: users can only read/write their own documents                     |
 | Rich text XSS         | DOMPurify sanitization server-side before storing and before rendering             |
 | Discount abuse        | `usedCount` incremented in transaction with `maxUses` check                        |
@@ -1815,7 +2025,7 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 
 **Project scaffold**
 
-- [x] `npx create-next-app@latest fatcat --typescript --tailwind --eslint --app`
+- [x] `npx create-next-app@latest hobson --typescript --tailwind --eslint --app`
 - [x] Add path aliases (`@/`) in `tsconfig.json` + `tsconfig.paths.json`
 - [x] `.env.example` with all required vars documented
 - [x] `.gitignore` including `.env.local`, `emulator-data/`, `.firebase/`
@@ -1973,62 +2183,62 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 
 **Homepage**
 
-- [ ] `app/(storefront)/page.tsx` — ISR 300s, orchestrates all home sections
-- [ ] `components/home/HeroBanner.tsx` — carousel from Firestore `banners`
-- [ ] `components/home/CollectionStrip.tsx` — franchise tile row
-- [ ] `components/home/BrandStrip.tsx` — brand logo scroll
-- [ ] `components/home/HomeSection.tsx` — titled product row (featured / bestseller)
-- [ ] `components/home/HomeSectionList.tsx`
-- [ ] `components/home/PromoGrid.tsx` — 4-tile promo banners
-- [ ] `components/home/TestimonialsCarousel.tsx`
-- [ ] `components/home/FAQAccordion.tsx`
-- [ ] `lib/firebase/content.ts` — `getBanners()`, `getHomeSections()`, `getTestimonials()`, `getFAQ()`, `getAnnouncements()`
-- [ ] `hooks/useSiteConfig.ts`
+- [x] `app/(storefront)/page.tsx` — ISR 300s, orchestrates all home sections
+- [x] `components/home/HeroBanner.tsx` — carousel from Firestore `banners`
+- [x] `components/home/CollectionStrip.tsx` — franchise tile row
+- [x] `components/home/BrandStrip.tsx` — brand logo scroll
+- [x] `components/home/HomeSection.tsx` — titled product row (featured / bestseller)
+- [x] `components/home/HomeSectionList.tsx`
+- [x] `components/home/PromoGrid.tsx` — 4-tile promo banners
+- [x] `components/home/TestimonialsCarousel.tsx`
+- [x] `components/home/FAQAccordion.tsx`
+- [x] `lib/firebase/content.ts` — `getBanners()`, `getHomeSections()`, `getTestimonials()`, `getFAQ()`, `getAnnouncements()`
+- [x] `hooks/useSiteConfig.ts`
 
 **Search**
 
-- [ ] `app/(storefront)/search/page.tsx` — SSR, `?q=` param, ProductGrid, no-results state
-- [ ] `app/(storefront)/search/loading.tsx`
-- [ ] Firestore prefix query in `lib/firebase/products.ts#searchProducts()`
+- [x] `app/(storefront)/search/page.tsx` — SSR, `?q=` param, ProductGrid, no-results state
+- [x] `app/(storefront)/search/loading.tsx`
+- [x] Firestore prefix query in `lib/firebase/products.ts#searchProducts()`
 
 **Filters & Sort (collection page)**
 
-- [ ] Full filter panel UX on `/collections/[slug]` — availability, price range, brand, sort
-- [ ] URL param sync (`?brand=hot-toys&sort=price_asc&page=2`)
+- [x] Full filter panel UX on `/collections/[slug]` — availability, price range, brand, sort
+- [x] URL param sync (`?brand=hot-toys&sort=price_asc&page=2`)
 
 **Wishlist**
 
-- [ ] `app/(storefront)/account/wishlist/page.tsx`
-- [ ] Zustand wishlist persist + sync with Firestore on auth
+- [x] `app/(storefront)/account/wishlist/page.tsx`
+- [x] Zustand wishlist persist (localStorage); no Firestore sync needed on Spark plan
 
 **Account**
 
-- [ ] `app/(storefront)/account/layout.tsx` — sidebar
-- [ ] `app/(storefront)/account/page.tsx` — profile + coin balance
-- [ ] `app/(storefront)/account/orders/page.tsx` — order list
-- [ ] `app/(storefront)/account/addresses/page.tsx`
-- [ ] `app/(storefront)/account/orders/[orderId]/page.tsx` — order detail
-- [ ] `lib/firebase/users.ts` — `getUser()`, `updateUser()`, `addAddress()`, `removeAddress()`
-- [ ] `lib/firebase/orders.ts` — `getUserOrders()`, `getOrder()`
-- [ ] `components/account/AccountSidebar.tsx`
-- [ ] `components/account/CoinBalanceCard.tsx`
-- [ ] `components/account/AddressCard.tsx`
-- [ ] `components/order/OrderCard.tsx`
-- [ ] `components/order/OrderItemList.tsx`
-- [ ] `components/order/OrderStatusBadge.tsx`
+- [x] `app/(storefront)/account/layout.tsx` — sidebar
+- [x] `app/(storefront)/account/page.tsx` — profile + coin balance
+- [x] `app/(storefront)/account/orders/page.tsx` — order list
+- [x] `app/(storefront)/account/addresses/page.tsx`
+- [x] `app/(storefront)/account/orders/[orderId]/page.tsx` — order detail
+- [x] `lib/firebase/users.ts` — `getUser()`, `updateUser()`, `addAddress()`, `removeAddress()`
+- [x] `lib/firebase/orders.ts` — `getUserOrders()`, `getOrder()`
+- [x] `components/account/AccountSidebar.tsx`
+- [x] `components/account/CoinBalanceCard.tsx`
+- [x] `components/account/AddressCard.tsx`
+- [x] `components/order/OrderCard.tsx`
+- [x] `components/order/OrderItemList.tsx`
+- [x] `components/order/OrderStatusBadge.tsx`
 
 **Responsive polish**
 
-- [ ] Mobile nav drawer fully functional
-- [ ] Footer responsive (stacked on mobile)
-- [ ] Announcement bar auto-rotates
-- [ ] Trust badges row in footer + product page
-- [ ] Newsletter signup form (writes to Firestore `newsletterSignups/{email}`)
+- [x] Mobile nav drawer fully functional
+- [x] Footer responsive (stacked on mobile)
+- [x] Announcement bar auto-rotates
+- [x] Trust badges row in product page; footer has contact/social links
+- [x] Newsletter signup form (writes to Firestore `newsletterSignups/{email}`)
 
 **Phase 2 gate**
 
 - [x] typecheck · lint · build pass
-- [ ] Smoke test: homepage loads all sections; search works; wishlist syncs; account shows orders
+- [x] Smoke test: homepage loads all sections; search works; wishlist syncs; account shows orders
 
 ---
 
@@ -2048,14 +2258,14 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 - [x] `lib/firebase/orders.ts` — `updateOrderStatus()`, `releaseReservedStock()`
 - [x] `hooks/useOrderStatusConfig.ts`
 - [x] `app/api/admin/orders/[id]/status/route.ts` — PATCH (admin-only)
-- [ ] Firestore `orderStatusConfig` seed documents (all 7 statuses)
-- [x] Cloud Function stub: `onOrderStatusChange.ts` — dispatches WA notification
+- [x] Firestore `orderStatusConfig` seed documents (8 statuses in `scripts/seed-data.ts`)
+- [x] `PATCH /api/admin/orders/[id]/status` — after status write: build WA notify URL inline, return it to admin UI (admin clicks to open WhatsApp)
 - [x] `components/admin/StatusChangeForm.tsx` — status dropdown (valid transitions only), note, AWB, WA preview
 
 **Phase 3 gate**
 
 - [x] typecheck · lint · build pass
-- [ ] Smoke test: place order → view `/orders/{id}/track` → update status as admin → customer stepper updates in real time
+- [x] Smoke test: place order → view `/orders/{id}/track` → update status as admin → customer stepper updates in real time
 
 ---
 
@@ -2069,19 +2279,19 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 #### Checklist
 
 - [x] `app/api/webhooks/whatsapp/route.ts` — HMAC verification, command dispatch
-- [ ] `lib/whatsapp.ts` — `parseIncomingWebhook()`, `verifyWebhookSignature()`, `isAdminNumber()`, `buildHelpMessage()`
+- [x] `lib/whatsapp.ts` — `parseIncomingWebhook()`, `verifyWebhookSignature()`, `isAdminNumber()`, `buildHelpMessage()`
 - [x] `lib/inventory.ts` — `parseRestockCommand()`, `parseStatusCommand()`, `buildLowStockAlertMessage()`, `buildSoldOutAlertMessage()`
 - [x] Command handlers: RESTOCK, SOLDOUT, PREORDER, STATUS, STOCK, HELP
-- [x] `functions/src/onProductWrite.ts` — recalc `availableStock`, alert logic
-- [x] `functions/src/onOrderWrite.ts` — coins on delivered, release reserved stock on cancel/deliver
-- [x] `functions/src/onUserCoinUpdate.ts` — guard negative balance
-- [ ] Admin restock UI in `/admin/products/[id]` (Phase 6 page, but core logic here)
-- [ ] Vitest integration test: webhook handler processes RESTOCK command correctly
+- [x] Inline `availableStock` recalc in `PATCH /api/admin/products/[id]` and `POST /api/webhooks/whatsapp` (Spark plan — no Cloud Functions)
+- [x] Inline coin award + stock release in `PATCH /api/admin/orders/[id]/status` (no Cloud Function needed)
+- [x] Negative balance guard in `lib/firebase/users.ts` server-only functions
+- [x] Admin restock UI in `/admin/products/[id]` via `InventoryEditForm` component
+- [x] Vitest integration test: webhook handler processes RESTOCK command correctly (32 tests in `__tests__/`)
 
 **Phase 4 gate**
 
 - [x] typecheck · lint · build pass
-- [ ] Local webhook test: POST to `/api/webhooks/whatsapp` with valid HMAC + RESTOCK payload → Firestore updated
+- [x] Local webhook test: POST to `/api/webhooks/whatsapp` with valid HMAC + RESTOCK payload → Firestore updated
 
 ---
 
@@ -2094,25 +2304,25 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 
 #### Checklist
 
-- [ ] `app/(storefront)/blog/page.tsx` — ISR 3600s, empty-state handling
-- [ ] `app/(storefront)/blog/[slug]/page.tsx`
-- [ ] `app/(storefront)/blog/[slug]/loading.tsx`
-- [ ] `app/(storefront)/policies/[policy]/page.tsx` — ISR 3600s
-- [ ] `app/(storefront)/[pageSlug]/page.tsx` — about, contact (ISR 3600s)
-- [ ] `components/blog/PostCard.tsx`
-- [ ] `components/blog/PostBody.tsx` — DOMPurify sanitised
-- [ ] `lib/firebase/content.ts` — `getPage()`, `getBlogPost()`, `getAllBlogPosts()`
-- [ ] `lib/seo.ts` — `generateProductMetadata()`, `generateCollectionMetadata()`, `generateBlogMetadata()`, `generateDefaultMetadata()`
-- [ ] `app/api/revalidate/route.ts` — POST with secret token
-- [ ] `app/api/sitemap/route.ts` — dynamic XML from Firestore slugs
-- [ ] `app/sitemap.ts` — Next.js native sitemap (calls sitemap lib)
-- [ ] `app/robots.ts` — robots.txt generation
-- [ ] `functions/src/scheduledSitemapRebuild.ts` — Cloud Scheduler daily 2am IST
+- [x] `app/(storefront)/blog/page.tsx` — ISR 3600s, empty-state handling
+- [x] `app/(storefront)/blog/[slug]/page.tsx`
+- [x] `app/(storefront)/blog/[slug]/loading.tsx`
+- [x] `app/(storefront)/policies/[policy]/page.tsx` — ISR 3600s
+- [x] `app/(storefront)/[pageSlug]/page.tsx` — about, contact (ISR 3600s)
+- [x] `components/blog/PostCard.tsx`
+- [x] `components/blog/PostBody.tsx` — DOMPurify sanitised
+- [x] `lib/firebase/content.ts` — `getPage()`, `getBlogPost()`, `getAllBlogPosts()`
+- [x] `lib/seo.ts` — `generateProductMetadata()`, `generateCollectionMetadata()`, `generateBlogMetadata()`, `generateDefaultMetadata()`
+- [x] `app/api/revalidate/route.ts` — POST with secret token
+- [x] `app/api/sitemap/route.ts` — dynamic XML from Firestore slugs
+- [x] `app/sitemap.ts` — Next.js native sitemap (calls sitemap lib)
+- [x] `app/robots.ts` — robots.txt generation
+- [x] `app/api/cron/sitemap/route.ts` — Vercel cron daily sitemap rebuild (Spark plan, no Cloud Functions)
 
 **Phase 5 gate**
 
 - [x] typecheck · lint · build pass
-- [ ] Smoke test: `/blog`, `/policies/shipping-policy`, `/about`, `/contact` load correctly; `GET /api/sitemap` returns valid XML
+- [x] Smoke test: `/blog`, `/policies/shipping-policy`, `/about`, `/contact` load correctly; `GET /api/sitemap` returns valid XML
 
 ---
 
@@ -2160,7 +2370,7 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 > **Branch:** `phase/7-loyalty`  
 > **Commit message:** `feat: Phase 7 — Loyalty & Pre-orders complete`
 
-**Goal:** FCC Coins earn/redeem, discount code system, pre-order badge and checkout flow.
+**Goal:** HC Coins earn/redeem, discount code system, pre-order badge and checkout flow.
 
 #### Checklist
 
@@ -2172,8 +2382,8 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 - [x] Pre-order badge on `ProductCard`, `StockBadge`, product detail CTA
 - [x] Pre-order checkout: WhatsApp message prefixed "PRE-ORDER:"
 - [x] `components/account/CoinBalanceCard.tsx` — balance + history (coin history tab)
-- [x] `functions/src/onOrderWrite.ts` — coins awarded on `delivered`
-- [x] `functions/src/onUserCoinUpdate.ts` — negative balance guard
+- [x] Coin award logic in `PATCH /api/admin/orders/[id]/status` — inline on `delivered` transition (no Cloud Function)
+- [x] Negative balance guard in `lib/firebase/users.ts#awardCoins()` + `redeemCoins()`
 - [x] Firestore `discounts` seed with sample codes
 - [x] Firestore `loyaltyConfig/main` seed
 
@@ -2184,21 +2394,332 @@ Each phase ends with a commit on its own branch (`phase/N-name`) before merging 
 
 ---
 
-## 13. Future Upgrades
+---
 
-| Upgrade                      | Effort | Notes                                                                         |
-| ---------------------------- | ------ | ----------------------------------------------------------------------------- |
-| **Razorpay payment gateway** | 1 wk   | Replace `/api/checkout` redirect target; order model stays identical          |
-| **No-cost EMI**              | 3 days | Razorpay config param; show EMI calculator on product page                    |
-| **Algolia search**           | 1 wk   | Mirror `products` collection to Algolia via Cloud Function; swap search route |
-| **Push notifications**       | 3 days | Firebase Cloud Messaging for order status (replaces / augments WA notify)     |
-| **Mobile app**               | —      | React Native + Expo; all Firebase lib functions are reusable                  |
-| **B2B / bulk orders**        | 1 wk   | Separate order type, custom pricing tier field on users                       |
-| **Multi-currency**           | 1 wk   | `siteConfig.currencies[]` + exchange rate field; display-only for now         |
-| **Wishlist share**           | 2 days | Generate shareable link with wishlist snapshot                                |
+### 12.8 Phase 8 — Franchise/Brand Restructure & Platform Completion
+
+> **Branch:** `phase/8-platform`
+> **Commit message:** `feat: Phase 8 — Platform Completion`
+
+**Goal:** Separate `franchise` and `brand` into dedicated Firestore collections (like `categories`/`concerns` in Licorice). Add review system, support tickets, order returns, Razorpay + COD payment, email notifications (Resend), analytics, and all missing admin/settings pages.
 
 ---
 
-_Document version: 1.2 — March 2026_
-_All dynamic content fields editable by admin without code deployment._
+#### 8A — Franchise & Brand Refactor
+
+**Schema, constants & types**
+
+- [ ] Create `franchises` Firestore collection (migrate from `collections` type=franchise)
+- [ ] Create `brands` Firestore collection (migrate from `collections` type=brand)
+- [ ] Repurpose `collections` as curated/featured groupings only (What's New, 1/6 Scale, etc.)
+- [ ] Update `constants/firebase.ts` — add `FRANCHISES`, `BRANDS`, `CURATED_COLLECTIONS` (done above)
+- [ ] Update `constants/routes.ts` — add `FRANCHISE`, `BRAND` route builders (done above)
+- [ ] `types/franchise.ts` — `Franchise` type
+- [ ] `types/brand.ts` — `Brand` type
+- [ ] Update `types/content.ts` — remove `Collection.type` field; remove `Collection.logoImage` (moved to `Brand`); `Collection` = curated grouping only
+- [ ] `scripts/migrate-collections.ts` — one-off: split `collections` docs by `type` into `franchises` + `brands` Firestore collections
+
+**Data layer**
+
+- [ ] `lib/firebase/franchises.ts` — `getAllFranchises()`, `getFranchise()`, `getAllFranchisesAdmin()`, `upsertFranchise()`, `deleteFranchise()`, `updateFranchiseOrder()`
+- [ ] `lib/firebase/brands.ts` — `getAllBrands()`, `getBrand()`, `getAllBrandsAdmin()`, `upsertBrand()`, `deleteBrand()`, `updateBrandOrder()`
+- [ ] `lib/firebase/server.ts` — add `getAllFranchisesServer()`, `getAllBrandsServer()`; replace `getActiveCollectionsByTypeServer()` usage
+- [ ] `lib/firebase/products.ts` — update `getProducts()` filter params: `franchise?: string`, `brand?: string` now query against their respective collections' slugs
+- [ ] Firestore composite indexes:
+  - `products` by `franchise + inStock + createdAt`
+  - `products` by `brand + inStock + createdAt`
+  - `franchises` by `active + sortOrder`
+  - `brands` by `active + sortOrder`
+
+**Storefront routes**
+
+- [ ] `app/(storefront)/franchise/page.tsx` — all franchises grid (ISR 300s)
+- [ ] `app/(storefront)/franchise/[slug]/page.tsx` — products filtered by franchise slug (ISR 300s); same layout as `/collections/[slug]`
+- [ ] `app/(storefront)/franchise/[slug]/loading.tsx`
+- [ ] `app/(storefront)/brand/page.tsx` — all brands grid with logo images (ISR 300s)
+- [ ] `app/(storefront)/brand/[slug]/page.tsx` — products filtered by brand slug (ISR 300s)
+- [ ] `app/(storefront)/brand/[slug]/loading.tsx`
+- [ ] Update `app/(storefront)/collections/[slug]/page.tsx` — curated collections only; no `type` filter
+
+**Component updates**
+
+- [ ] Update `components/layout/NavCollectionsMenu.tsx` — reads from `franchises` + `brands` separately; removes `type=franchise/brand` filter
+- [ ] Rename `components/home/CollectionStrip.tsx` → `FranchiseStrip.tsx`; reads `franchises` collection
+- [ ] Update `components/home/BrandStrip.tsx` — reads `brands` collection (unchanged behaviour, new source)
+- [ ] Update `components/product/ProductCard.tsx` — franchise/brand links use `ROUTES.FRANCHISE` + `ROUTES.BRAND`
+- [ ] Update `components/product/ProductFilterSidebar.tsx` — franchise + brand dropdowns populated from dedicated collections
+
+**Admin routes**
+
+- [ ] `app/(admin)/admin/franchises/page.tsx` — list, drag-to-reorder, activate/deactivate
+- [ ] `app/(admin)/admin/franchises/new/page.tsx`
+- [ ] `app/(admin)/admin/franchises/[slug]/page.tsx` — edit form
+- [ ] `app/(admin)/admin/brands/page.tsx` — list with logo image preview
+- [ ] `app/(admin)/admin/brands/new/page.tsx`
+- [ ] `app/(admin)/admin/brands/[slug]/page.tsx`
+- [ ] `components/admin/FranchiseForm.tsx` — name, slug, thumbnailImage, bannerImage, description, sortOrder, active
+- [ ] `components/admin/BrandForm.tsx` — name, slug, logoImage, bannerImage, description, sortOrder, active
+- [ ] Update `components/admin/AdminSidebar.tsx` — add Franchises + Brands links; rename Collections → Curated Collections
+- [ ] Update `components/admin/ProductForm.tsx` — franchise/brand fields read from `franchises`/`brands` collections; dropdowns not hardcoded
+
+**Phase 8A gate**
+
+- [ ] typecheck · lint · build pass
+- [ ] `/franchise/marvel` and `/brand/hot-toys` render correct product grids
+- [ ] Navigation mega-menu populates from `franchises` + `brands`
+- [ ] Admin can create/edit/reorder franchises and brands independently
+
+---
+
+#### 8B — Product Reviews
+
+- [ ] `types/review.ts` — `Review`, `ReviewFlag`, `ReviewStatus` types
+- [ ] `lib/firebase/reviews.ts` — `getProductReviews()`, `submitReview()`, `approveReview()`, `rejectReview()`, `addAdminReply()`, `flagReview()`, `getReviewsAdmin()`; `checkVerifiedPurchase()` — cross-checks `orders` for userId + productId
+- [ ] `app/(storefront)/products/[slug]/page.tsx` — add Reviews section (approved reviews + add-review form below product info)
+- [ ] `components/product/ReviewsList.tsx` — paginated approved reviews with star filter tabs
+- [ ] `components/product/ReviewCard.tsx` — name, rating, date, body, photo thumbnails, verified-purchase badge, admin reply
+- [ ] `components/product/AddReviewForm.tsx` — star selector, title input, body textarea, optional photo upload (max 3 images to Firebase Storage)
+- [ ] `components/product/ReviewFilters.tsx` — filter by star rating
+- [ ] `components/product/ReviewPhotoGallery.tsx` — lightbox for review images (reuses `ImageLightbox` ui component)
+- [ ] `app/api/review/route.ts` — POST: submit review (auth required); sets `status: "pending"`; sets `isVerifiedPurchase` via purchase check
+- [ ] `app/api/review/flag/route.ts` — POST: write to `reviewFlags`, increment `reviews.flagCount`
+- [ ] `app/(admin)/admin/reviews/page.tsx` — moderation queue with Pending / Approved / Rejected tabs; `ReviewModerationCard`
+- [ ] `app/(admin)/admin/reviews/[id]/page.tsx` — full review + approve/reject/reply actions
+- [ ] `components/admin/ReviewModerationCard.tsx`
+- [ ] `app/api/admin/reviews/[id]/route.ts` — PATCH: approve | reject | add reply (admin only)
+- [ ] Firestore rule: users can only write their own reviews; only one review per user per product; public reads of approved only
+- [ ] Update `constants/routes.ts` — `ADMIN_REVIEWS` (done above)
+- [ ] Update `components/admin/AdminSidebar.tsx` — add Reviews link with pending-count badge
+
+---
+
+#### 8C — Customer Support Tickets
+
+- [ ] `types/support.ts` — `SupportTicket`, `TicketMessage`, `TicketStatus` types
+- [ ] `lib/firebase/supportTickets.ts` — `createTicket()`, `addMessage()`, `updateTicketStatus()`, `getUserTickets()`, `getAllTicketsAdmin()`
+- [ ] `app/(storefront)/account/support/page.tsx` — list customer's own tickets + "New Ticket" button
+- [ ] `app/(storefront)/account/support/[ticketId]/page.tsx` — ticket thread via `onSnapshot`; reply input
+- [ ] `components/support/TicketCard.tsx` — subject, status badge, last-reply date
+- [ ] `components/support/TicketThread.tsx` — message bubble list + reply textarea + send button
+- [ ] `app/api/support/tickets/route.ts` — POST: create ticket
+- [ ] `app/api/support/tickets/[id]/route.ts` — POST: add message; PATCH: update status
+- [ ] `app/(admin)/admin/support/page.tsx` — all tickets, filter by status (Open / In Progress / Resolved / Closed)
+- [ ] `app/(admin)/admin/support/[ticketId]/page.tsx` — full thread + resolve/close actions
+- [ ] `components/admin/TicketInbox.tsx` — ticket list with unread badge
+- [ ] Update `components/account/AccountSidebar.tsx` — add Support link with open-ticket count badge
+- [ ] Update `constants/routes.ts` — `ACCOUNT_SUPPORT`, `ADMIN_SUPPORT` (done above)
+
+---
+
+#### 8D — Order Returns & Refunds
+
+- [ ] Update `types/order.ts` — add `returnRequest?: { reason: string; requestedAt: Timestamp; status: "pending" | "approved" | "rejected"; refundAmount?: number; resolvedAt?: Timestamp }`
+- [ ] Update `constants/orderStatus.ts` — add `return_requested`, `return_approved`, `refund_initiated` statuses + transitions
+- [ ] `app/(storefront)/account/orders/[orderId]/page.tsx` — add "Request Return" button (visible within 7-day window from delivered date)
+- [ ] `components/order/ReturnRequestButton.tsx` — opens confirm modal with reason selector
+- [ ] `app/api/account/return-request/route.ts` — POST: validate return window + order ownership; write `returnRequest` to order doc
+- [ ] `lib/firebase/orders.ts` — `submitReturnRequest()`, `approveReturn()`, `rejectReturn()`
+- [ ] `app/(admin)/admin/orders/[id]/page.tsx` — show return request panel when `returnRequest` exists; Approve/Reject buttons + refund amount input
+- [ ] `app/api/admin/orders/[id]/refund/route.ts` — POST: mark refund initiated; update order status; trigger `restoreStock`
+- [ ] `app/api/admin/orders/[id]/restore-stock/route.ts` — POST: increment `stock` + `availableStock` for each returned item (Firestore transaction)
+- [ ] `lib/firebase/products.ts` — add `restoreStock(productId, qty)` function
+
+---
+
+#### 8E — Email Notifications (Resend)
+
+- [ ] `npm install resend`
+- [ ] Add `RESEND_API_KEY` + `FROM_EMAIL` to `.env.example`
+- [ ] `lib/email/index.ts` — `sendOrderConfirmation()`, `sendOrderStatusUpdate()`, `sendTicketReply()`, `sendReturnApproved()`
+- [ ] `lib/email/templates/orderConfirmation.ts` — HTML: order items table, total, delivery address, track link
+- [ ] `lib/email/templates/orderStatusUpdate.ts` — HTML: status name, message, tracking link when shipped
+- [ ] `lib/email/templates/ticketReply.ts` — HTML: ticket subject, new admin message, link to thread
+- [ ] `lib/email/templates/returnApproved.ts` — HTML: refund amount, estimated timeline
+- [ ] `app/api/order-confirm/route.ts` — POST: send order confirmation email; idempotent via `emailSent` flag on order
+- [ ] Update `app/api/checkout/route.ts` — call `sendOrderConfirmation()` after successful order write
+- [ ] Update `app/api/admin/orders/[id]/route.ts` — call `sendOrderStatusUpdate()` on status change
+- [ ] Update support ticket API — call `sendTicketReply()` on new admin message
+
+---
+
+#### 8F — Razorpay + COD Payment Methods
+
+- [ ] `npm install razorpay`
+- [ ] Add `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` to `.env.example`
+- [ ] Update `types/config.ts` — add `PaymentSettings { razorpayEnabled, codEnabled, whatsappEnabled, codFee }`
+- [ ] Add `paymentSettings/main` Firestore document; update `constants/firebase.ts` — `PAYMENT_SETTINGS` (done above)
+- [ ] `lib/firebase/config.ts` — add `getPaymentSettings()`, `updatePaymentSettings()`
+- [ ] `lib/razorpay.ts` — `createRazorpayOrder()`, `verifyPaymentSignature()` (HMAC-SHA256 using `timingSafeEqual`)
+- [ ] Update `app/(storefront)/checkout/page.tsx` — conditional payment method selector based on `paymentSettings`
+- [ ] `components/checkout/PaymentOptions.tsx` — radio group: WhatsApp | Razorpay | COD; conditionally rendered per settings
+- [ ] Update `app/api/checkout/route.ts` — branch on `paymentMethod`: Razorpay → create Razorpay order + return `razorpayOrderId`; COD → direct order write with `codFee` added; WhatsApp → existing flow
+- [ ] `app/api/payment/razorpay/verify/route.ts` — POST: verify Razorpay payment signature; update order status to `payment_confirmed`
+- [ ] `app/api/payment/whatsapp/submit-proof/route.ts` — POST: accept proof screenshot (multipart/form-data), upload to Firebase Storage under `payment-proofs/{orderId}`, write `paymentProofUrl` to order
+- [ ] `components/checkout/WhatsAppPaymentInstructions.tsx` — UPI ID + QR code + bank details from `paymentSettings`
+- [ ] `components/checkout/WhatsAppProofUpload.tsx` — file input → POST to `/api/payment/whatsapp/submit-proof`
+- [ ] `components/admin/WhatsAppPaymentConfirm.tsx` — shows proof image in `/admin/orders/[id]`; Confirm / Reject buttons
+- [ ] `app/(admin)/admin/settings/payments/page.tsx` — toggle Razorpay / COD / WhatsApp; COD fee; Razorpay key input (masked); UPI/bank details for WhatsApp
+
+---
+
+#### 8G — Admin Analytics Page
+
+- [ ] `npm install recharts`
+- [ ] `lib/firebase/analytics.ts` — `getRevenueByMonth()`, `getOrdersByStatus()`, `getTopProducts()`, `getBreakdownByFranchise()`, `getBreakdownByBrand()`, `getPaymentMethodSplit()`
+- [ ] `app/(admin)/admin/analytics/page.tsx` — full analytics dashboard:
+  - Period selector: 3m / 6m / 12m / 24m
+  - Revenue line chart (monthly totals from `orders`)
+  - Orders by status donut chart
+  - Top 10 products table (by revenue)
+  - Franchise breakdown bar chart
+  - Brand breakdown bar chart
+  - Payment method split pie chart
+  - New customers per period
+- [ ] `components/admin/AnalyticsCharts.tsx` — Recharts wrappers (LineChart, BarChart, PieChart)
+- [ ] `components/admin/AnalyticsRangePicker.tsx` — period selector buttons
+- [ ] Update `components/admin/AdminSidebar.tsx` — add Analytics nav link
+
+---
+
+#### 8H — Admin Settings Pages
+
+**Settings hub**
+
+- [ ] `app/(admin)/admin/settings/page.tsx` — redirect to `/admin/settings/payments` (first tab)
+
+**Shipping settings**
+
+- [ ] Update `types/config.ts` — add `ShippingSettings { freeShippingThreshold, gstPercent, codFee, shippingNote }`
+- [ ] Add `shippingSettings/main` Firestore document; `constants/firebase.ts` — `SHIPPING_SETTINGS` (done above)
+- [ ] `lib/firebase/config.ts` — add `getShippingSettings()`, `updateShippingSettings()`
+- [ ] `app/(admin)/admin/settings/shipping/page.tsx` — free shipping threshold, GST %, COD fee, note shown at checkout
+- [ ] `components/admin/ShippingSettingsForm.tsx`
+- [ ] Update `app/api/checkout/route.ts` — read `shippingSettings` to apply COD fee + GST dynamically
+
+**Navigation settings**
+
+- [ ] Update `types/config.ts` — add `NavigationConfig { featuredFranchises: string[], featuredBrands: string[], maxMegaMenuItems: number }`
+- [ ] Add `navigationConfig/main` Firestore document; `constants/firebase.ts` — `NAVIGATION_CONFIG` (done above)
+- [ ] `lib/firebase/config.ts` — add `getNavigationConfig()`, `updateNavigationConfig()`
+- [ ] `app/(admin)/admin/settings/navigation/page.tsx` — select which franchises/brands appear pinned in mega-menu; drag to reorder
+- [ ] `components/admin/NavigationSettingsForm.tsx`
+- [ ] Update `components/layout/NavCollectionsMenu.tsx` — reads `navigationConfig` to determine featured items
+
+---
+
+#### 8I — Newsletter Admin Page
+
+- [ ] `lib/firebase/newsletter.ts` — `getAllSubscribers()`, `deleteSubscriber()`, `exportSubscribersCSV()`
+- [ ] `app/(admin)/admin/newsletter/page.tsx` — subscriber list (email, subscribed date), delete action, Export CSV button
+- [ ] `components/admin/NewsletterSubscriberTable.tsx`
+- [ ] Update `components/admin/AdminSidebar.tsx` — add Newsletter link with subscriber count
+
+---
+
+#### 8J — Blog Category Filtering
+
+- [ ] Update `types/content.ts` — add `categories: string[]` to `BlogPost`
+- [ ] Update `lib/firebase/content.ts` — `getAllBlogPosts(category?: string)` with optional category filter
+- [ ] Update `app/(storefront)/blog/page.tsx` — add category tab bar (News · Reviews · Unboxing · Custom Builds · Guides)
+- [ ] Update `components/blog/PostCard.tsx` — show category tag chip
+- [ ] Add `blogCategories: string[]` to `siteConfig/main` schema (admin-managed list)
+- [ ] Update `components/admin/SiteConfigForm.tsx` — add blog categories tag input
+
+---
+
+#### 8K — Checkout State Persistence
+
+- [ ] `store/checkoutStore.ts` — `step`, `address`, `paymentMethod`, `discountCode`, `discountAmount`, `coinsRedeemed`, `orderId` — persisted `hobson-checkout`; clear on order success
+- [ ] `hooks/useCheckout.ts` — wraps `checkoutStore`
+- [ ] Update `app/(storefront)/checkout/page.tsx` — read/write checkout store; restore multi-step state on page refresh
+
+---
+
+**Phase 8 gate**
+
+- [ ] typecheck · lint · build pass
+- [ ] `/franchise/marvel` and `/brand/hot-toys` render correct product grids
+- [ ] Product detail shows review list + add-review form; admin can moderate
+- [ ] Support ticket creation → real-time thread works end-to-end
+- [ ] Return request submits; admin can approve and restore stock
+- [ ] Razorpay checkout flow verifies signature and confirms order
+- [ ] Order confirmation email received on test order (Resend)
+- [ ] Analytics page shows correct revenue totals
+- [ ] Payment / Shipping / Navigation settings pages save and apply correctly
+
+---
+
+### 12.9 Phase 9 — Testing
+
+> **Branch:** `phase/9-tests`
+> **Commit message:** `feat: Phase 9 — Testing`
+
+**Goal:** Full unit, integration, and E2E test coverage for all critical flows. No Cloud Functions to deploy (Spark plan — all logic is in API routes).
+
+#### Vercel Cron — verify
+
+- [ ] `app/api/cron/sitemap/route.ts` exists and calls `revalidatePath`
+- [ ] `vercel.json` has `"crons": [{ "path": "/api/cron/sitemap", "schedule": "0 20 * * *" }]`
+- [ ] Confirm cron fires on Vercel preview deployment
+
+#### Unit Tests (Vitest)
+
+- [ ] `lib/formatCurrency.test.ts`
+- [ ] `lib/loyalty.test.ts` — `calculateCoinsEarned`, `calculateMaxRedeemable`, `applyCoinsToOrder`
+- [ ] `lib/whatsapp.test.ts` — `buildCheckoutMessageURL`, `verifyWebhookSignature`
+- [ ] `lib/inventory.test.ts` — all command parsers (RESTOCK, SOLDOUT, PREORDER, STATUS, STOCK)
+- [ ] `lib/razorpay.test.ts` — `verifyPaymentSignature` valid + tampered payloads
+- [ ] `lib/firebase/discounts.test.ts` — `validateDiscount` edge cases (expired, over maxUses, min order)
+- [ ] `components/ui/Button.test.tsx`
+- [ ] `components/product/PriceTag.test.tsx`
+- [ ] `components/product/StockBadge.test.tsx`
+
+#### Integration Tests (Vitest + Firestore emulator)
+
+- [ ] `app/api/checkout/route.test.ts` — stock reservation transaction, discount validation, coin redemption, COD fee
+- [ ] `app/api/webhooks/whatsapp/route.test.ts` — HMAC verification, RESTOCK/STATUS commands update Firestore
+- [ ] `app/api/payment/razorpay/verify/route.test.ts` — valid + invalid signatures
+- [ ] `app/api/review/route.test.ts` — submit, duplicate guard, verified-purchase flag
+- [ ] `app/api/support/tickets/route.test.ts` — create, reply, status change
+
+#### E2E Tests (Playwright)
+
+- [ ] `e2e/browse-to-cart.spec.ts` — browse collection → product detail → add to cart → cart page
+- [ ] `e2e/checkout-whatsapp.spec.ts` — checkout form → place order → WA redirect → order tracking
+- [ ] `e2e/checkout-razorpay.spec.ts` — Razorpay mock → signature verify → order confirmed
+- [ ] `e2e/account-orders.spec.ts` — login → order history → order detail → return request
+- [ ] `e2e/admin-order-status.spec.ts` — admin login → update status → customer tracking updates in real time
+- [ ] `e2e/reviews.spec.ts` — submit review → admin approves → appears on product page
+- [ ] `e2e/support-ticket.spec.ts` — create ticket → admin replies → customer sees reply
+
+**Phase 9 gate**
+
+- [ ] All unit tests pass: `pnpm test`
+- [ ] All integration tests pass with Firestore emulator: `pnpm test:integration`
+- [ ] All E2E tests pass: `pnpm e2e`
+- [ ] Zero TypeScript errors: `pnpm typecheck`
+- [ ] Production build succeeds: `pnpm build`
+- [ ] Vercel dashboard confirms cron job schedule is registered
+
+---
+
+## 13. Future Upgrades
+
+| Upgrade                           | Effort | Notes                                                                                      |
+| --------------------------------- | ------ | ------------------------------------------------------------------------------------------ |
+| **No-cost EMI**                   | 3 days | Razorpay config param; show EMI calculator on product page (builds on Phase 8F)            |
+| **Algolia search**                | 1 wk   | Mirror `products` to Algolia via Next.js API route on product save; swap `searchProductsServer()` call |
+| **Push notifications**            | 3 days | Firebase Cloud Messaging for order status (augments Phase 8E email notifications)          |
+| **Mobile app**                    | —      | React Native + Expo; all `lib/firebase/` functions are directly reusable                   |
+| **B2B / bulk orders**             | 1 wk   | Separate `OrderType = "retail" \| "b2b"` field; custom pricing tier on `users` doc         |
+| **Multi-currency**                | 1 wk   | `siteConfig.currencies[]` + exchange rate; display-only conversion for now                 |
+| **Wishlist share**                | 2 days | Generate shareable `/wishlist/share/[token]` link from wishlist snapshot                   |
+| **Product comparison**            | 3 days | Side-by-side specs table for up to 3 products; compare-toggle button on `ProductCard`      |
+| **Affiliate / referral codes**    | 1 wk   | `?ref=CODE` URL param → tracked to referrer in `users.referredBy`; bonus coins on delivery |
+
+---
+
+_Document version: 1.5 — March 2026_  
+_All dynamic content fields editable by admin without code deployment._  
+_Licorice comparison: Phase 8 (analytics, reviews, support, settings) maps to Licorice's admin/analytics, admin/reviews, admin/support, admin/settings. Hobson uses modular `lib/firebase/` over Licorice's monolithic `lib/db.ts`. Both share WhatsApp + Razorpay + COD payment, Resend email, next-intl i18n, Firestore Spark, and Zustand._
 

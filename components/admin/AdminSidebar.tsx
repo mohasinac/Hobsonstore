@@ -14,13 +14,16 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: "⊞" },
   { href: "/admin/products", label: "Products", icon: "📦" },
   { href: "/admin/orders", label: "Orders", icon: "📋" },
-  { href: "/admin/collections", label: "Collections", icon: "🗂" },
+  { href: "/admin/franchises", label: "Franchises", icon: "🎬" },
+  { href: "/admin/brands", label: "Brands", icon: "🏭" },
+  { href: "/admin/collections", label: "Curated Collections", icon: "🗂" },
   { href: "/admin/content", label: "Content", icon: "🖼" },
   { href: "/admin/blog", label: "Blog", icon: "📝" },
   { href: "/admin/pages", label: "Pages", icon: "📄" },
   { href: "/admin/loyalty", label: "Loyalty", icon: "🪙" },
   { href: "/admin/discounts", label: "Discounts", icon: "🏷" },
   { href: "/admin/config", label: "Config", icon: "⚙" },
+  { href: "/admin/config/integrations", label: "Integrations", icon: "🔑" },
   { href: "/admin/seed", label: "Seed Data", icon: "🌱" },
 ];
 

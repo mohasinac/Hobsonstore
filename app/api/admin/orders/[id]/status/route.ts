@@ -33,7 +33,7 @@ async function awardCoinsForOrder(orderId: string): Promise<void> {
   if (coinsEarned <= 0) return;
 
   await db.collection(COLLECTIONS.USERS).doc(order.userId).update({
-    fccCoins: FieldValue.increment(coinsEarned),
+    hcCoins: FieldValue.increment(coinsEarned),
     coinHistory: FieldValue.arrayUnion({
       delta: coinsEarned,
       reason: "purchase",
@@ -121,7 +121,7 @@ export async function PATCH(
       await releaseReservedStock(orderId);
     }
 
-    // Award FCC Coins on delivery
+    // Award HC Coins on delivery
     if (newStatus === "delivered") {
       await awardCoinsForOrder(orderId);
     }

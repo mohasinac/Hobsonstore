@@ -43,7 +43,7 @@ export function OrderSummary({
 
         {coinsDiscount > 0 && (
           <div className="flex justify-between font-bold" style={{ color: "#d97706" }}>
-            <span>FCC Coins</span>
+            <span>HC Coins</span>
             <span>−{formatINR(coinsDiscount)}</span>
           </div>
         )}

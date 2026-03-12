@@ -16,7 +16,7 @@ export interface User {
   email: string;
   phone?: string;
   photoURL?: string;
-  fccCoins: number;
+  hcCoins: number;
   coinHistory: CoinHistoryEntry[];
   addresses: (Address & { id: string; isDefault: boolean })[];
   wishlist: string[];

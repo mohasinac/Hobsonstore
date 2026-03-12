@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc, getFirestore } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy, getFirestore } from "firebase/firestore";
 import { getFirebaseApp } from "./client";
 import { COLLECTIONS } from "@/constants/firebase";
 import type {
@@ -26,17 +26,13 @@ export async function getLoyaltyConfig(): Promise<LoyaltyConfig | null> {
 }
 
 export async function getOrderStatusConfig(): Promise<OrderStatusConfig[]> {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { collection, getDocs, query, orderBy } = require("firebase/firestore");
   const db = getDb();
   const q = query(
     collection(db, COLLECTIONS.ORDER_STATUS_CONFIG),
     orderBy("sortOrder", "asc"),
   );
   const snap = await getDocs(q);
-  return snap.docs.map(
-    (d: { data: () => OrderStatusConfig }) => d.data() as OrderStatusConfig,
-  );
+  return snap.docs.map((d) => d.data() as OrderStatusConfig);
 }
 
 // ─── Admin write functions ────────────────────────────────────────────────────

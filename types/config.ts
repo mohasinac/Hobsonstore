@@ -57,3 +57,51 @@ export interface Discount {
   expiresAt?: Timestamp;
   active: boolean;
 }
+
+export interface PaymentSettings {
+  razorpayEnabled: boolean;
+  codEnabled: boolean;
+  whatsappEnabled: boolean;
+  codFee: number;
+  razorpayKeyId?: string;
+  /** UPI ID for WhatsApp payment flow */
+  upiId?: string;
+  /** QR code image URL (Firebase Storage) */
+  upiQrUrl?: string;
+  bankName?: string;
+  bankAccountNumber?: string;
+  bankIfsc?: string;
+  bankAccountHolder?: string;
+}
+
+/** Firestore document shape for `settings/integrationKeys` — secrets stored AES-256-GCM encrypted. */
+export interface IntegrationKeys {
+  // Twilio (WhatsApp / SMS)
+  twilioAccountSid?: string;
+  twilioAuthToken?: string;      // encrypted
+  twilioWhatsappFrom?: string;
+  // WhatsApp misc
+  whatsappNumber?: string;
+  whatsappAdminBotNumber?: string;
+  whatsappWebhookSecret?: string; // encrypted
+  // Razorpay (Phase 8)
+  razorpayKeyId?: string;         // encrypted
+  razorpayKeySecret?: string;     // encrypted
+  // Admin notifications
+  adminEmails?: string;           // comma-separated
+}
+
+export interface ShippingSettings {
+  freeShippingThreshold: number;
+  gstPercent: number;
+  codFee: number;
+  shippingNote?: string;
+}
+
+export interface NavigationConfig {
+  /** Slug list of franchises pinned to the top of the mega-menu */
+  featuredFranchises: string[];
+  /** Slug list of brands pinned to the top of the mega-menu */
+  featuredBrands: string[];
+  maxMegaMenuItems: number;
+}

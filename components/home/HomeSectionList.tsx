@@ -19,11 +19,19 @@ export async function HomeSectionList({ sections }: HomeSectionListProps) {
         products = await getNewArrivalsProductsServer(section.itemLimit).catch(() => []);
       } else if (section.collectionSlug) {
         const col = await getCollectionServer(section.collectionSlug).catch(() => null);
-        const filterKey = col?.type === "brand" ? "brand" : "franchise";
-        products = await getProductsServer(
-          { [filterKey]: section.collectionSlug },
-          section.itemLimit,
-        ).catch(() => []);
+        if (col?.manualProductIds?.length) {
+          products = await getProductsByIdsServer(col.manualProductIds).catch(() => []);
+        } else if (col?.filterFranchises?.length) {
+          products = await getProductsServer(
+            { franchise: col.filterFranchises[0] },
+            section.itemLimit,
+          ).catch(() => []);
+        } else if (col?.filterBrands?.length) {
+          products = await getProductsServer(
+            { brand: col.filterBrands[0] },
+            section.itemLimit,
+          ).catch(() => []);
+        }
       } else if (section.manualProductIds?.length) {
         products = await getProductsByIdsServer(section.manualProductIds).catch(() => []);
       }

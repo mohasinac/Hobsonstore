@@ -32,7 +32,7 @@ export function CoinRedeemToggle({
       }}
     >
       <Checkbox
-        label={`Use ${availableCoins} FCC Coins (save ${formatINR(savingsAmount)})`}
+        label={`Use ${availableCoins} HC Coins (save ${formatINR(savingsAmount)})`}
         checked={enabled}
         onChange={(e) => onToggle(e.target.checked)}
       />

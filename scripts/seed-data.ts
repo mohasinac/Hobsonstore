@@ -1197,11 +1197,224 @@ export const SEED_BLOG_POSTS = [
   },
 ];
 
+// ─── Franchises ───────────────────────────────────────────────────────────────
+
+export const SEED_FRANCHISES = [
+  {
+    slug: "marvel",
+    name: "Marvel",
+    bannerImage: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=800&q=80",
+    logoImage: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=200&q=80",
+    description: "Iconic Marvel super-heroes from Iron Man to Spider-Man.",
+    seoTitle: "Marvel Collectibles — Hobson Collectibles",
+    seoDescription: "Shop premium Marvel action figures and statues.",
+    active: true,
+    sortOrder: 1,
+  },
+  {
+    slug: "dc",
+    name: "DC Comics",
+    bannerImage: "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=800&q=80",
+    logoImage: "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=200&q=80",
+    description: "Collectibles from the DC universe — Batman, Superman, Wonder Woman & more.",
+    active: true,
+    sortOrder: 2,
+  },
+  {
+    slug: "star-wars",
+    name: "Star Wars",
+    bannerImage: "https://images.unsplash.com/photo-1563656157432-67560011e209?w=800&q=80",
+    description: "A galaxy far, far away — brought to life in stunning detail.",
+    active: true,
+    sortOrder: 3,
+  },
+  {
+    slug: "anime",
+    name: "Anime",
+    bannerImage: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=800&q=80",
+    description: "Dragon Ball Z, Demon Slayer, One Piece, Attack on Titan & more.",
+    active: true,
+    sortOrder: 4,
+  },
+  {
+    slug: "game-of-thrones",
+    name: "Game of Thrones",
+    bannerImage: "https://images.unsplash.com/photo-1526400473556-aac12354f3db?w=800&q=80",
+    description: "Seven Kingdoms collectibles — dragons, knights, and Iron Throne.",
+    active: true,
+    sortOrder: 5,
+  },
+  {
+    slug: "warhammer",
+    name: "Warhammer",
+    bannerImage: "https://images.unsplash.com/photo-1526400473556-aac12354f3db?w=800&q=80",
+    description: "Warhammer 40K and Age of Sigmar premium figures.",
+    active: true,
+    sortOrder: 6,
+  },
+];
+
+// ─── Brands ───────────────────────────────────────────────────────────────────
+
+export const SEED_BRANDS = [
+  {
+    slug: "hot-toys",
+    name: "Hot Toys",
+    bannerImage: "https://images.unsplash.com/photo-1608889175638-9322300c46e8?w=800&q=80",
+    logoImage: "https://images.unsplash.com/photo-1608889175638-9322300c46e8?w=200&q=80",
+    description: "Sixth-scale masterpieces with hyper-realistic likenesses.",
+    active: true,
+    sortOrder: 1,
+  },
+  {
+    slug: "sideshow",
+    name: "Sideshow Collectibles",
+    bannerImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+    logoImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80",
+    description: "World-class premium collectible statues and figures.",
+    active: true,
+    sortOrder: 2,
+  },
+  {
+    slug: "iron-studios",
+    name: "Iron Studios",
+    bannerImage: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80",
+    logoImage: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=200&q=80",
+    description: "Brazilian craftsmen behind iconic 1:10 Battle Dioramas.",
+    active: true,
+    sortOrder: 3,
+  },
+  {
+    slug: "mcfarlane",
+    name: "McFarlane Toys",
+    bannerImage: "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=800&q=80",
+    logoImage: "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=200&q=80",
+    description: "Highly detailed collector-grade action figures at accessible prices.",
+    active: true,
+    sortOrder: 4,
+  },
+  {
+    slug: "bandai",
+    name: "Bandai",
+    bannerImage: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=800&q=80",
+    logoImage: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=200&q=80",
+    description: "S.H.Figuarts, Metal Build, and other premium Bandai lines.",
+    active: true,
+    sortOrder: 5,
+  },
+  {
+    slug: "threezero",
+    name: "ThreeZero",
+    bannerImage: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=800&q=80",
+    logoImage: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=200&q=80",
+    description: "Iconic 1/6 and 1/12 scale collectibles with exceptional detail.",
+    active: true,
+    sortOrder: 6,
+  },
+];
+
+// ─── Curated Collections ──────────────────────────────────────────────────────
+
+export const SEED_CURATED_COLLECTIONS = [
+  {
+    slug: "whats-new",
+    name: "What's New",
+    description: "The latest arrivals and freshest releases at Hobson.",
+    active: true,
+    sortOrder: 1,
+  },
+  {
+    slug: "16-scale",
+    name: "1/6 Scale",
+    description: "Premium sixth-scale figures from Hot Toys, ThreeZero, and more.",
+    active: true,
+    sortOrder: 2,
+  },
+  {
+    slug: "110-scale",
+    name: "1/10 Scale",
+    description: "BDS Art Scale and Battle Diorama figures from Iron Studios.",
+    active: true,
+    sortOrder: 3,
+  },
+  {
+    slug: "preorder",
+    name: "Pre-order",
+    description: "Secure yours before it sells out — ships on release.",
+    active: true,
+    sortOrder: 4,
+  },
+  {
+    slug: "statues",
+    name: "Statues & Dioramas",
+    description: "Premium polystone and resin statues from Sideshow and Iron Studios.",
+    active: true,
+    sortOrder: 5,
+  },
+  {
+    slug: "under-5000",
+    name: "Under ₹5,000",
+    description: "High-quality collectibles at approachable price points.",
+    active: true,
+    sortOrder: 6,
+  },
+];
+
+// ─── Payment Settings (singleton) ────────────────────────────────────────────
+
+export const SEED_PAYMENT_SETTINGS = {
+  _docId: "main",
+  razorpayEnabled: false,
+  razorpayKeyId: "",
+  razorpayKeySecret: "",
+  codEnabled: true,
+  codFee: 0,
+  codMaxOrderValue: 10000,
+  whatsappEnabled: true,
+  whatsappNumber: "919999999999",
+  upiId: "",
+  bankName: "",
+  bankAccountNumber: "",
+  bankIfsc: "",
+  bankAccountHolder: "",
+  paymentNote: "We accept UPI, cards, net banking, and COD.",
+};
+
+// ─── Shipping Settings (singleton) ────────────────────────────────────────────
+
+export const SEED_SHIPPING_SETTINGS = {
+  _docId: "main",
+  freeShippingThreshold: 2999,
+  standardShippingFee: 99,
+  expressShippingFee: 299,
+  gstPercent: 18,
+  codFee: 0,
+  shippingNote: "Free pan-India shipping on all orders above ₹2,999.",
+  estimatedDeliveryDays: "3–7",
+  expressDeliveryDays: "1–2",
+  nonServiceablePincodes: [] as string[],
+};
+
+// ─── Navigation Config (singleton) ────────────────────────────────────────────
+
+export const SEED_NAVIGATION_CONFIG = {
+  _docId: "main",
+  featuredFranchises: ["marvel", "dc", "star-wars", "anime"],
+  featuredBrands: ["hot-toys", "sideshow", "iron-studios", "mcfarlane"],
+  maxMegaMenuItems: 8,
+  showBrandsInNav: true,
+  showFranchisesInNav: true,
+  showBlogInNav: true,
+};
+
 // ─── All seed entity IDs (for the admin seeding page) ────────────────────────
 
 export const SEED_ENTITY_MAP = {
   products: SEED_PRODUCTS.map((p) => p.id),
   collections: SEED_COLLECTIONS.map((c) => c.slug),
+  franchises: SEED_FRANCHISES.map((f) => f.slug),
+  brands: SEED_BRANDS.map((b) => b.slug),
+  curatedCollections: SEED_CURATED_COLLECTIONS.map((c) => c.slug),
   banners: SEED_BANNERS.map((b) => b.id),
   promobanners: SEED_PROMO_BANNERS.map((b) => b.id),
   homeSections: SEED_HOME_SECTIONS.map((s) => s.id),
@@ -1212,4 +1425,10 @@ export const SEED_ENTITY_MAP = {
   orderStatusConfig: SEED_ORDER_STATUS_CONFIG.map((s) => s.id),
   pages: SEED_PAGES.map((p) => p.id),
   blogPosts: SEED_BLOG_POSTS.map((b) => b.id),
+  // singletons — seeded by docId
+  siteConfig: ["main"],
+  loyaltyConfig: ["main"],
+  paymentSettings: ["main"],
+  shippingSettings: ["main"],
+  navigationConfig: ["main"],
 };

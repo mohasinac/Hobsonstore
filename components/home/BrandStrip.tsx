@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ROUTES } from "@/constants/routes";
-import type { Collection } from "@/types/content";
+import type { Brand } from "@/types/brand";
 
 interface BrandStripProps {
-  brands: Collection[];
+  brands: Brand[];
 }
 
 export function BrandStrip({ brands }: BrandStripProps) {
@@ -34,7 +34,7 @@ export function BrandStrip({ brands }: BrandStripProps) {
           {brands.map((brand) => (
             <Link
               key={brand.slug}
-              href={ROUTES.COLLECTION(brand.slug)}
+              href={ROUTES.BRAND(brand.slug)}
               className="group flex-shrink-0 transition-transform hover:-translate-y-0.5"
             >
               <div className="relative h-12 w-28 opacity-60 grayscale transition group-hover:opacity-100 group-hover:grayscale-0">
@@ -62,3 +62,4 @@ export function BrandStrip({ brands }: BrandStripProps) {
     </section>
   );
 }
+

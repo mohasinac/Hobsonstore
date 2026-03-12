@@ -1,7 +1,7 @@
 import type { LoyaltyConfig } from "@/types/config";
 
 /**
- * Calculate how many FCC Coins a customer earns for a given order total.
+ * Calculate how many HC Coins a customer earns for a given order total.
  * @param orderTotal - Total paid in INR (after discounts + coin redemption)
  * @param config - LoyaltyConfig from Firestore
  */
@@ -46,7 +46,7 @@ export function calculateMaxRedeemable(
 
 /**
  * Convert coin amount to its INR equivalent.
- * @param coins  - Number of FCC Coins
+ * @param coins  - Number of HC Coins
  * @param config - LoyaltyConfig from Firestore
  * @returns Value in INR (floored to whole rupees)
  */

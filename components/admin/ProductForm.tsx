@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirebaseApp } from "@/lib/firebase/client";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { Select } from "@/components/ui/Select";
 import { CameraCapture } from "./CameraCapture";
+import { getAllFranchisesAdmin } from "@/lib/firebase/franchises";
+import { getAllBrandsAdmin } from "@/lib/firebase/brands";
 import type { Product } from "@/types/product";
 import type { ProductWritePayload } from "@/lib/firebase/products";
 
@@ -23,6 +26,17 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
   const [regularPrice, setRegularPrice] = useState(String(initial?.regularPrice ?? ""));
   const [franchise, setFranchise] = useState(initial?.franchise ?? "");
   const [brand, setBrand] = useState(initial?.brand ?? "");
+  const [franchiseOptions, setFranchiseOptions] = useState<{ value: string; label: string }[]>([]);
+  const [brandOptions, setBrandOptions] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    getAllFranchisesAdmin().then((items) =>
+      setFranchiseOptions(items.map((f) => ({ value: f.slug, label: f.name })))
+    ).catch(() => {});
+    getAllBrandsAdmin().then((items) =>
+      setBrandOptions(items.map((b) => ({ value: b.slug, label: b.name })))
+    ).catch(() => {});
+  }, []);
   const [tags, setTags] = useState((initial?.tags ?? []).join(", "));
   const [description, setDescription] = useState(initial?.description ?? "");
   const [stock, setStock] = useState(String(initial?.stock ?? 0));
@@ -183,8 +197,24 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Input label="Franchise" value={franchise} onChange={(e) => setFranchise(e.target.value)} />
-          <Input label="Brand" value={brand} onChange={(e) => setBrand(e.target.value)} />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Franchise</label>
+            <Select
+              placeholder="Select franchise"
+              options={franchiseOptions}
+              value={franchise}
+              onChange={(e) => setFranchise(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+            <Select
+              placeholder="Select brand"
+              options={brandOptions}
+              value={brand}
+              onChange={(e) => setBrand(e.target.value)}
+            />
+          </div>
         </div>
         <Input
           label="Tags (comma-separated)"

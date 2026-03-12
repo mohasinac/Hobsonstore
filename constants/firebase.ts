@@ -1,8 +1,13 @@
 export const COLLECTIONS = {
+  // ─── Core commerce ────────────────────────────────────────────────────────
   PRODUCTS: "products",
   ORDERS: "orders",
   USERS: "users",
-  COLLECTIONS: "collections",
+  // ─── Taxonomy (Spark plan: separate collections like categories/concerns) ─
+  FRANCHISES: "franchises",          // franchise IPs (Marvel, DC, TMNT…)
+  BRANDS: "brands",                  // manufacturer brands (Hot Toys, Sideshow…)
+  CURATED_COLLECTIONS: "collections", // curated groupings (What's New, 1/6 Scale…)
+  // ─── Storefront content ───────────────────────────────────────────────────
   BANNERS: "banners",
   HOME_SECTIONS: "homeSections",
   PROMO_BANNERS: "promobanners",
@@ -11,9 +16,18 @@ export const COLLECTIONS = {
   FAQ: "faq",
   BLOG: "blog",
   PAGES: "pages",
+  // ─── Commerce & engagement ────────────────────────────────────────────────
   DISCOUNTS: "discounts",
+  REVIEWS: "reviews",
+  REVIEW_FLAGS: "reviewFlags",
+  SUPPORT_TICKETS: "supportTickets",
+  NEWSLETTER_SIGNUPS: "newsletterSignups",
+  // ─── Config singletons ────────────────────────────────────────────────────
   LOYALTY_CONFIG: "loyaltyConfig",
   ORDER_STATUS_CONFIG: "orderStatusConfig",
   SITE_CONFIG: "siteConfig",
-  NEWSLETTER_SIGNUPS: "newsletterSignups",
+  PAYMENT_SETTINGS: "paymentSettings",
+  SHIPPING_SETTINGS: "shippingSettings",
+  NAVIGATION_CONFIG: "navigationConfig",
+  INTEGRATION_KEYS: "integrationKeys",
 } as const;

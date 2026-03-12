@@ -69,7 +69,7 @@ export async function awardCoins(
     timestamp: serverTimestamp() as CoinHistoryEntry["timestamp"],
   };
   await updateDoc(doc(db, COLLECTIONS.USERS, uid), {
-    fccCoins: increment(delta),
+    hcCoins: increment(delta),
     coinHistory: arrayUnion(entry),
   });
 }
@@ -87,7 +87,7 @@ export async function redeemCoins(
     timestamp: serverTimestamp() as CoinHistoryEntry["timestamp"],
   };
   await updateDoc(doc(db, COLLECTIONS.USERS, uid), {
-    fccCoins: increment(-amount),
+    hcCoins: increment(-amount),
     coinHistory: arrayUnion(entry),
   });
 }

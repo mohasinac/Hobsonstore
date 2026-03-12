@@ -91,13 +91,22 @@ export interface ContentPage {
   seoDescription?: string;
 }
 
+/** Curated/featured groupings only (What's New, 1/6 Scale, Action Figures, etc.).
+ *  Franchise IPs → `types/franchise.ts`  |  Brands → `types/brand.ts`
+ */
 export interface Collection {
   slug: string;
   name: string;
-  type: "franchise" | "brand";
-  bannerImage: string;
-  logoImage?: string;
+  bannerImage?: string;
   description?: string;
+  /** Auto-filter: products whose franchise slug is in this list are included */
+  filterFranchises?: string[];
+  /** Auto-filter: products whose brand slug is in this list are included */
+  filterBrands?: string[];
+  /** Auto-filter: products that have any of these tags are included */
+  filterTags?: string[];
+  /** OR: handpick specific product IDs */
+  manualProductIds?: string[];
   seoTitle?: string;
   seoDescription?: string;
   sortOrder: number;
