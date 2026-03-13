@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirebaseApp } from "@/lib/firebase/client";
 import { saveCharacterHotspotConfig } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -124,6 +125,7 @@ export function CharacterHotspotForm({ initial }: CharacterHotspotFormProps) {
     setSuccess(false);
     try {
       await saveCharacterHotspotConfig({ imageUrl, imageAlt, active, pins });
+      void revalidateContentCache();
       setSuccess(true);
     } catch {
       setError("Save failed. Check your connection and try again.");

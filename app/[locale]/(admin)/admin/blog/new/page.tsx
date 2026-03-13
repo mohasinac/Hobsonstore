@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBlogPost } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { ContentEditor } from "@/components/admin/ContentEditor";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -47,6 +48,7 @@ export default function NewBlogPostPage() {
         publishedAt: serverTimestamp() as unknown as BlogPost["publishedAt"],
         updatedAt: serverTimestamp() as unknown as BlogPost["updatedAt"],
       });
+      void revalidateContentCache();
       router.push("/admin/blog");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");

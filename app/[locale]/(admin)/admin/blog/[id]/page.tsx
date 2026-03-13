@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getBlogPostById, updateBlogPost } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { ContentEditor } from "@/components/admin/ContentEditor";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -46,6 +47,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
     setSaving(true);
     try {
       await updateBlogPost(pId, form as Partial<Omit<BlogPost, "id">>);
+      void revalidateContentCache();
       router.push("/admin/blog");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");

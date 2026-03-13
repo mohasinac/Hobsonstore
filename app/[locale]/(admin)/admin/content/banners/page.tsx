@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getBanners, createBanner, updateBanner, deleteBanner } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { BannerForm } from "@/components/admin/BannerForm";
 import { Button } from "@/components/ui/Button";
 import type { Banner } from "@/types/content";
@@ -23,6 +24,7 @@ export default function AdminBannersPage() {
 
   async function handleCreate(data: Omit<Banner, "id">) {
     await createBanner(data);
+    void revalidateContentCache();
     setCreating(false);
     await load();
   }
@@ -30,6 +32,7 @@ export default function AdminBannersPage() {
   async function handleUpdate(data: Omit<Banner, "id">) {
     if (!editing) return;
     await updateBanner(editing.id, data);
+    void revalidateContentCache();
     setEditing(null);
     await load();
   }
@@ -37,6 +40,7 @@ export default function AdminBannersPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this banner?")) return;
     await deleteBanner(id);
+    void revalidateContentCache();
     await load();
   }
 

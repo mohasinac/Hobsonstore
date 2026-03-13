@@ -132,6 +132,22 @@ export async function getProductById(id: string): Promise<Product | null> {
   return { id: snap.id, ...snap.data() } as Product;
 }
 
+/** Batch-fetch multiple products by ID using Firestore `in` queries (max 30 per batch). */
+export async function getProductsByIds(ids: string[]): Promise<Product[]> {
+  if (!ids.length) return [];
+  const db = getDb();
+  const batches: string[][] = [];
+  for (let i = 0; i < ids.length; i += 30) batches.push(ids.slice(i, i + 30));
+  const results = await Promise.all(
+    batches.map((batch) =>
+      getDocs(query(collection(db, COLLECTIONS.PRODUCTS), where("__name__", "in", batch))),
+    ),
+  );
+  return results.flatMap((snap) =>
+    snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Product),
+  );
+}
+
 // ─── Admin CRUD ───────────────────────────────────────────────────────────────
 
 export type ProductWritePayload = Omit<Product, "id" | "createdAt" | "updatedAt" | "availableStock" | "reservedStock" | "restockHistory"> & {

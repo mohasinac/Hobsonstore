@@ -10,6 +10,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.2.1] — 2026-03-14
+
+### Performance
+
+#### Server-Side Caching Overhaul
+
+- `lib/firebase/server.ts` — upgraded 17 server functions from `React cache()` (per-request deduplication only) to `unstable_cache` with cross-request TTLs. Affected functions: `getBannersServer`, `getPromoBannersServer`, `getHomeSectionsServer`, `getTestimonialsServer`, `getFAQServer`, `getAnnouncementsServer`, `getAllBlogPostsServer`, `getTrustBadgesServer`, `getCharacterHotspotConfigServer` (revalidate: 300 s, tags: `content`); `getAllFranchisesServer`, `getFranchiseServer`, `getAllBrandsServer`, `getBrandServer`, `getAllCollectionsServer`, `getCollectionServer`, `getSiteConfigServer` (revalidate: 300 s, tags: `content`); `getFeaturedProductsServer`, `getBestsellerProductsServer`, `getNewArrivalsProductsServer` (revalidate: 120 s, tags: `products`). Eliminates redundant Firestore reads on every search keystroke, dynamic page render, and API route invocation.
+- `app/api/sitemap/route.ts` — wrapped the three full collection scans (`products`, `curated_collections`, `blog`) in `unstable_cache` (revalidate: 3600 s, tag: `sitemap`). Previously `force-dynamic` with no caching caused a full Firestore scan on every sitemap crawl by search engine bots.
+- `app/[locale]/(storefront)/account/wishlist/page.tsx` — eliminated N+1 Firestore reads; replaced `Promise.all(ids.map(getProductById))` with a single batch `getProductsByIds(ids)` call using Firestore's `in` query.
+- `lib/firebase/products.ts` — added `getProductsByIds(ids: string[])` client-side batch fetch function; batches in groups of 30 to satisfy Firestore `in` limit.
+- `app/api/admin/orders/[id]/status/route.ts` — eliminated duplicate order document read; `awardCoinsForOrder` now accepts the already-fetched `Order` object instead of re-fetching from Firestore (saves 1 read per status change).
+- `hooks/useOrderStatusConfig.ts` — replaced `onSnapshot` real-time listener with a one-time `getDocs` call. Order status config is static-ish and does not require a persistent WebSocket connection.
+
+#### Admin Cache Invalidation
+
+- `lib/actions/revalidate.ts` — new server actions `revalidateContentCache()` (busts `content` tag) and `revalidateProductsCache()` (busts `products` tag); called after every admin write so storefront `unstable_cache` entries are purged immediately rather than waiting for TTL expiry.
+- Wired `revalidateContentCache()` into all admin write handlers: banners, promo banners, home sections, testimonials, FAQ, trust badges, announcements, character hotspot (`CharacterHotspotForm`), franchises (list/new/edit), brands (list/new/edit), collections (list/new/edit), blog posts (list/new/edit), static pages, and site config.
+- Wired `revalidateProductsCache()` into admin product write handlers: products list (delete), new product, edit product.
+
+---
+
 ## [0.2.0] — 2026-03-14
 
 ### Added

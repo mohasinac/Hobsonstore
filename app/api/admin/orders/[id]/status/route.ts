@@ -18,15 +18,11 @@ interface StatusBody {
   courierName?: string;
 }
 
-async function awardCoinsForOrder(orderId: string): Promise<void> {
+async function awardCoinsForOrder(orderId: string, order: Order): Promise<void> {
   const db = getAdminDb();
-  const [orderSnap, configSnap] = await Promise.all([
-    db.collection(COLLECTIONS.ORDERS).doc(orderId).get(),
-    db.collection(COLLECTIONS.LOYALTY_CONFIG).doc("main").get(),
-  ]);
-  if (!orderSnap.exists || !configSnap.exists) return;
+  const configSnap = await db.collection(COLLECTIONS.LOYALTY_CONFIG).doc("main").get();
+  if (!configSnap.exists) return;
 
-  const order = orderSnap.data() as Order;
   const config = configSnap.data() as LoyaltyConfig;
   if (!config.active || !order.userId || order.userId === "guest") return;
 
@@ -67,14 +63,13 @@ export async function PATCH(
     return NextResponse.json({ error: "newStatus is required." }, { status: 400 });
   }
 
-  // Fetch current order status
   const db = getAdminDb();
   const orderSnap = await db.collection(COLLECTIONS.ORDERS).doc(orderId).get();
   if (!orderSnap.exists) {
     return NextResponse.json({ error: "Order not found." }, { status: 404 });
   }
 
-  const order = orderSnap.data() as { currentStatus: OrderStatus };
+  const order = orderSnap.data() as Order;
   const validTransitions = ORDER_STATUS_TRANSITIONS[order.currentStatus] ?? [];
   if (!validTransitions.includes(newStatus)) {
     return NextResponse.json(
@@ -101,7 +96,7 @@ export async function PATCH(
 
     // Award HC Coins on delivery
     if (newStatus === "delivered") {
-      await awardCoinsForOrder(orderId);
+      await awardCoinsForOrder(orderId, order);
     }
 
     // Notify customer on WhatsApp (no-op if Twilio not configured)

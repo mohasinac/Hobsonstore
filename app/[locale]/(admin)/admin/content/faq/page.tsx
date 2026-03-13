@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getFAQ, createFAQ, updateFAQ, deleteFAQ } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { FAQForm } from "@/components/admin/FAQForm";
 import { Button } from "@/components/ui/Button";
 import type { FAQItem } from "@/types/content";
@@ -23,6 +24,7 @@ export default function AdminFAQPage() {
 
   async function handleCreate(data: Omit<FAQItem, "id">) {
     await createFAQ(data);
+    void revalidateContentCache();
     setCreating(false);
     await load();
   }
@@ -30,6 +32,7 @@ export default function AdminFAQPage() {
   async function handleUpdate(data: Omit<FAQItem, "id">) {
     if (!editing) return;
     await updateFAQ(editing.id, data);
+    void revalidateContentCache();
     setEditing(null);
     await load();
   }
@@ -37,6 +40,7 @@ export default function AdminFAQPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this FAQ?")) return;
     await deleteFAQ(id);
+    void revalidateContentCache();
     await load();
   }
 

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { createProduct } from "@/lib/firebase/products";
+import { revalidateProductsCache } from "@/lib/actions/revalidate";
 import { ProductForm } from "@/components/admin/ProductForm";
 import type { ProductWritePayload } from "@/lib/firebase/products";
 
@@ -10,6 +11,7 @@ export default function NewProductPage() {
 
   async function handleSubmit(data: ProductWritePayload) {
     await createProduct(data);
+    void revalidateProductsCache();
     router.push("/admin/products");
   }
 

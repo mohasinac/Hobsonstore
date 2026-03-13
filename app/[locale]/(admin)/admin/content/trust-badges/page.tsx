@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getTrustBadges, createTrustBadge, updateTrustBadge, deleteTrustBadge } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { TrustBadgeForm } from "@/components/admin/TrustBadgeForm";
 import { Button } from "@/components/ui/Button";
 import type { TrustBadge } from "@/types/content";
@@ -23,6 +24,7 @@ export default function AdminTrustBadgesPage() {
 
   async function handleCreate(data: Omit<TrustBadge, "id">) {
     await createTrustBadge(data);
+    void revalidateContentCache();
     setCreating(false);
     await load();
   }
@@ -30,6 +32,7 @@ export default function AdminTrustBadgesPage() {
   async function handleUpdate(data: Omit<TrustBadge, "id">) {
     if (!editing) return;
     await updateTrustBadge(editing.id, data);
+    void revalidateContentCache();
     setEditing(null);
     await load();
   }
@@ -37,6 +40,7 @@ export default function AdminTrustBadgesPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this trust badge?")) return;
     await deleteTrustBadge(id);
+    void revalidateContentCache();
     await load();
   }
 

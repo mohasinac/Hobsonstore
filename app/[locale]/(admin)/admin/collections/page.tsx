@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllCollectionsAdmin, deleteCollection, updateCollectionOrder } from "@/lib/firebase/collections";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { DraggableList } from "@/components/admin/DraggableList";
 import { Button } from "@/components/ui/Button";
 import type { Collection } from "@/types/content";
@@ -33,6 +34,7 @@ export default function AdminCollectionsPage() {
   async function handleDelete(slug: string) {
     if (!confirm(`Delete collection "${slug}"?`)) return;
     await deleteCollection(slug);
+    void revalidateContentCache();
     setCollections((prev) => prev.filter((c) => c.slug !== slug));
   }
 

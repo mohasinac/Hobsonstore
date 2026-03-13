@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { AnnouncementForm } from "@/components/admin/AnnouncementForm";
 import { Button } from "@/components/ui/Button";
 import type { Announcement } from "@/types/content";
@@ -23,6 +24,7 @@ export default function AdminAnnouncementsPage() {
 
   async function handleCreate(data: Omit<Announcement, "id">) {
     await createAnnouncement(data);
+    void revalidateContentCache();
     setCreating(false);
     await load();
   }
@@ -30,6 +32,7 @@ export default function AdminAnnouncementsPage() {
   async function handleUpdate(data: Omit<Announcement, "id">) {
     if (!editing) return;
     await updateAnnouncement(editing.id, data);
+    void revalidateContentCache();
     setEditing(null);
     await load();
   }
@@ -37,6 +40,7 @@ export default function AdminAnnouncementsPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this announcement?")) return;
     await deleteAnnouncement(id);
+    void revalidateContentCache();
     await load();
   }
 

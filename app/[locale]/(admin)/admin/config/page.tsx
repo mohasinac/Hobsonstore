@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSiteConfig, updateSiteConfig, getOrderStatusConfig, updateOrderStatusConfigEntry } from "@/lib/firebase/config";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { SiteConfigForm } from "@/components/admin/SiteConfigForm";
 import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -33,6 +34,7 @@ export default function AdminConfigPage() {
 
   async function handleSiteConfig(data: SiteConfig) {
     await updateSiteConfig(data);
+    void revalidateContentCache();
     setSiteConfig(data);
   }
 

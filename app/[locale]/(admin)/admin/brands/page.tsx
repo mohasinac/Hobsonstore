@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllBrandsAdmin, deleteBrand, updateBrandOrder } from "@/lib/firebase/brands";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { DraggableList } from "@/components/admin/DraggableList";
 import { Button } from "@/components/ui/Button";
 import type { Brand } from "@/types/brand";
@@ -34,6 +35,7 @@ export default function AdminBrandsPage() {
   async function handleDelete(slug: string) {
     if (!confirm(`Delete brand "${slug}"?`)) return;
     await deleteBrand(slug);
+    void revalidateContentCache();
     setBrands((prev) => prev.filter((b) => b.slug !== slug));
   }
 

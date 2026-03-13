@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllFranchisesAdmin, deleteFranchise, updateFranchiseOrder } from "@/lib/firebase/franchises";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { DraggableList } from "@/components/admin/DraggableList";
 import { Button } from "@/components/ui/Button";
 import type { Franchise } from "@/types/franchise";
@@ -28,12 +29,15 @@ export default function AdminFranchisesPage() {
 
   function handleReorder(reordered: FranchiseItem[]) {
     setFranchises(reordered);
-    Promise.all(reordered.map((f, i) => updateFranchiseOrder(f.slug, i))).catch(console.error);
+    Promise.all(reordered.map((f, i) => updateFranchiseOrder(f.slug, i)))
+      .then(() => revalidateContentCache())
+      .catch(console.error);
   }
 
   async function handleDelete(slug: string) {
     if (!confirm(`Delete franchise "${slug}"?`)) return;
     await deleteFranchise(slug);
+    void revalidateContentCache();
     setFranchises((prev) => prev.filter((f) => f.slug !== slug));
   }
 

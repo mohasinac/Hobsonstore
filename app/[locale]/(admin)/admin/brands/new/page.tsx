@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { upsertBrand } from "@/lib/firebase/brands";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { BrandForm } from "@/components/admin/BrandForm";
 import type { Brand } from "@/types/brand";
 
@@ -10,6 +11,7 @@ export default function NewBrandPage() {
 
   async function handleSubmit(data: Brand) {
     await upsertBrand(data.slug, data);
+    void revalidateContentCache();
     router.push("/admin/brands");
   }
 

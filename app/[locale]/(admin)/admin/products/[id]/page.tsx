@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getProductById, updateProduct } from "@/lib/firebase/products";
+import { revalidateProductsCache } from "@/lib/actions/revalidate";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { InventoryEditForm } from "@/components/admin/InventoryEditForm";
 import type { Product } from "@/types/product";
@@ -35,6 +36,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       availableStock: Math.max(0, newStock - reserved),
       inStock: newStock - reserved > 0,
     });
+    void revalidateProductsCache();
     router.push("/admin/products");
   }
 

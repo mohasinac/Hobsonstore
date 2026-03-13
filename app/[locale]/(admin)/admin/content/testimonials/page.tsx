@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { TestimonialForm } from "@/components/admin/TestimonialForm";
 import { Button } from "@/components/ui/Button";
 import type { Testimonial } from "@/types/content";
@@ -23,6 +24,7 @@ export default function AdminTestimonialsPage() {
 
   async function handleCreate(data: Omit<Testimonial, "id">) {
     await createTestimonial(data);
+    void revalidateContentCache();
     setCreating(false);
     await load();
   }
@@ -30,6 +32,7 @@ export default function AdminTestimonialsPage() {
   async function handleUpdate(data: Omit<Testimonial, "id">) {
     if (!editing) return;
     await updateTestimonial(editing.id, data);
+    void revalidateContentCache();
     setEditing(null);
     await load();
   }
@@ -37,6 +40,7 @@ export default function AdminTestimonialsPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this testimonial?")) return;
     await deleteTestimonial(id);
+    void revalidateContentCache();
     await load();
   }
 

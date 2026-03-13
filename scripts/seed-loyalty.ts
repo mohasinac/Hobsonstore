@@ -64,14 +64,24 @@ const discounts = [
     expiresAt: Timestamp.fromDate(new Date("2026-09-30T23:59:59Z")),
   },
   {
-    code: "NEWSTORE15",
+    code: "SPRING26",
     type: "percent" as const,
     value: 15,
-    minOrderValue: 2000,
-    maxUses: 200,
+    minOrderValue: 2499,
+    maxUses: 300,
     usedCount: 0,
     active: true,
     expiresAt: Timestamp.fromDate(new Date("2026-06-30T23:59:59Z")),
+  },
+  {
+    code: "HOTNEW2026",
+    type: "percent" as const,
+    value: 5,
+    minOrderValue: 15000,
+    maxUses: 200,
+    usedCount: 0,
+    active: true,
+    expiresAt: Timestamp.fromDate(new Date("2026-12-31T23:59:59Z")),
   },
   {
     code: "TESTEXPIRED",
@@ -81,7 +91,7 @@ const discounts = [
     maxUses: undefined,
     usedCount: 0,
     active: true,
-    expiresAt: Timestamp.fromDate(new Date("2025-01-01T00:00:00Z")), // already expired
+    expiresAt: Timestamp.fromDate(new Date("2025-03-14T00:00:00Z")), // already expired
   },
 ];
 

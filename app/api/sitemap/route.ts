@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/firebase";
 
@@ -26,10 +27,23 @@ async function getSlugs(
     .filter((s): s is string => typeof s === "string" && s.length > 0);
 }
 
+const getSitemapSlugs = unstable_cache(
+  async () => {
+    const [productSlugs, collectionSlugs, blogSlugs] = await Promise.all([
+      getSlugs(COLLECTIONS.PRODUCTS, "slug"),
+      getSlugs(COLLECTIONS.CURATED_COLLECTIONS, "slug", [{ field: "active", value: true }]),
+      getSlugs(COLLECTIONS.BLOG, "slug", [{ field: "published", value: true }]),
+    ]);
+    return { productSlugs, collectionSlugs, blogSlugs };
+  },
+  ["sitemap-slugs"],
+  { revalidate: 3600, tags: ["sitemap"] },
+);
+
 /**
  * GET /api/sitemap
  * Returns a dynamic XML sitemap built from Firestore slugs.
- * Cached for 1 hour; on-demand revalidation via /api/revalidate.
+ * Slug data cached for 1 hour; on-demand revalidation via /api/revalidate.
  */
 export async function GET() {
   let productSlugs: string[] = [];
@@ -37,11 +51,7 @@ export async function GET() {
   let blogSlugs: string[] = [];
 
   try {
-    [productSlugs, collectionSlugs, blogSlugs] = await Promise.all([
-      getSlugs(COLLECTIONS.PRODUCTS, "slug"),
-      getSlugs(COLLECTIONS.CURATED_COLLECTIONS, "slug", [{ field: "active", value: true }]),
-      getSlugs(COLLECTIONS.BLOG, "slug", [{ field: "published", value: true }]),
-    ]);
+    ({ productSlugs, collectionSlugs, blogSlugs } = await getSitemapSlugs());
   } catch {
     // Admin SDK unavailable (e.g. no credentials) — return a minimal sitemap
   }

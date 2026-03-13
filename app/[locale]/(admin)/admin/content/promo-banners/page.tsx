@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getPromoBanners, createPromoBanner, updatePromoBanner, deletePromoBanner } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { PromoBannerForm } from "@/components/admin/PromoBannerForm";
 import { Button } from "@/components/ui/Button";
 import type { PromoBanner } from "@/types/content";
@@ -23,6 +24,7 @@ export default function AdminPromoBannersPage() {
 
   async function handleCreate(data: Omit<PromoBanner, "id">) {
     await createPromoBanner(data);
+    void revalidateContentCache();
     setCreating(false);
     await load();
   }
@@ -30,6 +32,7 @@ export default function AdminPromoBannersPage() {
   async function handleUpdate(data: Omit<PromoBanner, "id">) {
     if (!editing) return;
     await updatePromoBanner(editing.id, data);
+    void revalidateContentCache();
     setEditing(null);
     await load();
   }
@@ -37,6 +40,7 @@ export default function AdminPromoBannersPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this promo banner?")) return;
     await deletePromoBanner(id);
+    void revalidateContentCache();
     await load();
   }
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   getHomeSections, createHomeSection, updateHomeSection, deleteHomeSection,
 } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { HomeSectionForm } from "@/components/admin/HomeSectionForm";
 import { Button } from "@/components/ui/Button";
 import type { HomeSection } from "@/types/content";
@@ -25,6 +26,7 @@ export default function AdminHomeSectionsPage() {
 
   async function handleCreate(data: Omit<HomeSection, "id">) {
     await createHomeSection(data);
+    void revalidateContentCache();
     setCreating(false);
     await load();
   }
@@ -32,6 +34,7 @@ export default function AdminHomeSectionsPage() {
   async function handleUpdate(data: Omit<HomeSection, "id">) {
     if (!editing) return;
     await updateHomeSection(editing.id, data);
+    void revalidateContentCache();
     setEditing(null);
     await load();
   }
@@ -39,6 +42,7 @@ export default function AdminHomeSectionsPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this section?")) return;
     await deleteHomeSection(id);
+    void revalidateContentCache();
     await load();
   }
 

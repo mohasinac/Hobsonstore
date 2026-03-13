@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllBlogPostsAdmin, deleteBlogPost } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { Button } from "@/components/ui/Button";
 import type { BlogPost } from "@/types/content";
 
@@ -20,6 +21,7 @@ export default function AdminBlogPage() {
   async function handleDelete(id: string, title: string) {
     if (!confirm(`Delete "${title}"?`)) return;
     await deleteBlogPost(id);
+    void revalidateContentCache();
     setPosts((prev) => prev.filter((p) => p.id !== id));
   }
 

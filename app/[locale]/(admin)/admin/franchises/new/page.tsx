@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { upsertFranchise } from "@/lib/firebase/franchises";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { FranchiseForm } from "@/components/admin/FranchiseForm";
 import type { Franchise } from "@/types/franchise";
 
@@ -10,6 +11,7 @@ export default function NewFranchisePage() {
 
   async function handleSubmit(data: Franchise) {
     await upsertFranchise(data.slug, data);
+    void revalidateContentCache();
     router.push("/admin/franchises");
   }
 

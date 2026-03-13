@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useWishlist } from "@/hooks/useWishlist";
-import { getProductById } from "@/lib/firebase/products";
+import { getProductsByIds } from "@/lib/firebase/products";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { Spinner } from "@/components/ui/Spinner";
 import { ROUTES } from "@/constants/routes";
@@ -33,8 +33,8 @@ export default function WishlistPage() {
         return;
       }
       try {
-        const results = await Promise.all(productIds.map((id) => getProductById(id)));
-        setProducts(results.filter(Boolean) as Product[]);
+        const results = await getProductsByIds(productIds);
+        setProducts(results);
       } catch (e) {
         console.error(e);
       } finally {

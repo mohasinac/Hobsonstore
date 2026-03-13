@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getPage, upsertPage } from "@/lib/firebase/content";
+import { revalidateContentCache } from "@/lib/actions/revalidate";
 import { ContentEditor } from "@/components/admin/ContentEditor";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -33,6 +34,7 @@ export default function EditPagePage({ params }: { params: Promise<{ slug: strin
     setSaving(true);
     try {
       await upsertPage(slug, page as Omit<ContentPage, "slug">);
+      void revalidateContentCache();
       setSaved(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");

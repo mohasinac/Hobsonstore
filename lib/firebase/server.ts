@@ -55,88 +55,112 @@ function toData<T>(snap: FirebaseFirestore.QueryDocumentSnapshot<any>): T {
 
 // ─── Banners ──────────────────────────────────────────────────────────────────
 
-export const getBannersServer = cache(async function (): Promise<Banner[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.BANNERS)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs.map((d) => toData<Banner>(d)).filter((b) => b.active);
-  } catch {
-    return [];
-  }
-});
+export const getBannersServer = unstable_cache(
+  async function (): Promise<Banner[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.BANNERS)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs.map((d) => toData<Banner>(d)).filter((b) => b.active);
+    } catch {
+      return [];
+    }
+  },
+  ["banners"],
+  { revalidate: 300, tags: ["content", "banners"] },
+);
 
-export const getPromoBannersServer = cache(async function (): Promise<PromoBanner[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.PROMO_BANNERS)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs
-      .map((d) => toData<PromoBanner>(d))
-      .filter((b) => b.active)
-      .slice(0, 4);
-  } catch {
+export const getPromoBannersServer = unstable_cache(
+  async function (): Promise<PromoBanner[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.PROMO_BANNERS)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs
+        .map((d) => toData<PromoBanner>(d))
+        .filter((b) => b.active)
+        .slice(0, 4);
+    } catch {
     return [];
-  }
-});
+    }
+  },
+  ["promo-banners"],
+  { revalidate: 300, tags: ["content", "promo-banners"] },
+);
 
 // ─── Home sections ────────────────────────────────────────────────────────────
 
-export const getHomeSectionsServer = cache(async function (): Promise<HomeSection[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.HOME_SECTIONS)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs.map((d) => toData<HomeSection>(d)).filter((s) => s.active);
-  } catch {
-    return [];
-  }
-});
+export const getHomeSectionsServer = unstable_cache(
+  async function (): Promise<HomeSection[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.HOME_SECTIONS)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs.map((d) => toData<HomeSection>(d)).filter((s) => s.active);
+    } catch {
+      return [];
+    }
+  },
+  ["home-sections"],
+  { revalidate: 300, tags: ["content", "home-sections"] },
+);
 
 // ─── Testimonials / FAQ ───────────────────────────────────────────────────────
 
-export const getTestimonialsServer = cache(async function (featuredOnly = false): Promise<Testimonial[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.TESTIMONIALS)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs
-      .map((d) => toData<Testimonial>(d))
-      .filter((t) => t.active && (!featuredOnly || t.featured));
-  } catch {
-    return [];
-  }
-});
+export const getTestimonialsServer = unstable_cache(
+  async function (featuredOnly = false): Promise<Testimonial[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.TESTIMONIALS)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs
+        .map((d) => toData<Testimonial>(d))
+        .filter((t) => t.active && (!featuredOnly || t.featured));
+    } catch {
+      return [];
+    }
+  },
+  ["testimonials"],
+  { revalidate: 300, tags: ["content", "testimonials"] },
+);
 
-export const getFAQServer = cache(async function (): Promise<FAQItem[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.FAQ)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs.map((d) => toData<FAQItem>(d)).filter((f) => f.active);
-  } catch {
-    return [];
-  }
-});
+export const getFAQServer = unstable_cache(
+  async function (): Promise<FAQItem[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.FAQ)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs.map((d) => toData<FAQItem>(d)).filter((f) => f.active);
+    } catch {
+      return [];
+    }
+  },
+  ["faq"],
+  { revalidate: 300, tags: ["content", "faq"] },
+);
 
 // ─── Announcements ────────────────────────────────────────────────────────────
 
-export const getAnnouncementsServer = cache(async function (): Promise<Announcement[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.ANNOUNCEMENTS)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs.map((d) => toData<Announcement>(d)).filter((a) => a.active);
-  } catch {
-    return [];
-  }
-});
+export const getAnnouncementsServer = unstable_cache(
+  async function (): Promise<Announcement[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.ANNOUNCEMENTS)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs.map((d) => toData<Announcement>(d)).filter((a) => a.active);
+    } catch {
+      return [];
+    }
+  },
+  ["announcements"],
+  { revalidate: 300, tags: ["content", "announcements"] },
+);
 
 // ─── Pages / Blog ─────────────────────────────────────────────────────────────
 
@@ -166,101 +190,133 @@ export const getBlogPostServer = cache(async function (slug: string): Promise<Bl
   }
 });
 
-export const getAllBlogPostsServer = cache(async function (): Promise<BlogPost[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.BLOG)
-      .orderBy("publishedAt", "desc")
-      .get();
-    return snap.docs.map((d) => toData<BlogPost>(d)).filter((p) => p.published);
-  } catch {
-    return [];
-  }
-});
+export const getAllBlogPostsServer = unstable_cache(
+  async function (): Promise<BlogPost[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.BLOG)
+        .orderBy("publishedAt", "desc")
+        .get();
+      return snap.docs.map((d) => toData<BlogPost>(d)).filter((p) => p.published);
+    } catch {
+      return [];
+    }
+  },
+  ["blog-posts"],
+  { revalidate: 300, tags: ["content", "blog"] },
+);
 
 // ─── Collections ──────────────────────────────────────────────────────────────
 
-export const getAllCollectionsServer = cache(async function (): Promise<Collection[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.CURATED_COLLECTIONS)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs.map((d) => toData<Collection>(d)).filter((c) => c.active);
-  } catch {
-    return [];
-  }
-});
+export const getAllCollectionsServer = unstable_cache(
+  async function (): Promise<Collection[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.CURATED_COLLECTIONS)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs.map((d) => toData<Collection>(d)).filter((c) => c.active);
+    } catch {
+      return [];
+    }
+  },
+  ["collections"],
+  { revalidate: 300, tags: ["content", "collections"] },
+);
 
-export const getCollectionServer = cache(async function (slug: string): Promise<Collection | null> {
-  try {
-    const snap = await db().collection(COLLECTIONS.CURATED_COLLECTIONS).doc(slug).get();
-    if (!snap.exists) return null;
-    return serializeTimestamps({ id: snap.id, ...snap.data() }) as unknown as Collection;
-  } catch {
-    return null;
-  }
-});
+export const getCollectionServer = unstable_cache(
+  async function (slug: string): Promise<Collection | null> {
+    try {
+      const snap = await db().collection(COLLECTIONS.CURATED_COLLECTIONS).doc(slug).get();
+      if (!snap.exists) return null;
+      return serializeTimestamps({ id: snap.id, ...snap.data() }) as unknown as Collection;
+    } catch {
+      return null;
+    }
+  },
+  ["collection"],
+  { revalidate: 300, tags: ["content", "collections"] },
+);
 
 // ─── Franchises ──────────────────────────────────────────────────────────────
 
-export const getAllFranchisesServer = cache(async function (): Promise<Franchise[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.FRANCHISES)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs.map((d) => toData<Franchise>(d)).filter((f) => f.active);
-  } catch {
-    return [];
-  }
-});
+export const getAllFranchisesServer = unstable_cache(
+  async function (): Promise<Franchise[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.FRANCHISES)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs.map((d) => toData<Franchise>(d)).filter((f) => f.active);
+    } catch {
+      return [];
+    }
+  },
+  ["franchises"],
+  { revalidate: 300, tags: ["content", "franchises"] },
+);
 
-export const getFranchiseServer = cache(async function (slug: string): Promise<Franchise | null> {
-  try {
-    const snap = await db().collection(COLLECTIONS.FRANCHISES).doc(slug).get();
-    if (!snap.exists) return null;
-    return serializeTimestamps({ ...snap.data() }) as Franchise;
-  } catch {
-    return null;
-  }
-});
+export const getFranchiseServer = unstable_cache(
+  async function (slug: string): Promise<Franchise | null> {
+    try {
+      const snap = await db().collection(COLLECTIONS.FRANCHISES).doc(slug).get();
+      if (!snap.exists) return null;
+      return serializeTimestamps({ ...snap.data() }) as Franchise;
+    } catch {
+      return null;
+    }
+  },
+  ["franchise"],
+  { revalidate: 300, tags: ["content", "franchises"] },
+);
 
 // ─── Brands ───────────────────────────────────────────────────────────────────
 
-export const getAllBrandsServer = cache(async function (): Promise<Brand[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.BRANDS)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs.map((d) => toData<Brand>(d)).filter((b) => b.active);
-  } catch {
-    return [];
-  }
-});
+export const getAllBrandsServer = unstable_cache(
+  async function (): Promise<Brand[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.BRANDS)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs.map((d) => toData<Brand>(d)).filter((b) => b.active);
+    } catch {
+      return [];
+    }
+  },
+  ["brands"],
+  { revalidate: 300, tags: ["content", "brands"] },
+);
 
-export const getBrandServer = cache(async function (slug: string): Promise<Brand | null> {
-  try {
-    const snap = await db().collection(COLLECTIONS.BRANDS).doc(slug).get();
-    if (!snap.exists) return null;
-    return serializeTimestamps({ ...snap.data() }) as Brand;
-  } catch {
-    return null;
-  }
-});
+export const getBrandServer = unstable_cache(
+  async function (slug: string): Promise<Brand | null> {
+    try {
+      const snap = await db().collection(COLLECTIONS.BRANDS).doc(slug).get();
+      if (!snap.exists) return null;
+      return serializeTimestamps({ ...snap.data() }) as Brand;
+    } catch {
+      return null;
+    }
+  },
+  ["brand"],
+  { revalidate: 300, tags: ["content", "brands"] },
+);
 
 // ─── Site config ──────────────────────────────────────────────────────────────
 
-export const getSiteConfigServer = cache(async function (): Promise<SiteConfig | null> {
-  try {
-    const snap = await db().collection(COLLECTIONS.SITE_CONFIG).doc("main").get();
-    if (!snap.exists) return null;
-    return serializeTimestamps(snap.data()) as SiteConfig;
-  } catch {
-    return null;
-  }
-});
+export const getSiteConfigServer = unstable_cache(
+  async function (): Promise<SiteConfig | null> {
+    try {
+      const snap = await db().collection(COLLECTIONS.SITE_CONFIG).doc("main").get();
+      if (!snap.exists) return null;
+      return serializeTimestamps(snap.data()) as SiteConfig;
+    } catch {
+      return null;
+    }
+  },
+  ["site-config"],
+  { revalidate: 300, tags: ["content", "site-config"] },
+);
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 
@@ -398,47 +454,71 @@ export async function getProductsServer(
   return _getProductsServerCached(JSON.stringify(filters), pageSize);
 }
 
-export const getFeaturedProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.PRODUCTS)
-      .where("isFeatured", "==", true)
-      .where("active", "==", true)
-      .limit(pageSize)
-      .get();
-    return snap.docs.map((d) => toData<Product>(d));
-  } catch {
-    return [];
-  }
-});
+const _getFeaturedProductsCached = unstable_cache(
+  async (pageSize: number): Promise<Product[]> => {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.PRODUCTS)
+        .where("isFeatured", "==", true)
+        .where("active", "==", true)
+        .limit(pageSize)
+        .get();
+      return snap.docs.map((d) => toData<Product>(d));
+    } catch {
+      return [];
+    }
+  },
+  ["featured-products"],
+  { revalidate: 120, tags: ["products"] },
+);
 
-export const getBestsellerProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.PRODUCTS)
-      .where("isBestseller", "==", true)
-      .where("active", "==", true)
-      .limit(pageSize)
-      .get();
-    return snap.docs.map((d) => toData<Product>(d));
-  } catch {
-    return [];
-  }
-});
+export async function getFeaturedProductsServer(pageSize = 8): Promise<Product[]> {
+  return _getFeaturedProductsCached(pageSize);
+}
 
-export const getNewArrivalsProductsServer = cache(async function (pageSize = 8): Promise<Product[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.PRODUCTS)
-      .where("active", "==", true)
-      .orderBy("createdAt", "desc")
-      .limit(pageSize)
-      .get();
-    return snap.docs.map((d) => toData<Product>(d));
-  } catch {
-    return [];
-  }
-});
+const _getBestsellerProductsCached = unstable_cache(
+  async (pageSize: number): Promise<Product[]> => {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.PRODUCTS)
+        .where("isBestseller", "==", true)
+        .where("active", "==", true)
+        .limit(pageSize)
+        .get();
+      return snap.docs.map((d) => toData<Product>(d));
+    } catch {
+      return [];
+    }
+  },
+  ["bestseller-products"],
+  { revalidate: 120, tags: ["products"] },
+);
+
+export async function getBestsellerProductsServer(pageSize = 8): Promise<Product[]> {
+  return _getBestsellerProductsCached(pageSize);
+}
+
+const _getNewArrivalsCached = unstable_cache(
+  async (pageSize: number): Promise<Product[]> => {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.PRODUCTS)
+        .where("active", "==", true)
+        .orderBy("createdAt", "desc")
+        .limit(pageSize)
+        .get();
+      return snap.docs.map((d) => toData<Product>(d));
+    } catch {
+      return [];
+    }
+  },
+  ["new-arrivals"],
+  { revalidate: 120, tags: ["products"] },
+);
+
+export async function getNewArrivalsProductsServer(pageSize = 8): Promise<Product[]> {
+  return _getNewArrivalsCached(pageSize);
+}
 
 // ─── Integration Keys ─────────────────────────────────────────────────────────
 
@@ -460,27 +540,35 @@ export async function updateIntegrationKeysServer(updates: Partial<IntegrationKe
 
 // ─── Character Hotspot ───────────────────────────────────────────────────────────
 
-export const getCharacterHotspotConfigServer = cache(async function (): Promise<CharacterHotspotConfig | null> {
-  try {
-    const snap = await db().collection(COLLECTIONS.CHARACTER_HOTSPOT).doc("main").get();
-    if (!snap.exists) return null;
-    return serializeTimestamps(snap.data()) as CharacterHotspotConfig;
-  } catch {
-    return null;
-  }
-});
+export const getCharacterHotspotConfigServer = unstable_cache(
+  async function (): Promise<CharacterHotspotConfig | null> {
+    try {
+      const snap = await db().collection(COLLECTIONS.CHARACTER_HOTSPOT).doc("main").get();
+      if (!snap.exists) return null;
+      return serializeTimestamps(snap.data()) as CharacterHotspotConfig;
+    } catch {
+      return null;
+    }
+  },
+  ["character-hotspot"],
+  { revalidate: 300, tags: ["content", "character-hotspot"] },
+);
 
 // ─── Trust Badges ────────────────────────────────────────────────
 
-export const getTrustBadgesServer = cache(async function (): Promise<TrustBadge[]> {
-  try {
-    const snap = await db()
-      .collection(COLLECTIONS.TRUST_BADGES)
-      .orderBy("sortOrder", "asc")
-      .get();
-    return snap.docs.map((d) => toData<TrustBadge>(d)).filter((b) => b.active);
-  } catch {
-    return [];
-  }
-});
+export const getTrustBadgesServer = unstable_cache(
+  async function (): Promise<TrustBadge[]> {
+    try {
+      const snap = await db()
+        .collection(COLLECTIONS.TRUST_BADGES)
+        .orderBy("sortOrder", "asc")
+        .get();
+      return snap.docs.map((d) => toData<TrustBadge>(d)).filter((b) => b.active);
+    } catch {
+      return [];
+    }
+  },
+  ["trust-badges"],
+  { revalidate: 300, tags: ["content", "trust-badges"] },
+);
 

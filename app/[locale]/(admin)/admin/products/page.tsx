@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllProductsAdmin, deleteProduct } from "@/lib/firebase/products";
+import { revalidateProductsCache } from "@/lib/actions/revalidate";
 import { ProductTableRow } from "@/components/admin/ProductTableRow";
 import { Button } from "@/components/ui/Button";
 import type { Product } from "@/types/product";
@@ -30,6 +31,7 @@ export default function AdminProductsPage() {
     const product = products.find((p) => p.id === id);
     if (!confirm(`Delete "${product?.name ?? id}"? This cannot be undone.`)) return;
     await deleteProduct(id);
+    void revalidateProductsCache();
     setProducts((prev) => prev.filter((p) => p.id !== id));
   }
 
