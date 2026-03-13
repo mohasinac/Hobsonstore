@@ -72,6 +72,6 @@ export async function POST(req: NextRequest) {
     written += chunk.length;
   }
 
-  revalidateTag("products");
+  revalidateTag("products", "");
   return NextResponse.json({ count: written });
 }
