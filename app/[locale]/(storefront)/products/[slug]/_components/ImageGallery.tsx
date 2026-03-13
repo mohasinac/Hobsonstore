@@ -19,7 +19,7 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
       {/* Main image */}
       <div
         className="relative aspect-square w-full cursor-zoom-in overflow-hidden"
-        style={{ border: '2px solid #0D0D0D', background: '#FFFEF0' }}
+        style={{ border: '2px solid var(--border-ink)', background: 'var(--surface-elevated)' }}
         onClick={() => setZoomed(true)}
       >
         <Image
@@ -41,9 +41,9 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
               onClick={() => setSelected(i)}
               className={cn(
                 "relative h-16 w-16 flex-shrink-0 overflow-hidden border-2",
-                selected === i ? "border-[#E8001C]" : "border-[#0D0D0D]",
+                selected === i ? "border-[#E8001C]" : "border-[var(--border-ink)]",
               )}
-              style={{ background: '#FFFEF0' }}
+              style={{ background: 'var(--surface-elevated)' }}
               aria-label={`View image ${i + 1}`}
             >
               <Image

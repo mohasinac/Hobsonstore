@@ -43,7 +43,7 @@ export default function AdminBannersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Banners</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Banners</h1>
         <Button size="sm" onClick={() => setCreating(true)}>+ New Banner</Button>
       </div>
 
@@ -51,7 +51,7 @@ export default function AdminBannersPage() {
         <div className="rounded-md border p-4">
           <h2 className="font-medium mb-4">New Banner</h2>
           <BannerForm onSubmit={handleCreate} submitLabel="Create" />
-          <button onClick={() => setCreating(false)} className="mt-2 text-xs text-gray-400 hover:text-gray-600">Cancel</button>
+          <button onClick={() => setCreating(false)} className="mt-2 text-xs dark:text-slate-500 dark:hover:text-slate-300 text-gray-400 hover:text-gray-600">Cancel</button>
         </div>
       )}
 
@@ -59,27 +59,27 @@ export default function AdminBannersPage() {
         <div className="rounded-md border p-4">
           <h2 className="font-medium mb-4">Edit Banner</h2>
           <BannerForm initial={editing} onSubmit={handleUpdate} submitLabel="Save Changes" />
-          <button onClick={() => setEditing(null)} className="mt-2 text-xs text-gray-400 hover:text-gray-600">Cancel</button>
+          <button onClick={() => setEditing(null)} className="mt-2 text-xs dark:text-slate-500 dark:hover:text-slate-300 text-gray-400 hover:text-gray-600">Cancel</button>
         </div>
       )}
 
       {loading ? (
-        <p className="text-sm text-gray-500">Loading…</p>
+        <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>
       ) : (
         <div className="space-y-2">
           {banners.map((b) => (
-            <div key={b.id} className="flex items-center justify-between rounded-md border bg-white px-4 py-3">
+            <div key={b.id} className="flex items-center justify-between rounded-md border px-4 py-3" style={{ background: 'var(--surface-elevated)', borderColor: 'var(--border-ink)' }}>
               <div>
                 <p className="font-medium text-sm">{b.title}</p>
-                <p className="text-xs text-gray-400">Sort: {b.sortOrder} · {b.active ? "Active" : "Hidden"}</p>
+                <p className="text-xs" style={{ color: 'var(--color-muted)' }}>Sort: {b.sortOrder} · {b.active ? "Active" : "Hidden"}</p>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => setEditing(b)} className="text-xs text-red-600 hover:underline">Edit</button>
-                <button onClick={() => handleDelete(b.id)} className="text-xs text-gray-400 hover:text-red-600">Delete</button>
+                <button onClick={() => handleDelete(b.id)} className="text-xs dark:text-slate-500 text-gray-400 hover:text-red-600">Delete</button>
               </div>
             </div>
           ))}
-          {banners.length === 0 && <p className="text-sm text-gray-400">No banners yet.</p>}
+          {banners.length === 0 && <p className="text-sm" style={{ color: 'var(--color-muted)' }}>No banners yet.</p>}
         </div>
       )}
     </div>

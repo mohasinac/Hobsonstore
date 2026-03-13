@@ -103,7 +103,7 @@ export function StatusChangeForm({
 
   if (validNext.length === 0) {
     return (
-      <p className="text-sm text-gray-500">
+      <p className="text-sm" style={{ color: 'var(--color-muted)' }}>
         No further status transitions available.
       </p>
     );

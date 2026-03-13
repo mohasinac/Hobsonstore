@@ -44,7 +44,7 @@ export function AdminSidebar() {
                 "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 active
                   ? "bg-red-50 text-red-700"
-                  : "text-gray-700 hover:bg-gray-100",
+                  : "text-gray-700 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-white/10",
               )}
             >
               <span className="text-base leading-none">{icon}</span>

@@ -216,14 +216,14 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
           className="flex items-center gap-3 px-4 py-3"
           style={{ borderBottom: "2px solid var(--border-ink)" }}
         >
-          <SearchIcon className="h-5 w-5 shrink-0 text-gray-500" />
+          <SearchIcon className="h-5 w-5 shrink-0 dark:text-slate-400 text-gray-500" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => handleQuery(e.target.value)}
             placeholder="Search collectibles, brands, franchises…"
-            className="flex-1 bg-transparent text-base outline-none text-gray-900 placeholder-gray-400"
+            className="flex-1 bg-transparent text-base outline-none dark:text-slate-100 dark:placeholder-slate-500 text-gray-900 placeholder-gray-400"
           />
           {loading ? (
             <div className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-gray-300 border-t-red-600" />
@@ -231,7 +231,7 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
             <button
               type="button"
               onClick={handleClose}
-              className="shrink-0 rounded px-1.5 py-0.5 text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors"
+              className="shrink-0 rounded px-1.5 py-0.5 text-[11px] font-semibold dark:text-slate-400 dark:hover:text-slate-200 text-gray-500 hover:text-gray-800 transition-colors"
               style={{ border: "1.5px solid #ccc" }}
               aria-label="Close"
             >
@@ -250,8 +250,7 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
                   key={product.id ?? product.slug}
                   href={ROUTES.PRODUCT(product.slug)}
                   onClick={handleClose}
-                  className="flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-yellow-50"
-                >
+                  className="flex items-center gap-3 rounded-md px-3 py-2 transition-colors dark:hover:bg-white/5 hover:bg-yellow-50">
                   {product.images?.[0] ? (
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded"
                       style={{ border: "1.5px solid var(--border-ink)" }}>
@@ -264,16 +263,16 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
                       />
                     </div>
                   ) : (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-gray-100"
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded dark:bg-white/5 bg-gray-100"
                       style={{ border: "1.5px solid var(--border-ink)" }}>
-                      <BoxIcon className="h-4 w-4 text-gray-400" />
+                      <BoxIcon className="h-4 w-4 dark:text-slate-500 text-gray-400" />
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-semibold text-gray-900">{product.name}</div>
-                    <div className="text-xs text-gray-500">₹{product.salePrice.toLocaleString("en-IN")}</div>
+                    <div className="truncate text-sm font-semibold dark:text-slate-100 text-gray-900">{product.name}</div>
+                    <div className="text-xs" style={{ color: 'var(--color-muted)' }}>₹{product.salePrice.toLocaleString("en-IN")}</div>
                   </div>
-                  <ArrowIcon className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                  <ArrowIcon className="h-3.5 w-3.5 shrink-0 dark:text-slate-500 text-gray-400" />
                 </Link>
               ))}
               <Link
@@ -295,7 +294,7 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
                   key={f.slug}
                   href={ROUTES.FRANCHISE(f.slug)}
                   onClick={handleClose}
-                  className="flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-yellow-50"
+                  className="flex items-center gap-3 rounded-md px-3 py-2 transition-colors dark:hover:bg-white/5 hover:bg-yellow-50"
                 >
                   {f.thumbnailImage ? (
                     <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded"
@@ -303,15 +302,15 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
                       <Image src={f.thumbnailImage} alt={f.name} fill sizes="36px" className="object-cover" />
                     </div>
                   ) : (
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-gray-100"
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded dark:bg-white/5 bg-gray-100"
                       style={{ border: "1.5px solid var(--border-ink)" }}>
                       <span className="text-lg">🎬</span>
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-semibold text-gray-900">{f.name}</div>
+                    <div className="truncate text-sm font-semibold dark:text-slate-100 text-gray-900">{f.name}</div>
                   </div>
-                  <ArrowIcon className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                  <ArrowIcon className="h-3.5 w-3.5 shrink-0 dark:text-slate-500 text-gray-400" />
                 </Link>
               ))}
             </ResultGroup>
@@ -325,7 +324,7 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
                   key={b.slug}
                   href={ROUTES.BRAND(b.slug)}
                   onClick={handleClose}
-                  className="flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-yellow-50"
+                  className="flex items-center gap-3 rounded-md px-3 py-2 transition-colors dark:hover:bg-white/5 hover:bg-yellow-50"
                 >
                   {b.logoImage ? (
                     <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded"
@@ -333,15 +332,15 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
                       <Image src={b.logoImage} alt={b.name} fill sizes="36px" className="object-contain p-1" />
                     </div>
                   ) : (
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-gray-100"
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded dark:bg-white/5 bg-gray-100"
                       style={{ border: "1.5px solid var(--border-ink)" }}>
                       <span className="text-lg">🏭</span>
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-semibold text-gray-900">{b.name}</div>
+                    <div className="truncate text-sm font-semibold dark:text-slate-100 text-gray-900">{b.name}</div>
                   </div>
-                  <ArrowIcon className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                  <ArrowIcon className="h-3.5 w-3.5 shrink-0 dark:text-slate-500 text-gray-400" />
                 </Link>
               ))}
             </ResultGroup>
@@ -349,7 +348,7 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
 
           {/* Empty API search */}
           {results && !hasApiResults && query.length >= 2 && (
-            <p className="px-3 py-4 text-center text-sm text-gray-500">
+            <p className="px-3 py-4 text-center text-sm" style={{ color: 'var(--color-muted)' }}>
               No results for &ldquo;<strong>{query}</strong>&rdquo;. Try a different keyword.
             </p>
           )}
@@ -363,9 +362,9 @@ export function SearchDialog({ iconColor = "currentColor", iconHoverBg = "rgba(2
                     key={l.href}
                     href={l.href}
                     onClick={handleClose}
-                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-yellow-100"
+                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold dark:text-slate-200 dark:hover:bg-white/5 text-gray-800 transition-colors hover:bg-yellow-100"
                   >
-                    <ArrowIcon className="h-3 w-3 text-gray-400" />
+                    <ArrowIcon className="h-3 w-3 dark:text-slate-500 text-gray-400" />
                     {l.label}
                   </Link>
                 ))}

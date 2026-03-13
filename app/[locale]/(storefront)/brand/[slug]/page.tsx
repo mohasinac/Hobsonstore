@@ -95,16 +95,16 @@ export default async function BrandPage({
               fontFamily: "var(--font-bangers, Bangers, cursive)",
               fontSize: "clamp(2rem, 5vw, 3rem)",
               letterSpacing: "0.06em",
-              color: "#0D0D0D",
+              color: "var(--color-black)",
             }}
           >
             {brand.name}
           </h1>
         )}
         {brand.description && (
-          <p className="mb-6" style={{ color: "#6B6B6B" }}>{brand.description}</p>
+          <p className="mb-6" style={{ color: "var(--text-muted-strong)" }}>{brand.description}</p>
         )}
-        <p className="mb-6 text-sm font-semibold" style={{ color: "#6B6B6B" }}>{products.length} products</p>
+        <p className="mb-6 text-sm font-semibold" style={{ color: "var(--text-muted-strong)" }}>{products.length} products</p>
 
         <div className="flex flex-col gap-8 md:flex-row">
           <div className="w-full md:w-56 shrink-0">

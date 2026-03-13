@@ -499,7 +499,7 @@ function CharacterHotspotInner({
           <div
             className="w-full"
             style={{
-              background: "#FFFFFF",
+              background: "var(--surface-elevated)",
               borderTopLeftRadius: 16,
               borderTopRightRadius: 16,
               overflow: "hidden",

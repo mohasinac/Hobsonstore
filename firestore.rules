@@ -99,6 +99,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /characterHotspot/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /trustBadges/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Newsletter ────────────────────────────────────────────────
+    match /newsletterSignups/{docId} {
+      // Anyone (even unauthenticated) can subscribe; only admins can read or delete
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
     match /orderStatusConfig/{docId} {
       allow read: if true;
       allow write: if isAdmin();
@@ -123,7 +139,14 @@ service cloud.firestore {
 
     // ── Users ─────────────────────────────────────────────────────
     match /users/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin();
+      // Owners may only update safe profile fields — never role, hcCoins, or coinHistory
+      allow create: if isOwner(userId);
+      allow update: if isAdmin() ||
+        (isOwner(userId) &&
+          !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['role', 'hcCoins', 'coinHistory']));
+      allow delete: if isAdmin();
     }
 
     // ── Admins (read-only via app; managed in console) ────────────

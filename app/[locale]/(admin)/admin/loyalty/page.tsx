@@ -18,10 +18,12 @@ export default function AdminLoyaltyPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getLoyaltyConfig().then((c) => {
-      setConfig(c ?? DEFAULT_CONFIG);
-      setLoading(false);
-    });
+    getLoyaltyConfig()
+      .then((c) => {
+        setConfig(c ?? DEFAULT_CONFIG);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   async function handleSubmit(data: LoyaltyConfig) {
@@ -29,11 +31,11 @@ export default function AdminLoyaltyPage() {
     setConfig(data);
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (loading) return <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>;
 
   return (
     <div className="max-w-md space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Loyalty Config</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Loyalty Config</h1>
       <LoyaltyConfigForm initial={config!} onSubmit={handleSubmit} />
     </div>
   );

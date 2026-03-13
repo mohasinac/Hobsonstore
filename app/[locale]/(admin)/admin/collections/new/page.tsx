@@ -15,7 +15,7 @@ export default function NewCollectionPage() {
 
   return (
     <div className="max-w-xl space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">New Collection</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>New Collection</h1>
       <CollectionForm onSubmit={handleSubmit} submitLabel="Create Collection" />
     </div>
   );

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminApp, getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { COLLECTIONS } from "@/constants/firebase";
+import { verifyAdminToken } from "@/lib/auth-server";
 
 interface BulkRow {
   name: string;
@@ -12,25 +13,6 @@ interface BulkRow {
   brand: string;
   tags: string[];
   stock: number;
-}
-
-async function verifyAdminToken(req: NextRequest): Promise<string | null> {
-  const auth = req.headers.get("Authorization");
-  if (!auth?.startsWith("Bearer ")) return null;
-  const token = auth.slice(7);
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getAuth } = require("firebase-admin/auth");
-    const decoded = await getAuth(getAdminApp()).verifyIdToken(token);
-    const db = getAdminDb();
-    const userSnap = await db.collection(COLLECTIONS.USERS).doc(decoded.uid).get();
-    if (!userSnap.exists) return null;
-    const userData = userSnap.data() as { role?: string };
-    if (userData.role !== "admin") return null;
-    return decoded.uid;
-  } catch {
-    return null;
-  }
 }
 
 export async function POST(req: NextRequest) {

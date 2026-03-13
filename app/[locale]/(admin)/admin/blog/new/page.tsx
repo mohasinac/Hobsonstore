@@ -57,7 +57,7 @@ export default function NewBlogPostPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">New Blog Post</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>New Blog Post</h1>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input label="Title *" value={form.title ?? ""} onChange={(e) => { set("title", e.target.value); if (!form.slug) set("slug", autoSlug(e.target.value)); }} />

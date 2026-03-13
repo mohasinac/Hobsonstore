@@ -30,7 +30,7 @@ export function ProductTableRow({ product, onDelete }: ProductTableRowProps) {
   }
 
   return (
-    <tr className="border-b hover:bg-gray-50">
+    <tr className="border-b dark:hover:bg-white/5 hover:bg-gray-50">
       <td className="py-3 px-4">
         <div className="flex items-center gap-3">
           {product.images[0] && (
@@ -38,8 +38,8 @@ export function ProductTableRow({ product, onDelete }: ProductTableRowProps) {
             <img src={product.images[0]} alt="" className="h-10 w-10 rounded object-cover flex-shrink-0" />
           )}
           <div>
-            <p className="text-sm font-medium text-gray-900 line-clamp-1">{product.name}</p>
-            <p className="text-xs text-gray-500">{product.slug}</p>
+            <p className="text-sm font-medium line-clamp-1" style={{ color: 'var(--color-black)' }}>{product.name}</p>
+            <p className="text-xs" style={{ color: 'var(--color-muted)' }}>{product.slug}</p>
           </div>
         </div>
       </td>
@@ -49,13 +49,14 @@ export function ProductTableRow({ product, onDelete }: ProductTableRowProps) {
           <div className="flex items-center gap-1">
             <input
               type="number"
-              className="w-16 rounded border border-gray-300 px-2 py-0.5 text-sm"
+              className="w-16 rounded border px-2 py-0.5 text-sm"
+              style={{ borderColor: 'var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}
               value={stock}
               onChange={(e) => setStock(e.target.value)}
               autoFocus
             />
             <Button variant="primary" className="py-0.5 px-2 text-xs" loading={saving} onClick={saveStock}>Save</Button>
-            <button type="button" onClick={() => setEditingStock(false)} className="text-xs text-gray-500 hover:text-gray-700">Cancel</button>
+            <button type="button" onClick={() => setEditingStock(false)} className="text-xs dark:text-slate-400 dark:hover:text-slate-200 text-gray-500 hover:text-gray-700">Cancel</button>
           </div>
         ) : (
           <button
@@ -64,7 +65,7 @@ export function ProductTableRow({ product, onDelete }: ProductTableRowProps) {
             className="flex items-center gap-1 text-left hover:text-red-600"
           >
             {product.availableStock}
-            <span className="text-gray-400 text-xs">✏</span>
+            <span className="dark:text-slate-500 text-gray-400 text-xs">✏</span>
           </button>
         )}
       </td>

@@ -103,9 +103,10 @@ export function InventoryEditForm({ product, onSaved }: InventoryEditFormProps) 
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Restock Note</label>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-black)' }}>Restock Note</label>
         <textarea
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          style={{ borderColor: 'var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}
           rows={2}
           placeholder="Optional note about this restock"
           value={restockNote}
@@ -116,7 +117,7 @@ export function InventoryEditForm({ product, onSaved }: InventoryEditFormProps) 
 
       {/* Condition photos */}
       <div className="space-y-2">
-        <p className="text-sm font-medium text-gray-700">Condition Photos (optional)</p>
+        <p className="text-sm font-medium" style={{ color: 'var(--color-black)' }}>Condition Photos (optional)</p>
         <div className="flex flex-wrap gap-2">
           {conditionPhotos.map((url, i) => (
             // eslint-disable-next-line @next/next/no-img-element
@@ -124,7 +125,7 @@ export function InventoryEditForm({ product, onSaved }: InventoryEditFormProps) 
           ))}
         </div>
         <div className="flex gap-2">
-          <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">
+          <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm dark:hover:bg-white/10 hover:bg-gray-50" style={{ border: '2px solid var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}>
             Upload Photo
             <input type="file" accept="image/*" multiple className="sr-only" onChange={handlePhotoUpload} />
           </label>

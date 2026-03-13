@@ -37,12 +37,12 @@ export function FAQForm({ initial, onSubmit, submitLabel = "Save" }: FAQFormProp
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Question *</label>
-        <textarea className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" rows={2} value={question} onChange={(e) => setQuestion(e.target.value)} required />
+        <label className="block text-sm font-bold mb-1" style={{ color: 'var(--color-black)', letterSpacing: '0.02em' }}>Question *</label>
+        <textarea className="w-full px-3 py-2 text-sm outline-none resize-y" style={{ border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }} rows={2} value={question} onChange={(e) => setQuestion(e.target.value)} required />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Answer * (HTML allowed)</label>
-        <textarea className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" rows={4} value={answer} onChange={(e) => setAnswer(e.target.value)} required />
+        <label className="block text-sm font-bold mb-1" style={{ color: 'var(--color-black)', letterSpacing: '0.02em' }}>Answer * (HTML allowed)</label>
+        <textarea className="w-full px-3 py-2 text-sm outline-none resize-y" style={{ border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }} rows={4} value={answer} onChange={(e) => setAnswer(e.target.value)} required />
       </div>
       <Input label="Sort Order" type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} />
       <Checkbox label="Active" checked={active} onChange={(e) => setActive(e.target.checked)} />

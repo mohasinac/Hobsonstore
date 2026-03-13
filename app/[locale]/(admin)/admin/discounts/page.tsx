@@ -12,10 +12,12 @@ export default function AdminDiscountsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllDiscounts().then((d) => {
-      setDiscounts(d);
-      setLoading(false);
-    });
+    getAllDiscounts()
+      .then((d) => {
+        setDiscounts(d);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   async function handleDelete(code: string) {
@@ -32,16 +34,16 @@ export default function AdminDiscountsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Discounts</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Discounts</h1>
         <Link href="/admin/discounts/new">
           <Button size="sm">+ New Discount</Button>
         </Link>
       </div>
 
-      {loading ? <p className="text-sm text-gray-500">Loading…</p> : (
+      {loading ? <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p> : (
         <div className="overflow-x-auto rounded-md border">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
+            <thead className="text-xs uppercase" style={{ background: 'var(--surface-warm)', color: 'var(--color-muted)' }}>
               <tr>
                 <th className="px-4 py-2 text-left">Code</th>
                 <th className="px-4 py-2 text-left">Type</th>
@@ -53,23 +55,23 @@ export default function AdminDiscountsPage() {
             </thead>
             <tbody className="divide-y">
               {discounts.map((d) => (
-                <tr key={d.code} className="hover:bg-gray-50">
+                <tr key={d.code} className="dark:hover:bg-white/5 hover:bg-gray-50">
                   <td className="px-4 py-2 font-mono font-bold">{d.code}</td>
                   <td className="px-4 py-2 capitalize">{d.type}</td>
                   <td className="px-4 py-2 text-right">{d.type === "percent" ? `${d.value}%` : formatINR(d.value)}</td>
                   <td className="px-4 py-2 text-right">{d.usedCount}{d.maxUses ? ` / ${d.maxUses}` : ""}</td>
                   <td className="px-4 py-2">
-                    <button onClick={() => handleToggle(d.code, !d.active)} className={`text-xs rounded-full px-2 py-0.5 ${d.active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                    <button onClick={() => handleToggle(d.code, !d.active)} className={`text-xs rounded-full px-2 py-0.5 ${d.active ? "bg-green-100 text-green-700" : "dark:text-slate-400 bg-gray-100 text-gray-500 dark:bg-white/10"}`}>
                       {d.active ? "Active" : "Inactive"}
                     </button>
                   </td>
                   <td className="px-4 py-2 text-right">
-                    <button onClick={() => handleDelete(d.code)} className="text-xs text-gray-400 hover:text-red-600">Delete</button>
+                    <button onClick={() => handleDelete(d.code)} className="text-xs dark:text-slate-500 dark:hover:text-red-500 text-gray-400 hover:text-red-600">Delete</button>
                   </td>
                 </tr>
               ))}
               {discounts.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-6 text-center text-gray-400">No discounts yet.</td></tr>
+                <tr><td colSpan={6} className="px-4 py-6 text-center" style={{ color: 'var(--color-muted)' }}>No discounts yet.</td></tr>
               )}
             </tbody>
           </table>

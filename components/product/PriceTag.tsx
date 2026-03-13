@@ -24,12 +24,12 @@ export function PriceTag({
         {formatINR(salePrice)}
       </span>
       {isOnSale && (
-        <span className="text-base line-through" style={{ color: "#9CA3AF" }}>
+        <span className="text-base line-through" style={{ color: "var(--color-muted)" }}>
           {formatINR(regularPrice)}
         </span>
       )}
       {!inStock && !isPreorder && (
-        <span className="text-sm font-bold" style={{ color: "#6B6B6B" }}>— Sold Out</span>
+        <span className="text-sm font-bold" style={{ color: "var(--text-muted-strong)" }}>— Sold Out</span>
       )}
       {isPreorder && (
         <span className="text-sm font-medium text-amber-600">— Pre-order</span>

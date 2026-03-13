@@ -32,7 +32,10 @@ export function middleware(req: NextRequest) {
       // Redirect to /login (or /hi/login) preserving locale
       const isHi = localePrefixRe.test(pathname);
       const loginUrl = new URL(isHi ? "/hi/login" : "/login", req.url);
-      loginUrl.searchParams.set("next", pathname);
+      // Only carry forward relative paths to avoid open-redirect abuse
+      if (pathname.startsWith("/") && !pathname.startsWith("//")) {
+        loginUrl.searchParams.set("next", pathname);
+      }
       return NextResponse.redirect(loginUrl);
     }
   }

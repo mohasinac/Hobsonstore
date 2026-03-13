@@ -10,7 +10,9 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import { doc, setDoc, serverTimestamp, getFirestore } from "firebase/firestore";
 import { getFirebaseApp } from "@/lib/firebase/client";
+import { COLLECTIONS } from "@/constants/firebase";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/constants/routes";
@@ -32,9 +34,22 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      const auth = getAuth(getFirebaseApp());
+      const app = getFirebaseApp();
+      const auth = getAuth(app);
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName: name });
+      const db = getFirestore(app);
+      await setDoc(doc(db, COLLECTIONS.USERS, cred.user.uid), {
+        uid: cred.user.uid,
+        email: cred.user.email,
+        displayName: name,
+        role: "customer",
+        hcCoins: 0,
+        addresses: [],
+        wishlist: [],
+        coinHistory: [],
+        createdAt: serverTimestamp(),
+      });
       router.replace(ROUTES.HOME);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Registration failed.";
@@ -48,8 +63,28 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
     try {
-      const auth = getAuth(getFirebaseApp());
-      await signInWithPopup(auth, new GoogleAuthProvider());
+      const app = getFirebaseApp();
+      const auth = getAuth(app);
+      const result = await signInWithPopup(auth, new GoogleAuthProvider());
+      const { user } = result;
+      const db = getFirestore(app);
+      const userRef = doc(db, COLLECTIONS.USERS, user.uid);
+      // Only create doc if it doesn't exist (user may have registered before)
+      const { getDoc } = await import("firebase/firestore");
+      const snap = await getDoc(userRef);
+      if (!snap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName ?? "",
+          role: "customer",
+          hcCoins: 0,
+          addresses: [],
+          wishlist: [],
+          coinHistory: [],
+          createdAt: serverTimestamp(),
+        });
+      }
       router.replace(ROUTES.HOME);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Google sign-in failed.";
@@ -61,7 +96,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <h1 className="mb-6 text-xl font-bold text-gray-900 text-center">
+      <h1 className="mb-6 text-xl font-bold text-center" style={{ color: "var(--color-black)" }}>
         Create an account
       </h1>
 
@@ -102,7 +137,7 @@ export default function RegisterPage() {
         </Button>
       </form>
 
-      <div className="my-4 flex items-center gap-3 text-gray-400 text-sm">
+      <div className="my-4 flex items-center gap-3 text-sm" style={{ color: "var(--color-muted)" }}>
         <span className="flex-1 border-t" />
         or
         <span className="flex-1 border-t" />
@@ -117,7 +152,7 @@ export default function RegisterPage() {
         Continue with Google
       </Button>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <p className="mt-6 text-center text-sm" style={{ color: "var(--color-muted)" }}>
         Already have an account?{" "}
         <Link
           href="/login"

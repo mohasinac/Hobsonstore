@@ -4,11 +4,12 @@
 // DELETE ?field=<name> → removes a single field
 
 import { type NextRequest, NextResponse } from "next/server";
-import { getAdminApp, getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { getIntegrationKeysServer, updateIntegrationKeysServer } from "@/lib/firebase/server";
 import { encrypt, maskKey, isEncrypted, decrypt } from "@/lib/encryption";
 import { invalidateIntegrationKeysCache } from "@/lib/integration-keys";
 import { COLLECTIONS } from "@/constants/firebase";
+import { verifyAdminToken } from "@/lib/auth-server";
 import type { IntegrationKeys } from "@/types/config";
 
 // Fields that must be stored encrypted
@@ -17,6 +18,12 @@ const SECRET_FIELDS = new Set([
   "whatsappWebhookSecret",
   "razorpayKeyId",
   "razorpayKeySecret",
+]);
+
+// OAuth token fields — never returned to the browser, only their status is exposed
+const OAUTH_INTERNAL_FIELDS = new Set([
+  "razorpayAccessToken",
+  "razorpayRefreshToken",
 ]);
 
 const ALLOWED_PATCH_FIELDS = [
@@ -31,25 +38,6 @@ const ALLOWED_PATCH_FIELDS = [
   "adminEmails",
 ] as const satisfies (keyof IntegrationKeys)[];
 
-async function verifyAdminToken(req: NextRequest): Promise<string | null> {
-  const auth = req.headers.get("Authorization");
-  if (!auth?.startsWith("Bearer ")) return null;
-  const token = auth.slice(7);
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getAuth } = require("firebase-admin/auth");
-    const decoded = await getAuth(getAdminApp()).verifyIdToken(token);
-    const db = getAdminDb();
-    const userSnap = await db.collection(COLLECTIONS.USERS).doc(decoded.uid).get();
-    if (!userSnap.exists) return null;
-    const userData = userSnap.data() as { role?: string };
-    if (userData.role !== "admin") return null;
-    return decoded.uid;
-  } catch {
-    return null;
-  }
-}
-
 export async function GET(req: NextRequest) {
   const uid = await verifyAdminToken(req);
   if (!uid) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -57,10 +45,13 @@ export async function GET(req: NextRequest) {
   const keys = await getIntegrationKeysServer();
 
   // Return masked values — never expose raw secrets to the browser
-  const masked: Record<string, string | boolean | undefined> = {};
+  const masked: Record<string, string | boolean | number | undefined> = {};
   for (const [key, value] of Object.entries(keys)) {
+    // Skip internal OAuth tokens — only their status is surfaced below
+    if (OAUTH_INTERNAL_FIELDS.has(key)) continue;
+
     if (typeof value !== "string") {
-      masked[key] = value as string | boolean | undefined;
+      masked[key] = value as string | boolean | number | undefined;
       continue;
     }
     if (SECRET_FIELDS.has(key) && value) {
@@ -71,6 +62,9 @@ export async function GET(req: NextRequest) {
       masked[key] = value;
     }
   }
+
+  // OAuth connection status — safe booleans instead of raw tokens
+  masked.razorpayOAuthConnected = !!keys.razorpayAccessToken;
 
   return NextResponse.json(masked);
 }

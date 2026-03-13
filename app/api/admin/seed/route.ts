@@ -40,6 +40,14 @@ import { COLLECTIONS } from "@/constants/firebase";
 
 export const dynamic = "force-dynamic";
 
+// Seed routes are blocked in production; only callable when SEED_SECRET is set.
+function authorizeSeedRequest(req: import("next/server").NextRequest): boolean {
+  const secret = process.env.SEED_SECRET;
+  if (!secret) return false; // fail closed — must explicitly enable
+  const auth = req.headers.get("Authorization");
+  return auth === `Bearer ${secret}`;
+}
+
 // Paths to revalidate after any write
 const REVALIDATE_PATHS = ["/", "/blog", "/collections", "/search", "/products"];
 
@@ -488,6 +496,9 @@ const ENTITY_COLLECTION: Record<string, string> = {
 // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Route handlers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 export async function GET(req: NextRequest) {
+  if (!authorizeSeedRequest(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const db = getAdminDb();
   const entityKeys = Object.keys(SEED_FNS);
 
@@ -519,6 +530,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!authorizeSeedRequest(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   let body: { action: string; entities: string[] };
   try {
     body = (await req.json()) as { action: string; entities: string[] };
@@ -575,6 +589,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  if (!authorizeSeedRequest(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   let body: { entityKey: string; id: string; patch: Record<string, unknown> };
   try {
     body = await req.json();

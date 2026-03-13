@@ -166,7 +166,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
 
       {/* Basic info */}
       <section className="space-y-4">
-        <h3 className="font-semibold text-gray-900">Basic Info</h3>
+        <h3 className="font-semibold" style={{ color: 'var(--color-black)' }}>Basic Info</h3>
         <Input
           label="Product Name *"
           value={name}
@@ -198,7 +198,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Franchise</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-black)' }}>Franchise</label>
             <Select
               placeholder="Select franchise"
               options={franchiseOptions}
@@ -207,7 +207,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-black)' }}>Brand</label>
             <Select
               placeholder="Select brand"
               options={brandOptions}
@@ -225,9 +225,10 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
 
       {/* Description */}
       <section className="space-y-2">
-        <h3 className="font-semibold text-gray-900">Description</h3>
+        <h3 className="font-semibold" style={{ color: 'var(--color-black)' }}>Description</h3>
         <textarea
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 min-h-30"
+          className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 min-h-30"
+          style={{ borderColor: 'var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Product description (HTML allowed)"
@@ -236,10 +237,11 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
 
       {/* Specs */}
       <section className="space-y-2">
-        <h3 className="font-semibold text-gray-900">Specs</h3>
-        <p className="text-xs text-gray-500">One spec per line: <code>Scale: 1:6</code></p>
+        <h3 className="font-semibold" style={{ color: 'var(--color-black)' }}>Specs</h3>
+        <p className="text-xs" style={{ color: 'var(--color-muted)' }}>One spec per line: <code>Scale: 1:6</code></p>
         <textarea
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-red-500 min-h-20"
+          className="w-full rounded-md border px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-red-500 min-h-20"
+          style={{ borderColor: 'var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}
           value={specsRaw}
           onChange={(e) => setSpecsRaw(e.target.value)}
         />
@@ -247,7 +249,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
 
       {/* Inventory */}
       <section className="space-y-4">
-        <h3 className="font-semibold text-gray-900">Inventory</h3>
+        <h3 className="font-semibold" style={{ color: 'var(--color-black)' }}>Inventory</h3>
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Stock Qty"
@@ -279,10 +281,10 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
 
       {/* Images */}
       <section className="space-y-3">
-        <h3 className="font-semibold text-gray-900">Images</h3>
+        <h3 className="font-semibold" style={{ color: 'var(--color-black)' }}>Images</h3>
         <div className="flex flex-wrap gap-2">
           {images.map((url, i) => (
-            <div key={i} className="relative group">
+            <div key={url} className="relative group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt="" className="h-20 w-20 rounded object-cover border" />
               <button
@@ -296,7 +298,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
           ))}
         </div>
         <div className="flex gap-2">
-          <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">
+          <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm dark:hover:bg-white/10 hover:bg-gray-50" style={{ border: '2px solid var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}>
             <span>Upload Images</span>
             <input type="file" accept="image/*" multiple className="sr-only" onChange={handleImageFiles} />
           </label>
@@ -310,10 +312,10 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
 
       {/* Videos */}
       <section className="space-y-3">
-        <h3 className="font-semibold text-gray-900">Videos</h3>
+        <h3 className="font-semibold" style={{ color: 'var(--color-black)' }}>Videos</h3>
         <div className="flex flex-wrap gap-2">
           {videos.map((url, i) => (
-            <div key={i} className="relative group flex items-center gap-1 rounded border px-2 py-1 text-xs bg-gray-50">
+            <div key={url} className="relative group flex items-center gap-1 rounded border px-2 py-1 text-xs" style={{ borderColor: 'var(--border-ink)', background: 'var(--surface-warm)' }}>
               <span className="max-w-30 truncate">{url.split("/").pop()}</span>
               <button
                 type="button"
@@ -326,7 +328,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
           ))}
         </div>
         <div className="flex gap-2">
-          <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">
+          <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm dark:hover:bg-white/10 hover:bg-gray-50" style={{ border: '2px solid var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}>
             <span>Upload Video</span>
             <input type="file" accept="video/*" className="sr-only" onChange={handleVideoFiles} />
           </label>
@@ -340,7 +342,7 @@ export function ProductForm({ initial, onSubmit, submitLabel = "Save" }: Product
 
       {/* SEO */}
       <section className="space-y-4">
-        <h3 className="font-semibold text-gray-900">SEO (optional)</h3>
+        <h3 className="font-semibold" style={{ color: 'var(--color-black)' }}>SEO (optional)</h3>
         <Input label="SEO Title" value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} />
         <Input label="SEO Description" value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} />
       </section>

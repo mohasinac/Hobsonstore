@@ -33,4 +33,6 @@ export const COLLECTIONS = {
   SHIPPING_SETTINGS: "shippingSettings",
   NAVIGATION_CONFIG: "navigationConfig",
   INTEGRATION_KEYS: "integrationKeys",
+  ADMINS: "admins",
+  RESTOCK_NOTIFICATIONS: "restockNotifications",
 } as const;

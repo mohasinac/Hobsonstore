@@ -41,11 +41,11 @@ export default function EditPagePage({ params }: { params: Promise<{ slug: strin
     }
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (loading) return <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>;
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Edit Page: <code className="text-base font-mono">{slug}</code></h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Edit Page: <code className="text-base font-mono">{slug}</code></h1>
       {error && <p className="text-sm text-red-600">{error}</p>}
       {saved && <p className="text-sm text-green-600">Saved.</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -57,7 +57,7 @@ export default function EditPagePage({ params }: { params: Promise<{ slug: strin
       </form>
 
       <div className="rounded-md border p-4">
-        <h2 className="font-medium text-sm text-gray-700 mb-2">Other Pages</h2>
+        <h2 className="font-medium text-sm mb-2" style={{ color: 'var(--color-black)' }}>Other Pages</h2>
         <ul className="space-y-1">
           {KNOWN_SLUGS.filter((s) => s !== slug).map((s) => (
             <li key={s}>

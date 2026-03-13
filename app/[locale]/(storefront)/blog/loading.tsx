@@ -9,7 +9,7 @@ export default function BlogLoading() {
           <div
             key={i}
             className="overflow-hidden"
-            style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}
+            style={{ border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)' }}
           >
             <Skeleton className="aspect-[16/9] w-full" />
             <div className="space-y-3 p-5">

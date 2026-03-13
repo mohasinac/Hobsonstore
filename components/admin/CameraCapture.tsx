@@ -127,7 +127,7 @@ export function CameraCapture({ productSlug, onCapture, mode = "image" }: Camera
 
   if (!supportsCamera) {
     return (
-      <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">
+      <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm dark:hover:bg-white/10 hover:bg-gray-50" style={{ border: '2px solid var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}>
         <span>📷 {mode === "image" ? "Camera" : "Record"}</span>
         <input
           type="file"
@@ -161,10 +161,10 @@ export function CameraCapture({ productSlug, onCapture, mode = "image" }: Camera
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white shadow-xl overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b">
-              <h3 className="text-sm font-semibold">{mode === "image" ? "Take Photo" : "Record Video"}</h3>
-              <button type="button" onClick={handleClose} className="text-gray-400 hover:text-gray-700 text-lg leading-none">×</button>
+          <div className="w-full max-w-md rounded-xl shadow-xl overflow-hidden" style={{ background: 'var(--surface-elevated)' }}>
+            <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--border-ink)' }}>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--color-black)' }}>{mode === "image" ? "Take Photo" : "Record Video"}</h3>
+              <button type="button" onClick={handleClose} className="text-lg leading-none dark:text-slate-400 dark:hover:text-slate-100 text-gray-400 hover:text-gray-700">×</button>
             </div>
 
             <div className="p-4 space-y-3">

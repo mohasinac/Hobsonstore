@@ -46,10 +46,11 @@ export function Drawer({
         role="dialog"
         aria-modal="true"
         className={cn(
-          "absolute top-0 h-full w-full max-w-sm overflow-y-auto bg-white shadow-xl",
+          "absolute top-0 h-full w-full max-w-sm overflow-y-auto shadow-xl",
           side === "right" ? "right-0" : "left-0",
           className,
         )}
+        style={{ background: "var(--surface-elevated)" }}
       >
         {children}
       </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAuth } from "firebase-admin/auth";
+import { getAdminApp, getAdminDb } from "@/lib/firebase/admin";
 import { buildCheckoutMessageURL } from "@/lib/whatsapp";
 import { COLLECTIONS } from "@/constants/firebase";
 import type { CartItem } from "@/types/cart";
@@ -12,13 +13,25 @@ import { applyCoinsToOrder } from "@/lib/loyalty";
 interface CheckoutBody {
   items: CartItem[];
   address: Address;
-  userId: string;
   total: number;
   discountCode?: string | null;
   coinsToRedeem?: number;
 }
 
 export async function POST(req: NextRequest) {
+  // Resolve the authenticated user from the session cookie.
+  // Guest checkout is allowed (userId = "guest"); coin redemption requires auth.
+  let userId = "guest";
+  const sessionCookie = req.cookies.get("__session")?.value;
+  if (sessionCookie) {
+    try {
+      const decoded = await getAuth(getAdminApp()).verifySessionCookie(sessionCookie, true);
+      userId = decoded.uid;
+    } catch {
+      // Cookie invalid/expired — treat as guest
+    }
+  }
+
   let body: CheckoutBody;
   try {
     body = (await req.json()) as CheckoutBody;
@@ -29,14 +42,19 @@ export async function POST(req: NextRequest) {
   const {
     items,
     address,
-    userId,
     total: subtotal,
     discountCode,
     coinsToRedeem = 0,
   } = body;
 
-  if (!items?.length) {
-    return NextResponse.json({ error: "Cart is empty." }, { status: 400 });
+  if (!items?.length || items.length > 50) {
+    return NextResponse.json({ error: items?.length ? "Too many items in cart." : "Cart is empty." }, { status: 400 });
+  }
+  if (items.some((i) => !i.productId || typeof i.productId !== "string" || !i.productId.trim())) {
+    return NextResponse.json({ error: "Invalid item in cart." }, { status: 400 });
+  }
+  if (items.some((i) => !Number.isInteger(i.qty) || i.qty < 1)) {
+    return NextResponse.json({ error: "Invalid item quantity." }, { status: 400 });
   }
   if (
     !address?.name ||
@@ -49,6 +67,14 @@ export async function POST(req: NextRequest) {
       { error: "Incomplete delivery address." },
       { status: 400 },
     );
+  }
+  if (
+    address.name.length > 100 ||
+    address.line1.length > 200 ||
+    (address.line2 && address.line2.length > 200) ||
+    address.city.length > 100
+  ) {
+    return NextResponse.json({ error: "Address fields are too long." }, { status: 400 });
   }
   if (!/^\d{6}$/.test(address.pincode)) {
     return NextResponse.json({ error: "Invalid pincode." }, { status: 400 });
@@ -121,14 +147,19 @@ export async function POST(req: NextRequest) {
               loyaltyConfig,
             );
 
+            // Deduct only the coins that correspond to the actual discount awarded
+            const coinsActuallyUsed = loyaltyConfig.rupeePerCoin > 0
+              ? Math.ceil(coinsDiscount / loyaltyConfig.rupeePerCoin)
+              : safeCoinsToRedeem;
+
             // Deduct coins from user balance
             const coinEntry = {
-              delta: -safeCoinsToRedeem,
+              delta: -coinsActuallyUsed,
               reason: "redemption",
               timestamp: FieldValue.serverTimestamp(),
             };
             tx.update(db.collection(COLLECTIONS.USERS).doc(userId), {
-              hcCoins: FieldValue.increment(-safeCoinsToRedeem),
+              hcCoins: FieldValue.increment(-coinsActuallyUsed),
               coinHistory: FieldValue.arrayUnion(coinEntry),
             });
           }
@@ -138,6 +169,7 @@ export async function POST(req: NextRequest) {
       const finalTotal = Math.max(0, subtotal - discountAmount - coinsDiscount);
 
       // -- 3. Reserve stock --------------------------------------------------
+      let isPreorderOrder = false;
       for (const item of items) {
         const productRef = db
           .collection(COLLECTIONS.PRODUCTS)
@@ -149,7 +181,9 @@ export async function POST(req: NextRequest) {
         const data = snap.data() as {
           availableStock?: number;
           isPreorder?: boolean;
+          salePrice?: number;
         };
+        if (data.isPreorder) isPreorderOrder = true;
         const available = data.availableStock ?? 0;
         if (!data.isPreorder && available < item.qty) {
           throw new Error(`Only ${available} unit(s) of "${item.name}" left.`);
@@ -172,7 +206,7 @@ export async function POST(req: NextRequest) {
         coinsRedeemed: safeCoinsToRedeem > 0 ? safeCoinsToRedeem : 0,
         coinsDiscount,
         total: finalTotal,
-        isPreorder: items.some((i) => i.isPreorder),
+        isPreorder: isPreorderOrder,
         currentStatus: "pending_payment",
         statusHistory: [
           {

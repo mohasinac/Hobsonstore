@@ -15,7 +15,7 @@ export default function NewDiscountPage() {
 
   return (
     <div className="max-w-md space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">New Discount</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>New Discount</h1>
       <DiscountForm onSubmit={handleSubmit} submitLabel="Create Discount" />
     </div>
   );

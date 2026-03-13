@@ -169,14 +169,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const rawBody = await request.text();
   const contentType = request.headers.get("content-type") ?? "";
 
-  // 2. Verify HMAC-SHA256 signature
-  const secret = process.env.WHATSAPP_WEBHOOK_SECRET ?? "";
+  // 2. Verify HMAC-SHA256 signature — fail closed if secret not configured
+  const secret = process.env.WHATSAPP_WEBHOOK_SECRET;
+  if (!secret) {
+    return NextResponse.json({ error: "Webhook not configured" }, { status: 403 });
+  }
   const signature =
     request.headers.get("x-hub-signature-256") ??
     request.headers.get("x-twilio-signature") ??
     "";
 
-  if (secret && !verifyWebhookSignature(rawBody, signature.replace(/^sha256=/i, ""), secret)) {
+  if (!verifyWebhookSignature(rawBody, signature.replace(/^sha256=/i, ""), secret)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -186,9 +189,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Bad Request" }, { status: 400 });
   }
 
-  // 4. Verify sender is the admin bot number
-  const adminBotNumber = process.env.WHATSAPP_ADMIN_BOT_NUMBER ?? "";
-  if (adminBotNumber && !isAdminNumber(payload.from, adminBotNumber)) {
+  // 4. Verify sender is the admin bot number — fail closed if not configured
+  const adminBotNumber = process.env.WHATSAPP_ADMIN_BOT_NUMBER;
+  if (!adminBotNumber) {
+    return NextResponse.json({ error: "Webhook not configured" }, { status: 403 });
+  }
+  if (!isAdminNumber(payload.from, adminBotNumber)) {
     // Silently ignore messages from non-admin numbers
     return twiml("");
   }

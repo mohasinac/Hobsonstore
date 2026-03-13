@@ -33,7 +33,7 @@ export function OrderTable({ orders, onStatusFilter, statusFilter }: OrderTableP
           type="button"
           onClick={() => onStatusFilter?.("")}
           className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-            !statusFilter ? "bg-gray-900 text-white border-gray-900" : "border-gray-300 text-gray-600 hover:bg-gray-50"
+            !statusFilter ? "dark:bg-white dark:text-black dark:border-white bg-gray-900 text-white border-gray-900" : "dark:border-white/15 dark:text-slate-300 dark:hover:bg-white/10 border-gray-300 text-gray-600 hover:bg-gray-50"
           }`}
         >
           All
@@ -45,8 +45,8 @@ export function OrderTable({ orders, onStatusFilter, statusFilter }: OrderTableP
             onClick={() => onStatusFilter?.(s)}
             className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
               statusFilter === s
-                ? "bg-gray-900 text-white border-gray-900"
-                : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                ? "dark:bg-white dark:text-black dark:border-white bg-gray-900 text-white border-gray-900"
+                : "dark:border-white/15 dark:text-slate-300 dark:hover:bg-white/10 border-gray-300 text-gray-600 hover:bg-gray-50"
             }`}
           >
             {ORDER_STATUS_LABELS[s] ?? s}
@@ -55,14 +55,14 @@ export function OrderTable({ orders, onStatusFilter, statusFilter }: OrderTableP
       </div>
 
       {orders.length === 0 ? (
-        <p className="text-sm text-gray-500 py-8 text-center">No orders found.</p>
+        <p className="text-sm py-8 text-center" style={{ color: 'var(--color-muted)' }}>No orders found.</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead style={{ background: 'var(--surface-warm)' }}>
               <tr>
                 {["Order ID", "Customer", "Date", "Items", "Total", "Status", ""].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                  <th key={h} className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
                     {h}
                   </th>
                 ))}
@@ -72,17 +72,17 @@ export function OrderTable({ orders, onStatusFilter, statusFilter }: OrderTableP
               {orders.map((order) => {
                 const date = (order.createdAt as { toDate?: () => Date })?.toDate?.()?.toLocaleDateString("en-IN") ?? "—";
                 return (
-                  <tr key={order.id} className="border-t hover:bg-gray-50">
-                    <td className="px-4 py-3 font-mono text-xs text-gray-600">{order.id.slice(-8).toUpperCase()}</td>
+                  <tr key={order.id} className="border-t dark:hover:bg-white/5 hover:bg-gray-50">
+                    <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--text-secondary)' }}>{order.id.slice(-8).toUpperCase()}</td>
                     <td className="px-4 py-3">
                       <p className="font-medium">{order.address.name}</p>
-                      <p className="text-xs text-gray-500">{order.address.phone}</p>
+                      <p className="text-xs" style={{ color: 'var(--color-muted)' }}>{order.address.phone}</p>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{date}</td>
-                    <td className="px-4 py-3 text-gray-600">{order.items.length}</td>
+                    <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{date}</td>
+                    <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{order.items.length}</td>
                     <td className="px-4 py-3 font-medium">{formatINR(order.total)}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[order.currentStatus] ?? "bg-gray-100 text-gray-700"}`}>
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[order.currentStatus] ?? "dark:bg-white/10 dark:text-slate-300 bg-gray-100 text-gray-700"}`}>
                         {ORDER_STATUS_LABELS[order.currentStatus] ?? order.currentStatus}
                       </span>
                     </td>

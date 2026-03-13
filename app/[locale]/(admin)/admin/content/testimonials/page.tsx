@@ -43,38 +43,38 @@ export default function AdminTestimonialsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Testimonials</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Testimonials</h1>
         <Button size="sm" onClick={() => setCreating(true)}>+ New Testimonial</Button>
       </div>
 
       {creating && (
         <div className="rounded-md border p-4">
           <TestimonialForm onSubmit={handleCreate} submitLabel="Create" />
-          <button onClick={() => setCreating(false)} className="mt-2 text-xs text-gray-400 hover:text-gray-600">Cancel</button>
+          <button onClick={() => setCreating(false)} className="mt-2 text-xs dark:text-slate-500 dark:hover:text-slate-300 text-gray-400 hover:text-gray-600">Cancel</button>
         </div>
       )}
       {editing && (
         <div className="rounded-md border p-4">
           <TestimonialForm initial={editing} onSubmit={handleUpdate} submitLabel="Save" />
-          <button onClick={() => setEditing(null)} className="mt-2 text-xs text-gray-400 hover:text-gray-600">Cancel</button>
+          <button onClick={() => setEditing(null)} className="mt-2 text-xs dark:text-slate-500 dark:hover:text-slate-300 text-gray-400 hover:text-gray-600">Cancel</button>
         </div>
       )}
 
-      {loading ? <p className="text-sm text-gray-500">Loading…</p> : (
+      {loading ? <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p> : (
         <div className="space-y-2">
           {items.map((t) => (
-            <div key={t.id} className="flex items-center justify-between rounded-md border bg-white px-4 py-3">
+            <div key={t.id} className="flex items-center justify-between rounded-md border px-4 py-3" style={{ background: 'var(--surface-elevated)', borderColor: 'var(--border-ink)' }}>
               <div>
                 <p className="font-medium text-sm">{t.name} — {"★".repeat(t.rating)}</p>
-                <p className="text-xs text-gray-400 line-clamp-1">{t.text}</p>
+                <p className="text-xs line-clamp-1" style={{ color: 'var(--color-muted)' }}>{t.text}</p>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => setEditing(t)} className="text-xs text-red-600 hover:underline">Edit</button>
-                <button onClick={() => handleDelete(t.id)} className="text-xs text-gray-400 hover:text-red-600">Delete</button>
+                <button onClick={() => handleDelete(t.id)} className="text-xs dark:text-slate-500 text-gray-400 hover:text-red-600">Delete</button>
               </div>
             </div>
           ))}
-          {items.length === 0 && <p className="text-sm text-gray-400">No testimonials yet.</p>}
+          {items.length === 0 && <p className="text-sm" style={{ color: 'var(--color-muted)' }}>No testimonials yet.</p>}
         </div>
       )}
     </div>

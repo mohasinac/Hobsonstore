@@ -35,7 +35,7 @@ export function CollectionStrip({ collections }: CollectionStripProps) {
               className="group flex shrink-0 flex-col items-center gap-2"
             >
               <div
-                className="relative h-19 w-19 overflow-hidden bg-gray-100 transition-transform group-hover:-translate-y-1"
+                className="relative h-19 w-19 overflow-hidden dark:bg-white/10 bg-gray-100 transition-transform group-hover:-translate-y-1"
                 style={{
                   border: "3px solid var(--border-ink)",
                   boxShadow: "3px 3px 0px var(--border-ink)",

@@ -79,7 +79,7 @@ export default function AddressesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold" style={{ fontFamily: 'var(--font-bangers)', color: '#1A1A2E', letterSpacing: '0.06em' }}>My Addresses</h1>
+        <h1 className="text-2xl font-extrabold" style={{ fontFamily: 'var(--font-bangers)', color: 'var(--color-black)', letterSpacing: '0.06em' }}>My Addresses</h1>
         {!showForm && (
           <Button variant="primary" onClick={() => setShowForm(true)}>
             + Add Address
@@ -89,8 +89,8 @@ export default function AddressesPage() {
 
       {/* Add address form */}
       {showForm && (
-        <div className="bg-white p-6" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-widest" style={{ color: '#6B6B6B' }}>
+        <div className="p-6" style={{ background: 'var(--surface-elevated)', border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)' }}>
+          <h2 className="mb-4 text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted-strong)' }}>
             New Address
           </h2>
           <AddressForm value={newAddress} onChange={setNewAddress} />
@@ -113,8 +113,8 @@ export default function AddressesPage() {
 
       {/* Existing addresses */}
       {addresses.length === 0 && !showForm ? (
-        <div className="py-16 text-center" style={{ border: '2px dashed #0D0D0D' }}>
-          <p className="text-lg font-bold" style={{ color: '#1A1A2E' }}>
+        <div className="py-16 text-center" style={{ border: '2px dashed var(--border-ink)' }}>
+          <p className="text-lg font-bold" style={{ color: 'var(--color-black)' }}>
             No saved addresses yet
           </p>
         </div>

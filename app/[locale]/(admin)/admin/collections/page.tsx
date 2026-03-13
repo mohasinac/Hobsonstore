@@ -14,13 +14,15 @@ export default function AdminCollectionsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllCollectionsAdmin().then((cols) => {
-      const items = cols
-        .sort((a, b) => a.sortOrder - b.sortOrder)
-        .map((c) => ({ ...c, id: c.slug }));
-      setCollections(items);
-      setLoading(false);
-    });
+    getAllCollectionsAdmin()
+      .then((cols) => {
+        const items = cols
+          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .map((c) => ({ ...c, id: c.slug }));
+        setCollections(items);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   function handleReorder(reordered: CollectionItem[]) {
@@ -37,27 +39,29 @@ export default function AdminCollectionsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Collections</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Collections</h1>
         <Link href="/admin/collections/new">
           <Button size="sm">+ New Collection</Button>
         </Link>
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">Loading…</p>
+        <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>
+      ) : collections.length === 0 ? (
+        <p className="text-sm" style={{ color: 'var(--color-muted)' }}>No collections yet.</p>
       ) : (
         <DraggableList<CollectionItem>
           items={collections}
           onReorder={handleReorder}
           renderItem={(c) => (
-            <div className="flex items-center justify-between rounded-md border bg-white px-4 py-3">
+            <div className="flex items-center justify-between rounded-md border px-4 py-3" style={{ background: 'var(--surface-elevated)', borderColor: 'var(--border-ink)' }}>
               <div>
                 <p className="font-medium text-sm">{c.name}</p>
-                <p className="text-xs text-gray-400">{c.slug}</p>
+                <p className="text-xs" style={{ color: 'var(--color-muted)' }}>{c.slug}</p>
               </div>
               <div className="flex gap-2">
                 <Link href={`/admin/collections/${c.slug}`} className="text-xs text-red-600 hover:underline">Edit</Link>
-                <button onClick={() => handleDelete(c.slug)} className="text-xs text-gray-400 hover:text-red-600">Delete</button>
+                <button onClick={() => handleDelete(c.slug)} className="text-xs dark:text-slate-500 text-gray-400 hover:text-red-600">Delete</button>
               </div>
             </div>
           )}

@@ -25,12 +25,12 @@ export default function EditCollectionPage({ params }: { params: Promise<{ slug:
     router.push("/admin/collections");
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (loading) return <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>;
   if (!collection) return <p className="text-sm text-red-600">Collection not found.</p>;
 
   return (
     <div className="max-w-xl space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Edit: {collection.name}</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Edit: {collection.name}</h1>
       <CollectionForm initial={collection} onSubmit={handleSubmit} submitLabel="Save Changes" />
     </div>
   );

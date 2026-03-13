@@ -14,16 +14,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     const auth = getAuth(getFirebaseApp());
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
+      try {
+        if (!user) {
+          router.replace("/login");
+          return;
+        }
+        const profile = await getUser(user.uid);
+        if (profile?.role !== "admin") {
+          router.replace("/");
+          return;
+        }
+        setReady(true);
+      } catch {
         router.replace("/login");
-        return;
       }
-      const profile = await getUser(user.uid);
-      if (profile?.role !== "admin") {
-        router.replace("/");
-        return;
-      }
-      setReady(true);
     });
     return unsubscribe;
   }, [router]);
@@ -31,13 +35,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!ready) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-gray-500">Loading…</p>
+        <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen" style={{ background: "var(--color-surface)" }}>
       <AdminSidebar />
       <main className="flex-1 p-6 overflow-auto">{children}</main>
     </div>

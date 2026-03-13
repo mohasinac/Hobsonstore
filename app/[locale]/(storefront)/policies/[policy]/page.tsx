@@ -57,7 +57,7 @@ export default async function PolicyPage({ params }: Props) {
           fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "clamp(2rem, 5vw, 2.8rem)",
           letterSpacing: "0.06em",
-          color: "#0D0D0D",
+          color: "var(--color-black)",
         }}
       >
         {title.toUpperCase()}
@@ -65,7 +65,7 @@ export default async function PolicyPage({ params }: Props) {
       {page?.body ? (
         <RichTextRenderer html={page.body} />
       ) : (
-        <p style={{ color: "#6B6B6B" }}>
+        <p style={{ color: "var(--text-muted-strong)" }}>
           This page is not yet available. Please check back later.
         </p>
       )}

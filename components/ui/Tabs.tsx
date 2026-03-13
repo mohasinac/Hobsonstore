@@ -21,7 +21,7 @@ export function Tabs({ tabs, defaultTab, className }: TabsProps) {
 
   return (
     <div className={className}>
-      <div className="flex border-b border-gray-200">
+      <div className="flex" style={{ borderBottom: "2px solid var(--border-ink)" }}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -30,7 +30,7 @@ export function Tabs({ tabs, defaultTab, className }: TabsProps) {
               "px-4 py-2 text-sm font-medium transition-colors",
               active === tab.id
                 ? "border-b-2 border-red-600 text-red-600"
-                : "text-gray-500 hover:text-gray-700",
+                : "dark:text-slate-400 hover:dark:text-slate-200 text-gray-500 hover:text-gray-700",
             )}
           >
             {tab.label}

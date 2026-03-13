@@ -3,6 +3,9 @@
 
 @import "tailwindcss";
 
+/* Enable dark: Tailwind variant via .dark class */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Font families */
   --font-bangers: "Bangers", cursive;

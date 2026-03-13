@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface Item {
   id: string;
@@ -22,6 +22,10 @@ export function DraggableList<T extends Item>({
 }: DraggableListProps<T>) {
   const [list, setList] = useState(items);
   const dragIndex = useRef<number | null>(null);
+
+  useEffect(() => {
+    setList(items);
+  }, [items]);
 
   function handleDragStart(e: React.DragEvent, index: number) {
     dragIndex.current = index;
@@ -58,7 +62,7 @@ export function DraggableList<T extends Item>({
           onDrop={handleDrop}
           className="flex items-center gap-2 cursor-grab active:cursor-grabbing select-none"
         >
-          <span className="text-gray-300 hover:text-gray-500 text-base leading-none" title="Drag to reorder">⠿</span>
+          <span className="dark:text-slate-600 dark:hover:text-slate-400 text-gray-300 hover:text-gray-500 text-base leading-none" title="Drag to reorder">⠇</span>
           <div className="flex-1">{renderItem(item, index)}</div>
         </li>
       ))}

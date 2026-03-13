@@ -17,8 +17,8 @@ export default function AdminCharacterHotspotPage() {
   if (config === undefined) {
     return (
       <div className="space-y-6">
-        <h1 className="text-xl font-bold text-gray-900">Character Hotspot</h1>
-        <p className="text-sm text-gray-500">Loading…</p>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Character Hotspot</h1>
+        <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>
       </div>
     );
   }
@@ -26,8 +26,8 @@ export default function AdminCharacterHotspotPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">Character Hotspot</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Character Hotspot</h1>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-muted)' }}>
           Upload a panoramic scene image then click on it to place interactive
           character pins. Each pin has a name, description, accent colour, and a
           link to a franchise or search page.

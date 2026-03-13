@@ -15,7 +15,7 @@ export default function NewBrandPage() {
 
   return (
     <div className="max-w-xl space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">New Brand</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>New Brand</h1>
       <BrandForm onSubmit={handleSubmit} submitLabel="Create Brand" />
     </div>
   );

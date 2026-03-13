@@ -145,7 +145,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               fontFamily: "var(--font-bangers, Bangers, cursive)",
               fontSize: "clamp(1.4rem, 3vw, 1.8rem)",
               letterSpacing: "0.06em",
-              color: "#0D0D0D",
+              color: "var(--color-black)",
             }}
           >
             YOU MAY ALSO LIKE

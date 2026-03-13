@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminApp, getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { updateOrderStatus, releaseReservedStock, consumeReservedStock } from "@/lib/firebase/orders.server";
 import { buildStatusMessage, sendWhatsAppMessage } from "@/lib/whatsapp";
 import { ORDER_STATUS_TRANSITIONS } from "@/constants/orderStatus";
 import { COLLECTIONS } from "@/constants/firebase";
 import { calculateCoinsEarned } from "@/lib/loyalty";
 import { FieldValue } from "firebase-admin/firestore";
+import { verifyAdminToken } from "@/lib/auth-server";
 import type { OrderStatus, Order } from "@/types/order";
 import type { LoyaltyConfig } from "@/types/config";
 
@@ -41,29 +42,6 @@ async function awardCoinsForOrder(orderId: string): Promise<void> {
       timestamp: new Date().toISOString(),
     }),
   });
-}
-
-async function verifyAdminToken(req: NextRequest): Promise<string | null> {
-  const auth = req.headers.get("Authorization");
-  if (!auth?.startsWith("Bearer ")) return null;
-  const token = auth.slice(7);
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getAuth } = require("firebase-admin/auth");
-    const decoded = await getAuth(getAdminApp()).verifyIdToken(token);
-
-    // Check admin role in Firestore
-    const db = getAdminDb();
-    const userSnap = await db.collection(COLLECTIONS.USERS).doc(decoded.uid).get();
-    if (!userSnap.exists) return null;
-    const userData = userSnap.data() as { role?: string };
-    if (userData.role !== "admin") return null;
-
-    return decoded.uid;
-  } catch {
-    return null;
-  }
 }
 
 export async function PATCH(

@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ROUTES } from "@/constants/routes";
+import { useAuth } from "@/hooks/useAuth";
+import { getUser } from "@/lib/firebase/users";
 
 const NAV_ITEMS = [
   { href: ROUTES.ACCOUNT, label: "Profile" },
@@ -13,6 +16,15 @@ const NAV_ITEMS = [
 
 export function AccountSidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    getUser(user.uid).then((profile) => {
+      setIsAdmin(profile?.role === "admin");
+    });
+  }, [user]);
 
   return (
     <nav
@@ -45,6 +57,21 @@ export function AccountSidebar() {
             </li>
           );
         })}
+        {isAdmin && (
+          <li>
+            <Link
+              href={ROUTES.ADMIN}
+              className="block px-3 py-2 text-sm font-bold transition-colors"
+              style={{
+                color: "var(--color-black)",
+                background: "transparent",
+                borderLeft: "3px solid transparent",
+              }}
+            >
+              Admin Panel
+            </Link>
+          </li>
+        )}
       </ul>
     </nav>
   );

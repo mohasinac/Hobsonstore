@@ -181,7 +181,7 @@ export function CharacterHotspotForm({ initial }: CharacterHotspotFormProps) {
                 />
               )}
             </div>
-            <span className="mt-1 text-center text-[10px] font-medium text-gray-500">{s.label}</span>
+            <span className="mt-1 text-center text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>{s.label}</span>
           </div>
         ))}
       </div>
@@ -495,7 +495,7 @@ export function CharacterHotspotForm({ initial }: CharacterHotspotFormProps) {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold">
-                      {pin.name || <span className="italic text-gray-400">Unnamed</span>}
+                      {pin.name || <span className="italic" style={{ color: 'var(--color-muted)' }}>Unnamed</span>}
                     </p>
                     <p className="text-xs" style={{ color: "var(--color-muted)" }}>
                       {pin.universe} Â· {pin.xPct.toFixed(0)}%, {pin.yPct.toFixed(0)}%

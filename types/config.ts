@@ -16,7 +16,7 @@ export interface SiteConfig {
   defaultOgImage: string;
   contactEmail: string;
   whatsappCustomerCare: string;
-  whatsappStatues: string;
+  whatsappStatuses: string;
   whatsappAdminBot: string;
   phoneCustomerCare: string;
   facebookUrl: string;
@@ -84,9 +84,15 @@ export interface IntegrationKeys {
   whatsappNumber?: string;
   whatsappAdminBotNumber?: string;
   whatsappWebhookSecret?: string; // encrypted
-  // Razorpay (Phase 8)
+  // Razorpay (Phase 8) — manual API keys
   razorpayKeyId?: string;         // encrypted
   razorpayKeySecret?: string;     // encrypted
+  // Razorpay OAuth — set via the Connect flow, not manually
+  razorpayAccessToken?: string;   // encrypted, OAuth bearer token
+  razorpayRefreshToken?: string;  // encrypted, OAuth refresh token
+  razorpayPublicToken?: string;   // NOT secret, used as key_id for client-side Checkout
+  razorpayTokenExpiresAt?: number; // Unix ms when access_token expires
+  razorpayAccountId?: string;     // Merchant account ID from OAuth response
   // Admin notifications
   adminEmails?: string;           // comma-separated
 }

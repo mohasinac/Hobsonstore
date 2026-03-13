@@ -19,11 +19,10 @@ function getKey(): Buffer | null {
 export function encrypt(plaintext: string): string {
   const key = getKey();
   if (!key) {
-    console.warn(
+    throw new Error(
       "[encryption] ENCRYPTION_KEY is not set or invalid (must be 64 hex chars). " +
-        "Storing integration key in plaintext — set ENCRYPTION_KEY before deploying.",
+        "Set ENCRYPTION_KEY before saving integration keys.",
     );
-    return plaintext;
   }
   const iv = randomBytes(12); // 96-bit IV for GCM
   const cipher = createCipheriv(ALGO, key, iv);

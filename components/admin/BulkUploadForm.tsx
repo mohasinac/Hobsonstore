@@ -104,34 +104,34 @@ export function BulkUploadForm({ onUploaded }: BulkUploadFormProps) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border border-dashed border-gray-300 p-6 text-center">
-        <p className="text-sm text-gray-500 mb-3">
-          CSV columns: <code className="text-xs bg-gray-100 px-1 rounded">name, slug, salePrice, regularPrice, franchise, brand, tags (semicolon-separated), stock</code>
+      <div className="rounded-md border-2 border-dashed p-6 text-center" style={{ borderColor: 'var(--border-ink)', opacity: 1 }}>
+        <p className="text-sm mb-3" style={{ color: 'var(--color-muted)' }}>
+          CSV columns: <code className="text-xs px-1 rounded" style={{ background: 'var(--surface-warm)' }}>name, slug, salePrice, regularPrice, franchise, brand, tags (semicolon-separated), stock</code>
         </p>
-        <label className="cursor-pointer inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm hover:bg-gray-50">
+        <label className="cursor-pointer inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm dark:hover:bg-white/10 hover:bg-gray-50" style={{ border: '2px solid var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}>
           <span>Choose CSV file</span>
           <input type="file" accept=".csv,text/csv" className="sr-only" onChange={handleFile} />
         </label>
-        {fileName && <p className="mt-2 text-xs text-gray-600">{fileName}</p>}
+        {fileName && <p className="mt-2 text-xs" style={{ color: 'var(--color-muted)' }}>{fileName}</p>}
       </div>
 
       {rows && rows.length > 0 && (
         <div>
-          <p className="text-sm font-medium text-gray-700 mb-2">{rows.length} products to import</p>
-          <div className="max-h-64 overflow-y-auto rounded-md border text-xs">
+          <p className="text-sm font-medium mb-2" style={{ color: 'var(--color-black)' }}>{rows.length} products to import</p>
+          <div className="max-h-64 overflow-y-auto rounded-md border text-xs" style={{ borderColor: 'var(--border-ink)' }}>
             <table className="w-full">
-              <thead className="bg-gray-50 sticky top-0">
+              <thead className="sticky top-0" style={{ background: 'var(--surface-warm)' }}>
                 <tr>
                   {["Name", "Slug", "Price", "Stock", "Brand"].map((h) => (
-                    <th key={h} className="px-3 py-1.5 text-left font-medium text-gray-600">{h}</th>
+                    <th key={h} className="px-3 py-1.5 text-left font-medium" style={{ color: 'var(--color-muted)' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {rows.map((r, i) => (
-                  <tr key={i} className="border-t">
+                  <tr key={i} className="border-t" style={{ borderColor: 'var(--table-row-border)' }}>
                     <td className="px-3 py-1.5">{r.name}</td>
-                    <td className="px-3 py-1.5 text-gray-500">{r.slug}</td>
+                    <td className="px-3 py-1.5" style={{ color: 'var(--color-muted)' }}>{r.slug}</td>
                     <td className="px-3 py-1.5">₹{r.salePrice}</td>
                     <td className="px-3 py-1.5">{r.stock}</td>
                     <td className="px-3 py-1.5">{r.brand}</td>

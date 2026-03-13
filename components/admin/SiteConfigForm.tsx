@@ -65,7 +65,7 @@ export function SiteConfigForm({ initial, onSubmit }: SiteConfigFormProps) {
       {saved && <p className="text-sm text-green-600">Saved successfully.</p>}
 
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Branding</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>Branding</h3>
         <div className="grid grid-cols-2 gap-4">
           <Input label="Site Name" value={form.siteName} onChange={(e) => set("siteName", e.target.value)} />
           <Input label="Site Tagline" value={form.siteTagline} onChange={(e) => set("siteTagline", e.target.value)} />
@@ -79,7 +79,7 @@ export function SiteConfigForm({ initial, onSubmit }: SiteConfigFormProps) {
       </section>
 
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Contact</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>Contact</h3>
         <div className="grid grid-cols-2 gap-4">
           <Input label="Contact Email" type="email" value={form.contactEmail} onChange={(e) => set("contactEmail", e.target.value)} />
           <Input label="Phone (Customer Care)" value={form.phoneCustomerCare} onChange={(e) => set("phoneCustomerCare", e.target.value)} />
@@ -88,16 +88,16 @@ export function SiteConfigForm({ initial, onSubmit }: SiteConfigFormProps) {
       </section>
 
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">WhatsApp</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>WhatsApp</h3>
         <div className="grid grid-cols-3 gap-4">
           <Input label="Customer Care" value={form.whatsappCustomerCare} onChange={(e) => set("whatsappCustomerCare", e.target.value)} />
           <Input label="Admin Bot" value={form.whatsappAdminBot} onChange={(e) => set("whatsappAdminBot", e.target.value)} />
-          <Input label="Status Updates" value={form.whatsappStatues} onChange={(e) => set("whatsappStatues", e.target.value)} />
+          <Input label="Status Updates" value={form.whatsappStatuses} onChange={(e) => set("whatsappStatuses", e.target.value)} />
         </div>
       </section>
 
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Social</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>Social</h3>
         <div className="grid grid-cols-2 gap-4">
           <Input label="Facebook URL" value={form.facebookUrl} onChange={(e) => set("facebookUrl", e.target.value)} />
           <Input label="Instagram URL" value={form.instagramUrl} onChange={(e) => set("instagramUrl", e.target.value)} />
@@ -105,7 +105,7 @@ export function SiteConfigForm({ initial, onSubmit }: SiteConfigFormProps) {
       </section>
 
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Commerce</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>Commerce</h3>
         <div className="grid grid-cols-2 gap-4">
           <Input label="Free Shipping Minimum (₹)" type="number" value={String(form.freeShippingMinimum)} onChange={(e) => set("freeShippingMinimum", parseFloat(e.target.value) || 0)} />
           <Input label="Low Stock Default Threshold" type="number" value={String(form.inventoryLowStockDefault)} onChange={(e) => set("inventoryLowStockDefault", parseInt(e.target.value) || 0)} />
@@ -115,7 +115,7 @@ export function SiteConfigForm({ initial, onSubmit }: SiteConfigFormProps) {
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Locations</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>Locations</h3>
           <Button type="button" variant="secondary" size="sm" onClick={addLocation}>+ Add Location</Button>
         </div>
         {form.locations.map((loc, idx) => (

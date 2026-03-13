@@ -41,14 +41,14 @@ export function TestimonialForm({ initial, onSubmit, submitLabel = "Save" }: Tes
       {error && <p className="text-sm text-red-600">{error}</p>}
       <Input label="Customer Name *" value={name} onChange={(e) => setName(e.target.value)} required />
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
-        <select className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" value={rating} onChange={(e) => setRating(parseInt(e.target.value) as 1|2|3|4|5)}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-black)' }}>Rating</label>
+        <select className="w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: 'var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }} value={rating} onChange={(e) => setRating(parseInt(e.target.value) as 1|2|3|4|5)}>
           {[5,4,3,2,1].map((n) => <option key={n} value={n}>{n} star{n>1?"s":""}</option>)}
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Testimonial Text *</label>
-        <textarea className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" rows={4} value={text} onChange={(e) => setText(e.target.value)} required />
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-black)' }}>Testimonial Text *</label>
+        <textarea className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" style={{ borderColor: 'var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }} rows={4} value={text} onChange={(e) => setText(e.target.value)} required />
       </div>
       <Input label="Avatar URL" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} />
       <Input label="Sort Order" type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} />

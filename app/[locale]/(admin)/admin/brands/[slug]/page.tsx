@@ -25,12 +25,12 @@ export default function EditBrandPage({ params }: { params: Promise<{ slug: stri
     router.push("/admin/brands");
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (loading) return <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>;
   if (!brand) return <p className="text-sm text-red-600">Brand not found.</p>;
 
   return (
     <div className="max-w-xl space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Edit: {brand.name}</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Edit: {brand.name}</h1>
       <BrandForm initial={brand} onSubmit={handleSubmit} submitLabel="Save Changes" />
     </div>
   );

@@ -48,12 +48,12 @@ export function AddToCartSection({ product }: AddToCartSectionProps) {
       {/* Qty stepper */}
       {canAdd && (
         <div className="flex items-center gap-3">
-          <span className="text-sm font-bold" style={{ color: '#1A1A2E' }}>Quantity</span>
+          <span className="text-sm font-bold" style={{ color: 'var(--color-black)' }}>Quantity</span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
               className="flex h-8 w-8 items-center justify-center text-sm font-bold"
-              style={{ border: '2px solid #0D0D0D' }}
+              style={{ border: '2px solid var(--border-ink)' }}
               aria-label="Decrease quantity"
             >
               −
@@ -62,7 +62,7 @@ export function AddToCartSection({ product }: AddToCartSectionProps) {
             <button
               onClick={() => setQty((q) => Math.min(max, q + 1))}
               className="flex h-8 w-8 items-center justify-center text-sm font-bold"
-              style={{ border: '2px solid #0D0D0D' }}
+              style={{ border: '2px solid var(--border-ink)' }}
               aria-label="Increase quantity"
             >
               +

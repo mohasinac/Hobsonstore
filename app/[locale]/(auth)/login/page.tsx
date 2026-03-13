@@ -54,7 +54,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <h1 className="mb-6 text-xl font-bold text-gray-900 text-center">
+      <h1 className="mb-6 text-xl font-bold text-center" style={{ color: "var(--color-black)" }}>
         Sign in to your account
       </h1>
 
@@ -97,10 +97,10 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <div className="my-4 flex items-center gap-3 text-gray-400 text-sm">
-        <span className="flex-1 border-t" />
+      <div className="my-4 flex items-center gap-3 text-sm" style={{ color: "var(--color-muted)" }}>
+        <span className="flex-1 border-t" style={{ borderColor: "var(--border-ink)", opacity: 0.2 }} />
         or
-        <span className="flex-1 border-t" />
+        <span className="flex-1 border-t" style={{ borderColor: "var(--border-ink)", opacity: 0.2 }} />
       </div>
 
       <Button
@@ -112,7 +112,7 @@ export default function LoginPage() {
         Continue with Google
       </Button>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <p className="mt-6 text-center text-sm" style={{ color: "var(--color-muted)" }}>
         Don&apos;t have an account?{" "}
         <Link
           href="/register"

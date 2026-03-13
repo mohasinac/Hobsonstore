@@ -16,13 +16,15 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const [pId, setPId] = useState<string>("");
 
   useEffect(() => {
-    params.then(({ id }) => {
-      setPId(id);
-      getProductById(id).then((p) => {
-        setProduct(p);
-        setLoading(false);
-      });
-    });
+    params
+      .then(({ id }) => {
+        setPId(id);
+        return getProductById(id).then((p) => {
+          setProduct(p);
+          setLoading(false);
+        });
+      })
+      .catch(() => setLoading(false));
   }, [params]);
 
   async function handleSubmit(data: ProductWritePayload) {
@@ -36,19 +38,19 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     router.push("/admin/products");
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (loading) return <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>;
   if (!product) return <p className="text-sm text-red-600">Product not found.</p>;
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Edit: {product.name}</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Edit: {product.name}</h1>
 
-      <div className="flex gap-4 border-b">
+      <div className="flex gap-4" style={{ borderBottom: '2px solid var(--border-ink)' }}>
         {(["details", "inventory"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`pb-2 text-sm font-medium capitalize ${tab === t ? "border-b-2 border-red-600 text-red-600" : "text-gray-500"}`}
+            className={`pb-2 text-sm font-medium capitalize ${tab === t ? "border-b-2 border-red-600 text-red-600" : "dark:text-slate-400 text-gray-500"}`}
           >
             {t}
           </button>

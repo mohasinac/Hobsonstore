@@ -12,12 +12,13 @@ export default function EditFranchisePage({ params }: { params: Promise<{ slug: 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    params.then(({ slug }) => {
-      getFranchise(slug).then((f) => {
+    params
+      .then(({ slug }) => getFranchise(slug))
+      .then((f) => {
         setFranchise(f);
         setLoading(false);
-      });
-    });
+      })
+      .catch(() => setLoading(false));
   }, [params]);
 
   async function handleSubmit(data: Franchise) {
@@ -25,12 +26,12 @@ export default function EditFranchisePage({ params }: { params: Promise<{ slug: 
     router.push("/admin/franchises");
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (loading) return <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>;
   if (!franchise) return <p className="text-sm text-red-600">Franchise not found.</p>;
 
   return (
     <div className="max-w-xl space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Edit: {franchise.name}</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Edit: {franchise.name}</h1>
       <FranchiseForm initial={franchise} onSubmit={handleSubmit} submitLabel="Save Changes" />
     </div>
   );

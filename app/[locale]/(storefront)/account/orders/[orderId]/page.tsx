@@ -50,7 +50,7 @@ export default function OrderDetailPage() {
   if (notFound || !order) {
     return (
       <div className="py-16 text-center">
-        <p className="text-lg font-bold" style={{ color: '#1A1A2E' }}>Order not found.</p>
+        <p className="text-lg font-bold" style={{ color: 'var(--color-black)' }}>Order not found.</p>
         <Link href={ROUTES.ACCOUNT_ORDERS} className="mt-3 inline-block text-sm font-bold hover:underline" style={{ color: '#E8001C' }}>
           Back to orders
         </Link>
@@ -65,13 +65,13 @@ export default function OrderDetailPage() {
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href={ROUTES.ACCOUNT_ORDERS} className="text-sm font-semibold hover:underline" style={{ color: '#6B6B6B' }}>
+          <Link href={ROUTES.ACCOUNT_ORDERS} className="text-sm font-semibold hover:underline" style={{ color: 'var(--text-muted-strong)' }}>
             ← My Orders
           </Link>
-          <h1 className="mt-1 text-xl font-extrabold" style={{ fontFamily: 'var(--font-bangers)', color: '#1A1A2E', letterSpacing: '0.06em' }}>
+          <h1 className="mt-1 text-xl font-extrabold" style={{ fontFamily: 'var(--font-bangers)', color: 'var(--color-black)', letterSpacing: '0.06em' }}>
             Order #{order.id.slice(-8).toUpperCase()}
           </h1>
-          <p className="text-sm" style={{ color: '#6B6B6B' }}>
+          <p className="text-sm" style={{ color: 'var(--text-muted-strong)' }}>
             {order.createdAt?.toDate
               ? order.createdAt.toDate().toLocaleDateString("en-IN", {
                   day: "numeric",
@@ -85,9 +85,9 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Items */}
-      <div className="bg-white" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
-        <div className="px-5 py-3" style={{ borderBottom: '2px solid #0D0D0D' }}>
-          <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: '#6B6B6B' }}>Items</h2>
+      <div style={{ background: 'var(--surface-elevated)', border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)' }}>
+        <div className="px-5 py-3" style={{ borderBottom: '2px solid var(--border-ink)' }}>
+          <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted-strong)' }}>Items</h2>
         </div>
         <OrderItemList items={order.items} />
       </div>
@@ -95,13 +95,13 @@ export default function OrderDetailPage() {
       {/* Totals + Address row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* Order summary */}
-        <div className="bg-white p-5" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
-          <h2 className="mb-3 text-sm font-bold uppercase tracking-widest" style={{ color: '#6B6B6B' }}>
+        <div className="p-5" style={{ background: 'var(--surface-elevated)', border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)' }}>
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted-strong)' }}>
             Price Breakdown
           </h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt style={{ color: '#6B6B6B' }}>Subtotal</dt>
+              <dt style={{ color: 'var(--text-muted-strong)' }}>Subtotal</dt>
               <dd>{formatINR(order.subtotal)}</dd>
             </div>
             {order.discountAmount > 0 && (
@@ -116,7 +116,7 @@ export default function OrderDetailPage() {
                 <dd>−{formatINR(order.coinsRedeemed / 10)}</dd>
               </div>
             )}
-            <div className="flex justify-between pt-2 font-bold" style={{ borderTop: '2px solid #0D0D0D' }}>
+            <div className="flex justify-between pt-2 font-bold" style={{ borderTop: '2px solid var(--border-ink)' }}>
               <dt>Total</dt>
               <dd>{formatINR(order.total)}</dd>
             </div>
@@ -124,11 +124,11 @@ export default function OrderDetailPage() {
         </div>
 
         {/* Shipping address */}
-        <div className="bg-white p-5" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
-          <h2 className="mb-3 text-sm font-bold uppercase tracking-widest" style={{ color: '#6B6B6B' }}>
+        <div className="p-5" style={{ background: 'var(--surface-elevated)', border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)' }}>
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted-strong)' }}>
             Shipping Address
           </h2>
-          <address className="not-italic text-sm leading-relaxed" style={{ color: '#1A1A2E' }}>
+          <address className="not-italic text-sm leading-relaxed" style={{ color: 'var(--color-black)' }}>
             <strong>{address.name}</strong>
             <br />
             {address.phone}
@@ -143,11 +143,11 @@ export default function OrderDetailPage() {
 
       {/* Tracking */}
       {order.trackingNumber && (
-        <div className="bg-white p-5" style={{ border: '2px solid #0D0D0D', boxShadow: '3px 3px 0px #0D0D0D' }}>
-          <h2 className="mb-2 text-sm font-bold uppercase tracking-widest" style={{ color: '#6B6B6B' }}>
+        <div className="p-5" style={{ background: 'var(--surface-elevated)', border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)' }}>
+          <h2 className="mb-2 text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted-strong)' }}>
             Tracking
           </h2>
-          <p className="text-sm" style={{ color: '#1A1A2E' }}>
+          <p className="text-sm" style={{ color: 'var(--color-black)' }}>
             <span className="font-medium">{order.courierName}</span> ·{" "}
             <span>{order.trackingNumber}</span>
           </p>

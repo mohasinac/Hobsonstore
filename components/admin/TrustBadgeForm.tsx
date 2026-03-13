@@ -47,11 +47,12 @@ export function TrustBadgeForm({ initial, onSubmit, submitLabel = "Save" }: Trus
       <Input label="Title *" value={title} onChange={(e) => setTitle(e.target.value)} required />
       <Input label="Subtitle *" value={sub} onChange={(e) => setSub(e.target.value)} required />
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Icon *</label>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-black)' }}>Icon *</label>
         <select
           value={iconKey}
           onChange={(e) => setIconKey(e.target.value as TrustBadgeIconKey)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          style={{ borderColor: 'var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}
         >
           {ICON_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>

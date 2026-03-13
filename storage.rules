@@ -29,10 +29,12 @@ service firebase.storage {
       allow write: if isAdmin();
     }
 
-    // User avatars — owner read/write
+    // User avatars — owner read/write; images only, max 5 MB
     match /users/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if isSignedIn() && request.auth.uid == userId;
+      allow write: if isSignedIn() && request.auth.uid == userId
+        && request.resource.contentType.matches('image/.*')
+        && request.resource.size <= 5 * 1024 * 1024;
     }
 
     // Deny everything else

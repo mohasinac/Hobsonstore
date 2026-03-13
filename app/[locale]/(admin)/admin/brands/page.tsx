@@ -14,14 +14,16 @@ export default function AdminBrandsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllBrandsAdmin().then((items) => {
-      setBrands(
-        items
-          .sort((a, b) => a.sortOrder - b.sortOrder)
-          .map((b) => ({ ...b, id: b.slug }))
-      );
-      setLoading(false);
-    });
+    getAllBrandsAdmin()
+      .then((items) => {
+        setBrands(
+          items
+            .sort((a, b) => a.sortOrder - b.sortOrder)
+            .map((b) => ({ ...b, id: b.slug }))
+        );
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   function handleReorder(reordered: BrandItem[]) {
@@ -38,29 +40,29 @@ export default function AdminBrandsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Brands</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Brands</h1>
         <Link href="/admin/brands/new">
           <Button size="sm">+ New Brand</Button>
         </Link>
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">Loading…</p>
+        <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>
       ) : brands.length === 0 ? (
-        <p className="text-sm text-gray-400">No brands yet.</p>
+        <p className="text-sm" style={{ color: 'var(--color-muted)' }}>No brands yet.</p>
       ) : (
         <DraggableList<BrandItem>
           items={brands}
           onReorder={handleReorder}
           renderItem={(b) => (
-            <div className="flex items-center justify-between rounded-md border bg-white px-4 py-3">
+            <div className="flex items-center justify-between rounded-md border px-4 py-3" style={{ background: 'var(--surface-elevated)', borderColor: 'var(--border-ink)' }}>
               <div>
                 <p className="font-medium text-sm">{b.name}</p>
-                <p className="text-xs text-gray-400">{b.slug} · {b.active ? "active" : "inactive"}</p>
+                <p className="text-xs" style={{ color: 'var(--color-muted)' }}>{b.slug} · {b.active ? "active" : "inactive"}</p>
               </div>
               <div className="flex gap-2">
                 <Link href={`/admin/brands/${b.slug}`} className="text-xs text-red-600 hover:underline">Edit</Link>
-                <button onClick={() => handleDelete(b.slug)} className="text-xs text-gray-400 hover:text-red-600">Delete</button>
+                <button onClick={() => handleDelete(b.slug)} className="text-xs dark:text-slate-500 text-gray-400 hover:text-red-600">Delete</button>
               </div>
             </div>
           )}

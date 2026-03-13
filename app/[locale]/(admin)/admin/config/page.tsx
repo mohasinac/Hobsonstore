@@ -10,7 +10,7 @@ import type { SiteConfig, OrderStatusConfig } from "@/types/config";
 
 const DEFAULT_SITE: SiteConfig = {
   siteName: "", siteTagline: "", logoUrl: "", faviconUrl: "", defaultOgImage: "",
-  contactEmail: "", whatsappCustomerCare: "", whatsappStatues: "", whatsappAdminBot: "",
+  contactEmail: "", whatsappCustomerCare: "", whatsappStatuses: "", whatsappAdminBot: "",
   phoneCustomerCare: "", facebookUrl: "", instagramUrl: "", supportHours: "",
   freeShippingMinimum: 0, inventoryLowStockDefault: 5, noIndexAdmin: true,
   footerCopyright: "", locations: [],
@@ -46,15 +46,15 @@ export default function AdminConfigPage() {
     setStatusSaved(true);
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (loading) return <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p>;
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Config</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Config</h1>
 
-      <div className="flex gap-4 border-b">
+      <div className="flex gap-4" style={{ borderBottom: '2px solid var(--border-ink)' }}>
         {(["site", "order-status"] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={`pb-2 text-sm font-medium ${tab === t ? "border-b-2 border-red-600 text-red-600" : "text-gray-500"}`}>
+          <button key={t} onClick={() => setTab(t)} className={`pb-2 text-sm font-medium ${tab === t ? "border-b-2 border-red-600 text-red-600" : "dark:text-slate-400 text-gray-500"}`}>
             {t === "site" ? "Site Config" : "Order Statuses"}
           </button>
         ))}

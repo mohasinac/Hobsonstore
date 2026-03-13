@@ -100,14 +100,14 @@ export default async function BlogPostPage({ params }: Props) {
           fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "clamp(2rem, 5vw, 2.8rem)",
           letterSpacing: "0.06em",
-          color: "#0D0D0D",
+          color: "var(--color-black)",
         }}
       >
         {post.title.toUpperCase()}
       </h1>
 
       {/* Author + date */}
-      <div className="mb-8 flex items-center gap-3 text-sm" style={{ color: "#6B6B6B" }}>
+      <div className="mb-8 flex items-center gap-3 text-sm" style={{ color: "var(--text-muted-strong)" }}>
         {post.authorAvatar && (
           <Image
             src={post.authorAvatar}
@@ -117,7 +117,7 @@ export default async function BlogPostPage({ params }: Props) {
             className="rounded-full"
           />
         )}
-        <span className="font-bold" style={{ color: "#0D0D0D" }}>{post.authorName}</span>
+        <span className="font-bold" style={{ color: "var(--color-black)" }}>{post.authorName}</span>
         <span>·</span>
         <time dateTime={formatDate(post.publishedAt)}>
           {formatDate(post.publishedAt)}

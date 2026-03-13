@@ -34,10 +34,10 @@ export default function ForgotPasswordPage() {
     return (
       <div className="text-center">
         <div className="mb-4 text-3xl">📧</div>
-        <h1 className="mb-2 text-xl font-bold text-gray-900">
+        <h1 className="mb-2 text-xl font-bold" style={{ color: "var(--color-black)" }}>
           Check your email
         </h1>
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
           Password reset instructions have been sent to <strong>{email}</strong>
           .
         </p>
@@ -53,10 +53,10 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <h1 className="mb-2 text-xl font-bold text-gray-900 text-center">
+      <h1 className="mb-2 text-xl font-bold text-center" style={{ color: "var(--color-black)" }}>
         Reset password
       </h1>
-      <p className="mb-6 text-sm text-gray-500 text-center">
+      <p className="mb-6 text-sm text-center" style={{ color: "var(--color-muted)" }}>
         Enter your email and we&apos;ll send you a reset link.
       </p>
 
@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <p className="mt-6 text-center text-sm" style={{ color: "var(--color-muted)" }}>
         Remembered it?{" "}
         <Link
           href="/login"

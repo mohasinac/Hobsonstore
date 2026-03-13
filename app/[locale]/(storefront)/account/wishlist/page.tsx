@@ -58,7 +58,7 @@ export default function WishlistPage() {
           fontFamily: "var(--font-bangers, Bangers, cursive)",
           fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
           letterSpacing: "0.06em",
-          color: "#0D0D0D",
+          color: "var(--color-black)",
         }}
       >
         MY WISHLIST
@@ -68,8 +68,8 @@ export default function WishlistPage() {
         <div
           className="py-16 text-center"
           style={{
-            border: "2px dashed #0D0D0D",
-            background: "#FFFEF0",
+            border: "2px dashed var(--border-ink)",
+            background: "var(--surface-elevated)",
           }}
         >
           <p
@@ -77,7 +77,7 @@ export default function WishlistPage() {
             style={{
               fontFamily: "var(--font-bangers, Bangers, cursive)",
               letterSpacing: "0.06em",
-              color: "#0D0D0D",
+              color: "var(--color-black)",
             }}
           >
             Your wishlist is empty

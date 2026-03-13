@@ -38,6 +38,8 @@ interface KeyState {
   razorpayKeyIdIsSet?: boolean;
   razorpayKeySecret: string;
   razorpayKeySecretIsSet?: boolean;
+  razorpayOAuthConnected?: boolean;
+  razorpayAccountId?: string;
   adminEmails: string;
 }
 
@@ -50,13 +52,15 @@ const EMPTY: KeyState = {
   whatsappWebhookSecret: "",
   razorpayKeyId: "",
   razorpayKeySecret: "",
+  razorpayOAuthConnected: false,
+  razorpayAccountId: "",
   adminEmails: "",
 };
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
 const inputCls =
-  "w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-mono disabled:opacity-50";
+  "w-full px-3 py-2 text-sm font-mono outline-none transition-shadow disabled:opacity-50";
 
 function SavedBadge() {
   return (
@@ -88,14 +92,15 @@ function SecretInput({
   return (
     <div>
       <div className="mb-1 flex items-center gap-2">
-        <label className="text-sm font-semibold text-gray-800">{label}</label>
+        <label className="text-sm font-semibold" style={{ color: 'var(--color-black)' }}>{label}</label>
         {isSet && <SavedBadge />}
       </div>
-      {sublabel && <p className="mb-1.5 text-xs text-gray-500">{sublabel}</p>}
+      {sublabel && <p className="mb-1.5 text-xs" style={{ color: 'var(--color-muted)' }}>{sublabel}</p>}
       <div className="relative">
         <input
           type={show ? "text" : "password"}
           className={inputCls + " pr-10"}
+          style={{ border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={isSet ? "Leave blank to keep existing value" : placeholder}
@@ -104,7 +109,7 @@ function SecretInput({
         <button
           type="button"
           onClick={() => setShow((s) => !s)}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 dark:text-slate-400 dark:hover:text-slate-100 text-gray-400 hover:text-gray-700"
           tabIndex={-1}
           aria-label={show ? "Hide" : "Show"}
         >
@@ -141,11 +146,12 @@ function PlainInput({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-semibold text-gray-800">{label}</label>
-      {sublabel && <p className="mb-1.5 text-xs text-gray-500">{sublabel}</p>}
+      <label className="mb-1 block text-sm font-semibold" style={{ color: 'var(--color-black)' }}>{label}</label>
+      {sublabel && <p className="mb-1.5 text-xs" style={{ color: 'var(--color-muted)' }}>{sublabel}</p>}
       <input
         type={type}
         className={inputCls}
+        style={{ border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -157,8 +163,8 @@ function PlainInput({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section
-      className="overflow-hidden rounded-lg bg-white"
-      style={{ border: "2px solid #0D0D0D", boxShadow: "4px 4px 0px #0D0D0D" }}
+      className="overflow-hidden rounded-lg"
+      style={{ background: 'var(--surface-elevated)', border: "2px solid var(--border-ink)", boxShadow: "4px 4px 0px var(--border-ink)" }}
     >
       <div
         className="px-5 py-3"
@@ -184,6 +190,7 @@ export default function IntegrationsSettingsPage() {
   const [data, setData] = useState<KeyState>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -203,6 +210,55 @@ export default function IntegrationsSettingsPage() {
   useEffect(() => {
     if (token !== null) void load();
   }, [load, token]);
+
+  // Show toast for OAuth redirect result and clean the URL
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const connected = params.get("razorpay_connected");
+    const error = params.get("razorpay_error");
+    if (!connected && !error) return;
+    window.history.replaceState({}, "", window.location.pathname);
+    if (connected === "1") toast("Razorpay connected successfully!", "success");
+    else if (error) toast(`Razorpay OAuth failed: ${error.replace(/_/g, " ")}`, "error");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const connectRazorpay = async () => {
+    setOauthLoading(true);
+    try {
+      const res = await fetch("/api/admin/razorpay/oauth/connect", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) {
+        const json = await res.json() as { error?: string };
+        throw new Error(json.error ?? "Failed to initiate OAuth");
+      }
+      const { url } = await res.json() as { url: string };
+      window.location.href = url;
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Failed to connect Razorpay", "error");
+      setOauthLoading(false);
+    }
+  };
+
+  const disconnectRazorpay = async () => {
+    setOauthLoading(true);
+    try {
+      const res = await fetch("/api/admin/razorpay/oauth/disconnect", {
+        method: "DELETE",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error("Failed to disconnect");
+      toast("Razorpay disconnected", "success");
+      setLoading(true);
+      await load();
+    } catch {
+      toast("Failed to disconnect Razorpay", "error");
+    } finally {
+      setOauthLoading(false);
+    }
+  };
 
   const save = async () => {
     setSaving(true);
@@ -253,16 +309,16 @@ export default function IntegrationsSettingsPage() {
       {/* Header */}
       <div
         className="flex items-center justify-between px-6 py-4"
-        style={{ borderBottom: "3px solid #0D0D0D", background: "#fff" }}
+        style={{ borderBottom: "3px solid var(--border-ink)", background: "var(--surface-elevated)" }}
       >
         <div>
           <h1
             className="text-2xl font-bold tracking-wide"
-            style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", color: "#1A1A2E", letterSpacing: "0.06em" }}
+            style={{ fontFamily: "var(--font-bangers, Bangers, cursive)", color: "var(--color-black)", letterSpacing: "0.06em" }}
           >
             INTEGRATIONS
           </h1>
-          <p className="mt-0.5 text-sm text-gray-500">
+          <p className="mt-0.5 text-sm" style={{ color: 'var(--color-muted)' }}>
             API secrets are encrypted with AES-256-GCM before being stored in the database.
           </p>
         </div>
@@ -282,7 +338,7 @@ export default function IntegrationsSettingsPage() {
       <div className="mx-auto max-w-2xl space-y-8 px-6 py-8">
         {/* Twilio */}
         <Section title="Twilio — WhatsApp & SMS">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs" style={{ color: 'var(--color-muted)' }}>
             Twilio powers outbound WhatsApp notifications and the inventory bot.
             Find these in your{" "}
             <a
@@ -344,28 +400,101 @@ export default function IntegrationsSettingsPage() {
           />
         </Section>
 
-        {/* Razorpay (Phase 8) */}
-        <Section title="Razorpay — Online Payments (Phase 8)">
-          <p className="text-xs text-gray-500">
-            Available once Razorpay is enabled. Keys are stored encrypted and used
-            only for creating payment orders and initiating refunds server-side.
+        {/* Razorpay */}
+        <Section title="Razorpay — Online Payments">
+          <p className="text-xs" style={{ color: 'var(--color-muted)' }}>
+            Connect via OAuth (recommended) — your Razorpay account authorises this app without
+            sharing long-lived API secrets. Or paste API keys manually as a fallback.
           </p>
-          <SecretInput
-            label="Key ID"
-            sublabel="e.g. rzp_live_..."
-            value={data.razorpayKeyId}
-            isSet={data.razorpayKeyIdIsSet}
-            placeholder="rzp_live_..."
-            onChange={(v) => set("razorpayKeyId", v)}
-          />
-          <SecretInput
-            label="Key Secret"
-            sublabel="Keep this confidential — stored encrypted"
-            value={data.razorpayKeySecret}
-            isSet={data.razorpayKeySecretIsSet}
-            placeholder="Enter Razorpay secret key"
-            onChange={(v) => set("razorpayKeySecret", v)}
-          />
+
+          {/* OAuth connect / status card */}
+          <div
+            className="rounded-md px-4 py-3"
+            style={{ border: "1.5px solid var(--border-ink)", background: "var(--color-surface)" }}
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold" style={{ color: 'var(--color-black)' }}>
+                  OAuth Connection
+                </p>
+                {data.razorpayOAuthConnected ? (
+                  <p className="mt-0.5 text-xs" style={{ color: 'var(--color-muted)' }}>
+                    Connected{data.razorpayAccountId ? ` · ${data.razorpayAccountId}` : ""}
+                  </p>
+                ) : (
+                  <p className="mt-0.5 text-xs" style={{ color: 'var(--color-muted)' }}>
+                    Not connected — click to authorise via Razorpay
+                  </p>
+                )}
+              </div>
+              {data.razorpayOAuthConnected ? (
+                <button
+                  type="button"
+                  disabled={oauthLoading}
+                  onClick={disconnectRazorpay}
+                  className="shrink-0 rounded px-3 py-1.5 text-xs font-bold disabled:opacity-50"
+                  style={{
+                    border: "2px solid var(--border-ink)",
+                    background: "#fff",
+                    color: "var(--color-black)",
+                    boxShadow: "2px 2px 0px var(--border-ink)",
+                  }}
+                >
+                  {oauthLoading ? "…" : "Disconnect"}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={oauthLoading}
+                  onClick={connectRazorpay}
+                  className="shrink-0 flex items-center gap-2 rounded px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+                  style={{
+                    background: "#2280EF",
+                    border: "2px solid #0D0D0D",
+                    boxShadow: "2px 2px 0px #0D0D0D",
+                  }}
+                >
+                  {oauthLoading ? (
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : (
+                    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 0 0-5.656 0l-4 4a4 4 0 1 0 5.656 5.656l1.102-1.101" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.172 13.828a4 4 0 0 0 5.656 0l4-4a4 4 0 1 0-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  )}
+                  Connect with Razorpay
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Manual keys — fallback when OAuth is not used */}
+          <div>
+            <p
+              className="mb-3 text-xs font-semibold uppercase tracking-widest"
+              style={{ color: 'var(--color-muted)' }}
+            >
+              — or use manual API keys —
+            </p>
+            <div className="space-y-4">
+              <SecretInput
+                label="Key ID"
+                sublabel="e.g. rzp_live_... — stored encrypted"
+                value={data.razorpayKeyId}
+                isSet={data.razorpayKeyIdIsSet}
+                placeholder="rzp_live_..."
+                onChange={(v) => set("razorpayKeyId", v)}
+              />
+              <SecretInput
+                label="Key Secret"
+                sublabel="Keep this confidential — stored encrypted"
+                value={data.razorpayKeySecret}
+                isSet={data.razorpayKeySecretIsSet}
+                placeholder="Enter Razorpay secret key"
+                onChange={(v) => set("razorpayKeySecret", v)}
+              />
+            </div>
+          </div>
         </Section>
 
         {/* Admin emails */}

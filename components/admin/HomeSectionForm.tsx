@@ -52,8 +52,8 @@ export function HomeSectionForm({ initial, onSubmit, submitLabel = "Save" }: Hom
       <Input label="Title *" value={title} onChange={(e) => setTitle(e.target.value)} required />
       <Input label="Subtitle" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} />
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Section Type</label>
-        <select className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" value={type} onChange={(e) => setType(e.target.value as HomeSection["type"])}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-black)' }}>Section Type</label>
+        <select className="w-full rounded-md border px-3 py-2 text-sm" style={{ borderColor: 'var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }} value={type} onChange={(e) => setType(e.target.value as HomeSection["type"])}>
           <option value="featured">Featured</option>
           <option value="bestseller">Bestseller</option>
           <option value="new-arrivals">New Arrivals</option>

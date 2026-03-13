@@ -15,7 +15,7 @@ export default function NewFranchisePage() {
 
   return (
     <div className="max-w-xl space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">New Franchise</h1>
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>New Franchise</h1>
       <FranchiseForm onSubmit={handleSubmit} submitLabel="Create Franchise" />
     </div>
   );

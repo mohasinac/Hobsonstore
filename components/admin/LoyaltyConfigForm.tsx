@@ -54,7 +54,7 @@ export function LoyaltyConfigForm({ initial, onSubmit }: LoyaltyConfigFormProps)
             value={coinsPerRupee}
             onChange={(e) => setCoinsPerRupee(e.target.value)}
           />
-          <p className="text-xs text-gray-400 mt-0.5">e.g. 0.01 = 1 coin per ₹100</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--color-muted)' }}>e.g. 0.01 = 1 coin per ₹100</p>
         </div>
         <div>
           <Input
@@ -63,14 +63,14 @@ export function LoyaltyConfigForm({ initial, onSubmit }: LoyaltyConfigFormProps)
             value={rupeePerCoin}
             onChange={(e) => setRupeePerCoin(e.target.value)}
           />
-          <p className="text-xs text-gray-400 mt-0.5">e.g. 1 = 1 coin saves ₹1</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--color-muted)' }}>e.g. 1 = 1 coin saves ₹1</p>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <Input label="Minimum coins to redeem" type="number" value={minCoinsToRedeem} onChange={(e) => setMinCoinsToRedeem(e.target.value)} />
         <div>
           <Input label="Max redeem % of order total" type="number" value={maxRedeemPercent} onChange={(e) => setMaxRedeemPercent(e.target.value)} />
-          <p className="text-xs text-gray-400 mt-0.5">e.g. 10 = max 10% of order payable in coins</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--color-muted)' }}>e.g. 10 = max 10% of order payable in coins</p>
         </div>
       </div>
       <Checkbox label="Loyalty programme active" checked={active} onChange={(e) => setActive(e.target.checked)} />

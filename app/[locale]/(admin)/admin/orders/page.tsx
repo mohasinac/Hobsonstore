@@ -10,16 +10,18 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllOrdersAdmin(undefined, 100).then(({ orders: o }) => {
-      setOrders(o);
-      setLoading(false);
-    });
+    getAllOrdersAdmin(undefined, 100)
+      .then(({ orders: o }) => {
+        setOrders(o);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Orders</h1>
-      {loading ? <p className="text-sm text-gray-500">Loading…</p> : <OrderTable orders={orders} />}
+      <h1 className="text-xl font-bold" style={{ color: 'var(--color-black)' }}>Orders</h1>
+      {loading ? <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</p> : <OrderTable orders={orders} />}
     </div>
   );
 }

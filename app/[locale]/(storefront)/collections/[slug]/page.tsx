@@ -57,11 +57,11 @@ export default async function CollectionPage({
     >
       {/* Collection header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold" style={{ fontFamily: "var(--font-bangers)", color: "#1A1A2E", letterSpacing: "0.06em" }}>{col.name}</h1>
+        <h1 className="text-3xl font-bold" style={{ fontFamily: "var(--font-bangers)", color: "var(--color-black)", letterSpacing: "0.06em" }}>{col.name}</h1>
         {col.description && (
-          <p className="mt-2" style={{ color: "#6B6B6B" }}>{col.description}</p>
+          <p className="mt-2" style={{ color: "var(--text-muted-strong)" }}>{col.description}</p>
         )}
-        <p className="mt-1 text-sm font-semibold" style={{ color: "#6B6B6B" }}>{products.length} products</p>
+        <p className="mt-1 text-sm font-semibold" style={{ color: "var(--text-muted-strong)" }}>{products.length} products</p>
       </div>
 
       <div className="flex flex-col gap-8 md:flex-row">

@@ -51,8 +51,8 @@ export function CollectionForm({ initial, onSubmit, submitLabel = "Save" }: Coll
       <Input label="Slug *" value={slug} onChange={(e) => setSlug(e.target.value)} required />
       <Input label="Banner Image URL" value={bannerImage} onChange={(e) => setBannerImage(e.target.value)} />
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-        <textarea className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
+        <label className="block text-sm font-bold mb-1" style={{ color: 'var(--color-black)', letterSpacing: '0.02em' }}>Description</label>
+        <textarea className="w-full px-3 py-2 text-sm outline-none resize-y" style={{ border: '2px solid var(--border-ink)', boxShadow: '3px 3px 0px var(--border-ink)', background: 'var(--surface-elevated)', color: 'var(--color-black)' }} rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
       </div>
       <Input label="Sort Order" type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} />
       <div className="flex gap-4">
