@@ -1624,9 +1624,9 @@ export const SEED_PRODUCTS = [
 export const SEED_BANNERS = [
   {
     id: "banner-001",
-    title: "New Arrivals: Hot Toys 2026",
-    subtitle: "Explore The Latest 1/6 Scale Masterpieces",
-    ctaLabel: "Shop Now",
+    title: "Spring 2026 Drop: Hot Toys Collection",
+    subtitle: "Wolverine Deluxe, Iron Man MK50 & Batman Returns — In Stock Now",
+    ctaLabel: "Shop Hot Toys",
     ctaUrl: "/collections/hot-toys",
     backgroundImage: "https://images.unsplash.com/photo-1608889175638-9322300c46e8?w=1600&q=80",
     backgroundColor: "#1a1a2e",
@@ -1648,9 +1648,9 @@ export const SEED_BANNERS = [
   },
   {
     id: "banner-003",
-    title: "Pre-Order Now: Sideshow Superman",
-    subtitle: "Limited edition. Secure yours before it sells out.",
-    ctaLabel: "Pre-Order",
+    title: "Pre-Order: Sideshow Superman & InArt Batman",
+    subtitle: "Secure yours before allocations close — ships Q2–Q3 2026",
+    ctaLabel: "View Pre-Orders",
     ctaUrl: "/products/sideshow-superman-premium-format",
     backgroundImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80",
     backgroundColor: "#0d47a1",
@@ -1784,7 +1784,7 @@ export const SEED_HOME_SECTIONS = [
 export const SEED_ANNOUNCEMENTS = [
   {
     id: "ann-001",
-    message: "NO COST EMI ON ORDERS ABOVE ₹6,000 — Use code NOCOSTEMI at checkout",
+    message: "SPRING SALE 2026 — 15% off sitewide · Use code SPRING26 at checkout",
     link: "/products",
     linkLabel: "Shop now",
     active: true,
@@ -1794,9 +1794,9 @@ export const SEED_ANNOUNCEMENTS = [
   },
   {
     id: "ann-002",
-    message: "Hobson Bengaluru Store Now Open! Visit us at Indiranagar 100 Ft Road",
-    link: "/policies/contact",
-    linkLabel: "Get directions",
+    message: "New arrivals in stock: Hot Toys Wolverine Deluxe, McFarlane DC wave, Bandai Gojo Satoru SHF",
+    link: "/products",
+    linkLabel: "See what's new",
     active: true,
     sortOrder: 2,
     bgColor: "#1e40af",
@@ -1804,8 +1804,8 @@ export const SEED_ANNOUNCEMENTS = [
   },
   {
     id: "ann-003",
-    message: "Pre-order Sideshow Superman Premium Format — Ships Q3 2026",
-    link: "/products/sideshow-superman-premium-format",
+    message: "Pre-order Naruto Rikudō Sennin Mode (Q4 2026) & Sideshow Superman (Q3 2026) — slots filling fast",
+    link: "/products/bandai-shfiguarts-naruto-rikudo-sennin-mode",
     linkLabel: "Pre-order",
     active: true,
     sortOrder: 3,
@@ -1956,7 +1956,7 @@ export const SEED_FAQ = [
 
 export const SEED_DISCOUNTS = [
   {
-    id: "WELCOME10",    // Firestore doc ID = code
+    id: "WELCOME10",
     code: "WELCOME10",
     type: "percent" as const,
     value: 10,
@@ -1993,8 +1993,29 @@ export const SEED_DISCOUNTS = [
     minOrderValue: 2999,
     maxUses: 150,
     usedCount: 0,
-    applicableCollections: ["anime"],
     active: true,
+    applicableCollections: ["anime"],
+  },
+  {
+    id: "SPRING26",
+    code: "SPRING26",
+    type: "percent" as const,
+    value: 15,
+    minOrderValue: 2499,
+    maxUses: 300,
+    usedCount: 0,
+    active: true,
+  },
+  {
+    id: "HOTNEW2026",
+    code: "HOTNEW2026",
+    type: "percent" as const,
+    value: 5,
+    minOrderValue: 15000,
+    maxUses: 200,
+    usedCount: 0,
+    active: true,
+    applicableCollections: ["hot-toys"],
   },
 ];
 
@@ -2118,6 +2139,27 @@ export const SEED_PAGES = [
 
 export const SEED_BLOG_POSTS = [
   {
+    id: "blog-march-2026-new-arrivals",
+    title: "March 2026 New Arrivals: InArt, McFarlane DC Wave & More",
+    slug: "march-2026-new-arrivals",
+    coverImage: "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=1200&q=80",
+    excerpt: "InArt Batman Dark Knight Rises, McFarlane DC Page Punchers, Bandai Gojo Satoru SHF and more — here's everything that just landed at Hobson.",
+    body: `<h2>Fresh Arrivals at Hobson Collectibles — March 2026</h2>
+<p>Spring is here and so is a huge wave of new stock. Here's a quick run-down of what's just arrived and what you should act fast on.</p>
+<h3>InArt Batman (The Dark Knight Rises) 1/12 Deluxe</h3>
+<p>InArt's silicone-skin technology makes Christian Bale's likeness frighteningly accurate. The fabric cowl and Batsuit are hand-assembled, and the Gotham urban display stand ties the whole piece together. Stock is extremely limited — we received just 5 units.</p>
+<h3>Bandai S.H.Figuarts Gojo Satoru (Jujutsu Kaisen)</h3>
+<p>The most powerful sorcerer in anime is now available on our shelves. Infinity effect parts, dual head sculpts (blindfolded and revealed), and Domain Expansion hands — this SHF is a JJK shelf essential.</p>
+<h3>McFarlane DC Page Punchers Wave</h3>
+<p>Aquaman and Batman Three Jokers are back in stock. If you missed these during the last drop, now is the time. Each figure comes bundled with an exclusive DC Universe comic issue.</p>
+<h3>Spring Sale: 15% Off Everything</h3>
+<p>Use code <strong>SPRING26</strong> at checkout on all orders above ₹2,499. Valid through June 2026.</p>
+<p>Browse the <a href="/products">full catalogue</a> to see everything new.</p>`,
+    tags: ["new-arrivals", "inart", "mcfarlane", "bandai", "jujutsu-kaisen", "march-2026"],
+    authorName: "Hobson Team",
+    published: true,
+  },
+  {
     id: "blog-hot-toys-2026",
     title: "Hot Toys 2026 Line-Up: Everything You Need to Know",
     slug: "hot-toys-2026-lineup",
@@ -2129,8 +2171,8 @@ export const SEED_BLOG_POSTS = [
 <p>The Iron Man Mark L gets an anniversary re-release with updated deco, and a new Spider-Man Symbiote variant has been confirmed for Q2. The Avengers Campus figures are particularly exciting for Disney Parks fans.</p>
 <h3>DC Expansions</h3>
 <p>Following the success of Batman Arkham Knight, Hot Toys is doubling down on the DC gaming line with a Gotham Knights Nightwing and a highly anticipated Deathstroke.</p>
-<h3>Where to Pre-Order</h3>
-<p>All 2026 Hot Toys figures are available for pre-order at Hobson Collectibles. Use code HOTNEW2026 for 5% off your first pre-order.</p>`,
+<h3>Already In Stock</h3>
+<p>Wolverine Deluxe, Batman Returns Deluxe, Thor Endgame, and the Tony Stark Mech Test Deluxe are all available now at Hobson. Use code HOTNEW2026 for 5% off on Hot Toys orders above ₹15,000.</p>`,
     tags: ["hot-toys", "marvel", "dc", "star-wars", "2026"],
     authorName: "Hobson Team",
     published: true,
@@ -2165,12 +2207,14 @@ export const SEED_BLOG_POSTS = [
 <p>Anime collectibles have never been hotter. Here are the must-have pieces for this year.</p>
 <h3>1. Luffy Gear 5 — Bandai S.H.Figuarts</h3>
 <p>Sun God Nika form is finally here in S.H.Figuarts quality. Incredible laugh-effect parts and articulation that lets you recreate every iconic moment.</p>
-<h3>2. Tanjiro Kamado Water Breathing — Bandai S.H.Figuarts</h3>
+<h3>2. Gojo Satoru — Bandai S.H.Figuarts</h3>
+<p>Just landed in March 2026 — Gojo with Infinity effects and Domain Expansion hands is already selling fast. Grab it now while in stock.</p>
+<h3>3. Tanjiro Kamado Water Breathing — Bandai S.H.Figuarts</h3>
 <p>The detail on the water breathing effects is stunning. This is easily the best Tanjiro figure on the market.</p>
-<h3>3. Naruto Rikudō Sennin Mode — Bandai S.H.Figuarts</h3>
-<p>Available on pre-order now, this Naruto figure in Six Paths Sage Mode is set to be the definitive Naruto collectible.</p>
+<h3>4. Naruto Rikudō Sennin Mode — Bandai S.H.Figuarts</h3>
+<p>Available on pre-order now (ships Q4 2026), this Six Paths Sage Mode figure is set to be the definitive Naruto collectible.</p>
 <p>Check out our full <a href="/collections/anime">Anime collection</a> for all available and pre-order items.</p>`,
-    tags: ["anime", "dragon-ball-z", "demon-slayer", "one-piece", "naruto", "2026"],
+    tags: ["anime", "dragon-ball-z", "demon-slayer", "one-piece", "naruto", "jujutsu-kaisen", "2026"],
     authorName: "Hobson Team",
     published: true,
   },
