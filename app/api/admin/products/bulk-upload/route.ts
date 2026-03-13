@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { COLLECTIONS } from "@/constants/firebase";
@@ -71,5 +72,6 @@ export async function POST(req: NextRequest) {
     written += chunk.length;
   }
 
+  revalidateTag("products");
   return NextResponse.json({ count: written });
 }

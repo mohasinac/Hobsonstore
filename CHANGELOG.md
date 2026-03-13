@@ -29,6 +29,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Wired `revalidateContentCache()` into all admin write handlers: banners, promo banners, home sections, testimonials, FAQ, trust badges, announcements, character hotspot (`CharacterHotspotForm`), franchises (list/new/edit), brands (list/new/edit), collections (list/new/edit), blog posts (list/new/edit), static pages, and site config.
 - Wired `revalidateProductsCache()` into admin product write handlers: products list (delete), new product, edit product.
 
+### Fixed
+
+#### Missing Cache Invalidation on Product Writes
+
+- `components/admin/InventoryEditForm.tsx` — `handleSave` wrote updated `stock` / `availableStock` / `inStock` to Firestore but never called `revalidateProductsCache()`. Storefront served stale stock data for up to 120 s after an admin restock.
+- `components/admin/ProductTableRow.tsx` — inline `saveStock()` had the same gap; storefront product cards showed stale stock counts after the quick-edit save.
+- `app/api/admin/products/bulk-upload/route.ts` — bulk-import endpoint batch-created products without busting the `unstable_cache`. Newly uploaded products would not appear on the storefront until the 120 s TTL expired. Fixed by calling `revalidateTag("products")` before returning the success response.
+
 ---
 
 ## [0.2.0] — 2026-03-14

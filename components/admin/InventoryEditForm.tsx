@@ -5,6 +5,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { arrayUnion } from "firebase/firestore";
 import { getFirebaseApp } from "@/lib/firebase/client";
 import { updateProduct } from "@/lib/firebase/products";
+import { revalidateProductsCache } from "@/lib/actions/revalidate";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { CameraCapture } from "./CameraCapture";
@@ -73,6 +74,7 @@ export function InventoryEditForm({ product, onSaved }: InventoryEditFormProps) 
         // Append to history only when stock qty actually changed
         ...(newStock !== product.stock ? { restockHistory: arrayUnion(restockEntry) as unknown as [] } : {}),
       });
+      void revalidateProductsCache();
       setSuccess(true);
       onSaved?.();
     } catch (err) {

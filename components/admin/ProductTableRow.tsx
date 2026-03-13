@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { updateProduct } from "@/lib/firebase/products";
+import { revalidateProductsCache } from "@/lib/actions/revalidate";
 import { formatINR } from "@/lib/formatCurrency";
 import type { Product } from "@/types/product";
 
@@ -23,6 +24,7 @@ export function ProductTableRow({ product, onDelete }: ProductTableRowProps) {
     setSaving(true);
     try {
       await updateProduct(product.id, { stock: n, availableStock: Math.max(0, n - product.reservedStock), inStock: n > 0 });
+      void revalidateProductsCache();
       setEditingStock(false);
     } finally {
       setSaving(false);
