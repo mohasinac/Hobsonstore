@@ -1,6 +1,2 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+// Thin re-export — use @mohasinac/css-tailwind directly in new code.
+export { cn } from "@mohasinac/css-tailwind";
